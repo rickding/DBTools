@@ -28,13 +28,13 @@ public class DB2EA {
             }
 
             // File or directory, while not iterate sub folders
-            if (file.isFile() && arg.toLowerCase().endsWith(".sql")) {
+            if (file.isFile() && arg.toLowerCase().endsWith(SqlParser.File_SQL_Ext)) {
                 SqlParser.processFile(file);
             } else if (file.isDirectory()) {
                 File[] files = file.listFiles(new FilenameFilter() {
                     @Override
                     public boolean accept(File dir, String name) {
-                        return !StrUtils.isEmpty(name) && name.toLowerCase().endsWith(".sql");
+                        return !StrUtils.isEmpty(name) && name.toLowerCase().endsWith(SqlParser.File_SQL_Ext);
                     }
                 });
 
