@@ -6,7 +6,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DB2EATest {
+public class SqlParserTest {
     @Test
     public void testParse() {
         Map<String, String> mapIO = new HashMap<String, String>() {{
@@ -53,7 +53,7 @@ public class DB2EATest {
         }};
 
         for (Map.Entry<String, String> io : mapIO.entrySet()) {
-            EAItem item = DB2EA.parse(io.getKey(), null);
+            EAItem item = SqlParser.parse(io.getKey(), null);
             String ret = item == null ? null : item.toString();
             Assert.assertEquals(io.getValue(), ret);
         }
@@ -67,22 +67,22 @@ public class DB2EATest {
             put(new Object[] {"create table ea", " ", 2, null}, "ea");
             put(new Object[] {"create table `ea`", " ", 2, new String[] {"`"}}, "ea");
 
-            put(new Object[] {"Database: ad", DB2EA.DB_Splitter, DB2EA.DB_Index, new String[] {DB2EA.DB_Trim}}, "ad");
-            put(new Object[] {"Database       : oms-v2-st", DB2EA.DB_Splitter, DB2EA.DB_Index, new String[] {DB2EA.DB_Trim}}, "oms-v2-st");
+            put(new Object[] {"Database: ad", SqlParser.DB_Splitter, SqlParser.DB_Index, new String[] {SqlParser.DB_Trim}}, "ad");
+            put(new Object[] {"Database       : oms-v2-st", SqlParser.DB_Splitter, SqlParser.DB_Index, new String[] {SqlParser.DB_Trim}}, "oms-v2-st");
 
-            put(new Object[] {"CREATE TABLE `agif_agent` (", DB2EA.Table_Splitter, DB2EA.Table_Index, new String[] {DB2EA.Table_Trim}}, "agif_agent");
-            put(new Object[] {"CREATE TABLE `ad_code` (", DB2EA.Table_Splitter, DB2EA.Table_Index, new String[] {DB2EA.Table_Trim}}, "ad_code");
+            put(new Object[] {"CREATE TABLE `agif_agent` (", SqlParser.Table_Splitter, SqlParser.Table_Index, new String[] {SqlParser.Table_Trim}}, "agif_agent");
+            put(new Object[] {"CREATE TABLE `ad_code` (", SqlParser.Table_Splitter, SqlParser.Table_Index, new String[] {SqlParser.Table_Trim}}, "ad_code");
 
-            put(new Object[] {"`id` bigint(20) NOT NULL AUTO_INCREMENT,", DB2EA.Field_Splitter, DB2EA.Field_Index, new String[] {DB2EA.Field_Trim}}, "id");
-            put(new Object[] {"`AGENT_ID` varchar(36) COLLATE utf8_unicode_ci NOT NULL COMMENT '买手ID',", DB2EA.Field_Splitter, DB2EA.Field_Index, new String[] {DB2EA.Field_Trim}}, "AGENT_ID");
+            put(new Object[] {"`id` bigint(20) NOT NULL AUTO_INCREMENT,", SqlParser.Field_Splitter, SqlParser.Field_Index, new String[] {SqlParser.Field_Trim}}, "id");
+            put(new Object[] {"`AGENT_ID` varchar(36) COLLATE utf8_unicode_ci NOT NULL COMMENT '买手ID',", SqlParser.Field_Splitter, SqlParser.Field_Index, new String[] {SqlParser.Field_Trim}}, "AGENT_ID");
 
-            put(new Object[]{"COMMENT '广告页面',", DB2EA.Comment_Splitter, DB2EA.Comment_Index, DB2EA.Comment_Trim_List}, "广告页面");
-            put(new Object[]{"COMMENT '买手ID',", DB2EA.Comment_Splitter, DB2EA.Comment_Index, DB2EA.Comment_Trim_List}, "买手ID");
+            put(new Object[]{"COMMENT '广告页面',", SqlParser.Comment_Splitter, SqlParser.Comment_Index, SqlParser.Comment_Trim_List}, "广告页面");
+            put(new Object[]{"COMMENT '买手ID',", SqlParser.Comment_Splitter, SqlParser.Comment_Index, SqlParser.Comment_Trim_List}, "买手ID");
         }};
 
         for (Map.Entry<Object[], String> io : mapIO.entrySet()) {
             Object[] params = io.getKey();
-            String ret = DB2EA.parseName((String)params[0], (String)params[1], (Integer)params[2], (String[])params[3]);
+            String ret = SqlParser.parseName((String) params[0], (String) params[1], (Integer) params[2], (String[]) params[3]);
             Assert.assertEquals(io.getValue(), ret);
         }
     }

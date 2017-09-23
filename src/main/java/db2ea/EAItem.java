@@ -23,6 +23,14 @@ public class EAItem {
         this.comment = comment;
     }
 
+    public EAStereotype getStereotype() {
+        return stereotype;
+    }
+
+    public void setParent(EAItem parent) {
+        this.parent = parent;
+    }
+
     public String getId() {
         String id = StrUtils.isEmpty(name) ? "" : name;
 
