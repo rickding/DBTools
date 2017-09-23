@@ -54,20 +54,22 @@ public class EAItem {
         // Combine name and comment
         String fullName = StrUtils.isEmpty(name) ? "" : name;
         if (!StrUtils.isEmpty(comment)) {
-            fullName = String.format("%s%s", fullName, comment);
+            String tmp = comment.replace(EAWriter.Field_Separator, EAWriter.Field_Separator_Replace);
+            fullName = String.format("%s%s", fullName, tmp);
         }
 
         // Combine the needed values
         String[] values = {
                 fullName,
                 type == null ? "" : type.getCode(),
-                stereotype == null ? "" : stereotype.getCode(), getId(),
+                stereotype == null ? "" : stereotype.getCode(),
+                getId(),
                 parent == null ? "" : parent.getId()
         };
 
         StringBuilder sb = new StringBuilder();
         for (String str : values) {
-            sb.append(",");
+            sb.append(EAWriter.Field_Separator);
             sb.append(str);
         }
 

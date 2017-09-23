@@ -4,9 +4,10 @@ package db2ea;
  * Created by user on 2017/9/23.
  */
 public enum EAStereotype {
-    DB(0, "database connection"),
-    Table(1, "table"),
-    Field(2, "function");
+    None(0, ""),
+    DB(1, "database connection"),
+    Table(2, "table"),
+    Field(3, "function");
 
     private int id;
     private String code;

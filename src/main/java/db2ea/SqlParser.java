@@ -17,7 +17,7 @@ public class SqlParser {
         try {
             reader = new BufferedReader(new FileReader(file));
             writer = new EAWriter(file.getPath());
-            writer.open();
+            EAItem pack = writer.open();
 
             // DB, table, field are parent-cline relationships.
             EAItem db = null, table = null;
@@ -41,6 +41,7 @@ public class SqlParser {
 
                 if (type.isDB()) {
                     db = item;
+                    db.setParent(pack);
                     System.out.println(db.toString());
                 } else if (type.isTable()) {
                     table = item;
@@ -49,6 +50,7 @@ public class SqlParser {
                 } else if (type.isField()) {
                     item.setParent(table);
                 } else {
+                    System.out.printf("Un-supported item: %s\n", item.toString());
                     continue;
                 }
 
