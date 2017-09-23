@@ -9,6 +9,7 @@ import java.io.IOException;
 public class EAWriter {
     private String fileName;
     private FileWriter fileWriter;
+    private EAItem pack;
 
     public static String Field_Separator = ",";
     public static String Field_Separator_Replace = "，";
@@ -22,6 +23,14 @@ public class EAWriter {
         this.fileName = String.format("%s%s", fileName == null ? "file" : fileName, SqlParser.File_EA_Ext);
     }
 
+    public boolean isOpen() {
+        return fileWriter != null;
+    }
+
+    public EAItem getPack() {
+        return pack;
+    }
+
     /**
      * open, write header, create root package which will be the first level elements' parent
      * @return
@@ -31,7 +40,7 @@ public class EAWriter {
             close();
         }
 
-        EAItem pack = null;
+        pack = null;
         try {
             fileWriter = new FileWriter(fileName);
             // headers
@@ -55,6 +64,7 @@ public class EAWriter {
             return;
         }
 
+        pack = null;
         try {
             fileWriter.close();
         } catch (IOException e) {
@@ -63,6 +73,7 @@ public class EAWriter {
         } finally {
             fileWriter = null;
         }
+        System.out.printf("EAWrite saves successfully: %s\n", fileName);
     }
 
     public void write(EAItem item) {

@@ -28,20 +28,29 @@ public class DB2EA {
             }
 
             // File or directory, while not iterate sub folders
+            File[] files = null;
             if (file.isFile() && arg.toLowerCase().endsWith(SqlParser.File_SQL_Ext)) {
-                SqlParser.processFile(file);
+                files = new File[]{file};
             } else if (file.isDirectory()) {
-                File[] files = file.listFiles(new FilenameFilter() {
+                files = file.listFiles(new FilenameFilter() {
                     @Override
                     public boolean accept(File dir, String name) {
                         return !StrUtils.isEmpty(name) && name.toLowerCase().endsWith(SqlParser.File_SQL_Ext);
                     }
                 });
-
-                for (File f : files) {
-                    SqlParser.processFile(f);
-                }
             }
+
+            if (files == null || files.length <= 0) {
+                continue;
+            }
+
+            EAWriter writer = new EAWriter(file.getPath());
+            writer.open();
+
+            for (File f : files) {
+                SqlParser.processFile(f, writer);
+            }
+            writer.close();
         }
 
         System.out.printf("Finished, start: %s, end: %s\n",

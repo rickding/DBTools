@@ -6,18 +6,16 @@ import java.io.*;
  * Created by user on 2017/9/23.
  */
 public class SqlParser {
-    public static void processFile(File file) {
-        if (file == null || !file.canRead()) {
+    public static void processFile(File file, EAWriter writer) {
+        if (file == null || !file.canRead() || writer == null || !writer.isOpen()) {
             return;
         }
 
         // http://www.cnblogs.com/lovebread/archive/2009/11/23/1609122.html
         BufferedReader reader = null;
-        EAWriter writer = null;
         try {
             reader = new BufferedReader(new FileReader(file));
-            writer = new EAWriter(file.getPath());
-            EAItem pack = writer.open();
+            EAItem pack = writer.getPack();
 
             // DB, table, field are parent-cline relationships.
             EAItem db = null, table = null;
@@ -57,18 +55,11 @@ public class SqlParser {
                 writer.write(item);
             }
 
-            writer.close();
-            writer = null;
-
             reader.close();
             reader = null;
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (writer != null) {
-                writer.close();
-                writer = null;
-            }
             if (reader != null) {
                 try {
                     reader.close();

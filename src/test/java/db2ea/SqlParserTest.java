@@ -45,7 +45,7 @@ public class SqlParserTest {
 
             put("CREATE TABLE `ad_code` (", "ad_code,Class,table,ad_code,");
             put("`id` bigint(20) NOT NULL AUTO_INCREMENT,", "id,Class,function,id,");
-            put("`page_type` bigint(20) NOT NULL COMMENT '广告页面',", "page_type广告页面,Class,function,page_type,");
+            put("`page_type` bigint(20) NOT NULL COMMENT '广告,页面',", "page_type广告，页面,Class,function,page_type,");
 
             put("PRIMARY KEY (`id`),", null);
             put("KEY `index_adcode_page` (`page_type`,`code`,`is_deleted`),", null);
