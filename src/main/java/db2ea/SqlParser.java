@@ -41,16 +41,17 @@ public class SqlParser {
 
                 if (type.isDB()) {
                     db = item;
+                    System.out.println(db.toString());
                 } else if (type.isTable()) {
                     table = item;
                     table.setParent(db);
+                    System.out.println(table.toString());
                 } else if (type.isField()) {
                     item.setParent(table);
                 } else {
                     continue;
                 }
 
-                System.out.println(item.toString());
                 writer.write(item);
             }
 
