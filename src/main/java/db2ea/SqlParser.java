@@ -1,6 +1,9 @@
 package db2ea;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by user on 2017/9/23.
@@ -84,19 +87,19 @@ public class SqlParser {
         if (sqlLowercase.indexOf(DB_Flag) >= 0) {
             // Remove the unused beginning.
             sql = sql.substring(sqlLowercase.indexOf(DB_Flag));
-            String name = parseName(sql, DB_Splitter, DB_Index, DB_Trim);
+            String name = parseName(sql, DB_Splitter, DB_Index, DB_Trim, null);
             if (!StrUtils.isEmpty(name)) {
                 item = new EAItem(name, EAType.Artifact, EAStereotype.DB, parent);
             }
         } else if (sqlLowercase.startsWith(Table_Flag)) {
             sql = sql.substring(sqlLowercase.indexOf(Table_Flag));
-            String name = parseName(sql, Table_Splitter, Table_Index, Table_Trim);
+            String name = parseName(sql, Table_Splitter, Table_Index, Table_Trim, null);
             if (!StrUtils.isEmpty(name)) {
                 item = new EAItem(name, EAType.Class, EAStereotype.Table, parent);
             }
         } else if (sqlLowercase.startsWith(Field_Flag)) {
             sql = sql.substring(sqlLowercase.indexOf(Field_Flag));
-            String name = parseName(sql, Field_Splitter, Field_Index, Field_Trim);
+            String name = parseName(sql, Field_Splitter, Field_Index, Field_Trim, Field_Ignore_list);
             if (!StrUtils.isEmpty(name)) {
                 item = new EAItem(name, EAType.Class, EAStereotype.Field, parent);
 
@@ -105,7 +108,7 @@ public class SqlParser {
                 if (sqlLowercase.indexOf(Comment_Flag) >= 0) {
                     sql = sql.substring(sqlLowercase.indexOf(Comment_Flag));
 
-                    name = parseName(sql, Comment_Splitter, Comment_Index, Comment_Trim_List);
+                    name = parseName(sql, Comment_Splitter, Comment_Index, Comment_Trim_List, null);
                     if (!StrUtils.isEmpty(name)) {
                         item.setComment(name);
                     }
@@ -116,11 +119,11 @@ public class SqlParser {
         return item;
     }
 
-    public static String parseName(String str, String splitter, int index, String trim) {
-        return parseName(str, splitter, index, StrUtils.isEmpty(trim) ? null : new String[]{trim});
+    public static String parseName(String str, String splitter, int index, String trim, String[] ignores) {
+        return parseName(str, splitter, index, StrUtils.isEmpty(trim) ? null : new String[]{trim}, ignores);
     }
 
-    public static String parseName(String str, String splitter, int index, String[] trims) {
+    public static String parseName(String str, String splitter, int index, String[] trims, String[] ignores) {
         if (StrUtils.isEmpty(str) || StrUtils.isEmpty(splitter) || index < 0) {
             return str == null ? "" : str;
         }
@@ -153,6 +156,14 @@ public class SqlParser {
             }
         }
 
+        // Check if it should be ignored
+        if (!ArrayUtils.isEmpty(ignores)) {
+            List<String> list = Arrays.asList(ignores);
+            if (list.contains(name)) {
+                name = "";
+            }
+        }
+
         // Get the original string
         if (!StrUtils.isEmpty(name)) {
             index = strLowercase.indexOf(name);
@@ -181,6 +192,14 @@ public class SqlParser {
     public static String Field_Splitter = " ";
     public static int Field_Index = 0;
     public static String Field_Trim = "`";
+    public static String[] Field_Ignore_list = {
+            "create_time", "create_by", "update_time", "update_by", "server_ip",
+            "is_available", "is_deleted", "is_disable",
+            "version", "version_no", "client_versionno", "company_id",
+            "create_userid", "create_username", "create_userip", "create_usermac", "create_time_db",
+            "update_userid", "update_username", "update_userip", "update_usermac", "update_time_db",
+            "del_flg", "crt_id", "crt_time", "upd_id", "upd_time"
+    };
 
     public static String Comment_Flag = "comment";
     public static String Comment_Splitter = " ";

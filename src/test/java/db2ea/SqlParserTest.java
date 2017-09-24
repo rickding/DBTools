@@ -82,7 +82,7 @@ public class SqlParserTest {
 
         for (Map.Entry<Object[], String> io : mapIO.entrySet()) {
             Object[] params = io.getKey();
-            String ret = SqlParser.parseName((String) params[0], (String) params[1], (Integer) params[2], (String[]) params[3]);
+            String ret = SqlParser.parseName((String) params[0], (String) params[1], (Integer) params[2], (String[]) params[3], null);
             Assert.assertEquals(io.getValue(), ret);
         }
     }
