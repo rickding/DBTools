@@ -145,14 +145,14 @@ public class EAItem {
 
         StringBuilder sb = new StringBuilder();
         if (!StrUtils.isEmpty(rootProject)) {
-            sb.append(", ");
+            sb.append(",");
             sb.append(rootProject);
         }
         for (String project : projectSet) {
-            sb.append(", ");
+            sb.append(",");
             sb.append(project);
         }
-        String project = sb.length() > 0 ? sb.substring(2) : "";
+        String project = sb.length() > 0 ? sb.substring(1) : "";
 
         // Combine the needed values
         String[] values = {
