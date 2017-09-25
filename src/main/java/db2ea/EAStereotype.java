@@ -19,6 +19,10 @@ public enum EAStereotype {
         this.codeForExcel = codeForExcel;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public String getCode() {
         return code;
     }

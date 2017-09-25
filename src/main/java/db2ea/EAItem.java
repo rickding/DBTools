@@ -36,8 +36,16 @@ public class EAItem {
         this.codeForExcel = codeForExcel;
     }
 
+    public String getStereotypeCode() {
+        return stereotype == null ? "" : (codeForExcel ? stereotype.getCodeForExcel() : stereotype.getCode());
+    }
+
+    public int getStereotypeId() {
+        return stereotype == null ? 0 : stereotype.getId();
+    }
+
     public String getId() {
-        String id = StrUtils.isEmpty(name) ? "" : name;
+        String id = StrUtils.isEmpty(name) ? "" : String.format("%d_%s", getStereotypeId(), name);
 
         if (parent != null) {
             String pid = parent.getId();
@@ -67,7 +75,7 @@ public class EAItem {
         String[] values = {
                 fullName,
                 type == null ? "" : type.getCode(),
-                stereotype == null ? "" : (codeForExcel ? stereotype.getCodeForExcel() : stereotype.getCode()),
+                getStereotypeCode(),
                 getId(),
                 parent == null ? "" : parent.getId()
         };
