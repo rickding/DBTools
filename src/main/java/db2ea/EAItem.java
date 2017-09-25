@@ -20,6 +20,10 @@ public class EAItem {
         this.parent = parent;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public void setComment(String comment) {
         this.comment = comment;
     }

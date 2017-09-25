@@ -43,19 +43,37 @@ public class SqlParser {
                 if (type.isDB()) {
                     db = item;
                     db.setParent(pack);
+
+                    // Write db
+                    writer.write(db);
                     System.out.println(db.toString());
                 } else if (type.isTable()) {
+                    if (table != null) {
+                        // Write the previous table, since it's comment is at the end of sql definition block.
+                        writer.write(table);
+                    }
+
                     table = item;
                     table.setParent(db);
                     System.out.println(table.toString());
                 } else if (type.isField()) {
                     item.setParent(table);
+
+                    // Write field
+                    writer.write(item);
                 } else {
                     System.out.printf("Un-supported item: %s\n", item.toString());
-                    continue;
-                }
 
-                writer.write(item);
+                    // Table's comment
+                    if (table != null) {
+                        table.setComment(item.getName());
+                    }
+                }
+            }
+
+            // Write the last table, since it's comment is at the end of sql definition block.
+            if (table != null) {
+                writer.write(table);
             }
 
             reader.close();
@@ -102,16 +120,22 @@ public class SqlParser {
             if (!StrUtils.isEmpty(name)) {
                 item = new EAItem(name, EAType.Class, EAStereotype.Field, parent);
 
-                // Find the comment
+                // Find the comment of the field
                 sqlLowercase = sql.toLowerCase();
                 if (sqlLowercase.indexOf(Comment_Flag) >= 0) {
                     sql = sql.substring(sqlLowercase.indexOf(Comment_Flag));
-
-                    name = parseName(sql, Comment_Splitter, Comment_Index, Comment_Trim_List, Comment_Replace_Map, null);
+                    name = parseName(sql, Field_Comment_Splitter, Comment_Index, Comment_Trim_List, Comment_Replace_Map, null);
                     if (!StrUtils.isEmpty(name)) {
                         item.setComment(name);
                     }
                 }
+            }
+        } else if (sqlLowercase.indexOf(Comment_Flag) >= 0) {
+            // Find the comment of the table, which is at the end of the definition block.
+            sql = sql.substring(sqlLowercase.indexOf(Comment_Flag));
+            String name = parseName(sql, Table_Comment_Splitter, Comment_Index, Comment_Trim_List, Comment_Replace_Map, null);
+            if (!StrUtils.isEmpty(name)) {
+                item = new EAItem(name, EAType.Class, EAStereotype.None, parent);
             }
         }
 
@@ -211,9 +235,10 @@ public class SqlParser {
     };
 
     public static String Comment_Flag = "comment";
-    public static String Comment_Splitter = " ";
+    public static String Field_Comment_Splitter = " ";
+    public static String Table_Comment_Splitter = "=";
     public static int Comment_Index = 1;
-    public static String[] Comment_Trim_List = {",", "'", "\"", "()"};
+    public static String[] Comment_Trim_List = {",", ";", "'", "\"", "()"};
     public static Map<String, String> Comment_Replace_Map = new HashMap<String, String>() {{
         put(",", "，");
         put(":", "：");
