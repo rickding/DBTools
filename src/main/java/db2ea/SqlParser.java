@@ -1,9 +1,8 @@
 package db2ea;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.sql.Struct;
+import java.util.*;
 
 /**
  * Created by user on 2017/9/23.
@@ -87,19 +86,19 @@ public class SqlParser {
         if (sqlLowercase.indexOf(DB_Flag) >= 0) {
             // Remove the unused beginning.
             sql = sql.substring(sqlLowercase.indexOf(DB_Flag));
-            String name = parseName(sql, DB_Splitter, DB_Index, DB_Trim, null);
+            String name = parseName(sql, DB_Splitter, DB_Index, DB_Trim_List, null, null);
             if (!StrUtils.isEmpty(name)) {
                 item = new EAItem(name, EAType.Artifact, EAStereotype.DB, parent);
             }
         } else if (sqlLowercase.startsWith(Table_Flag)) {
             sql = sql.substring(sqlLowercase.indexOf(Table_Flag));
-            String name = parseName(sql, Table_Splitter, Table_Index, Table_Trim, null);
+            String name = parseName(sql, Table_Splitter, Table_Index, Table_Trim_List, null, null);
             if (!StrUtils.isEmpty(name)) {
                 item = new EAItem(name, EAType.Class, EAStereotype.Table, parent);
             }
         } else if (sqlLowercase.startsWith(Field_Flag)) {
             sql = sql.substring(sqlLowercase.indexOf(Field_Flag));
-            String name = parseName(sql, Field_Splitter, Field_Index, Field_Trim, Field_Ignore_list);
+            String name = parseName(sql, Field_Splitter, Field_Index, Field_Trim_List, null, Field_Ignore_list);
             if (!StrUtils.isEmpty(name)) {
                 item = new EAItem(name, EAType.Class, EAStereotype.Field, parent);
 
@@ -108,7 +107,7 @@ public class SqlParser {
                 if (sqlLowercase.indexOf(Comment_Flag) >= 0) {
                     sql = sql.substring(sqlLowercase.indexOf(Comment_Flag));
 
-                    name = parseName(sql, Comment_Splitter, Comment_Index, Comment_Trim_List, null);
+                    name = parseName(sql, Comment_Splitter, Comment_Index, Comment_Trim_List, Comment_Replace_Map, null);
                     if (!StrUtils.isEmpty(name)) {
                         item.setComment(name);
                     }
@@ -119,11 +118,7 @@ public class SqlParser {
         return item;
     }
 
-    public static String parseName(String str, String splitter, int index, String trim, String[] ignores) {
-        return parseName(str, splitter, index, StrUtils.isEmpty(trim) ? null : new String[]{trim}, ignores);
-    }
-
-    public static String parseName(String str, String splitter, int index, String[] trims, String[] ignores) {
+    public static String parseName(String str, String splitter, int index, String[] trims, Map<String, String> replaces, String[] ignores) {
         if (StrUtils.isEmpty(str) || StrUtils.isEmpty(splitter) || index < 0) {
             return str == null ? "" : str;
         }
@@ -142,7 +137,7 @@ public class SqlParser {
         name = name.trim();
 
         // Trim
-        if (!ArrayUtils.isEmpty(trims)) {
+        if (!StrUtils.isEmpty(name) && !ArrayUtils.isEmpty(trims)) {
             for (String trim : trims) {
                 // Trim the beginning
                 if (name.startsWith(trim)) {
@@ -156,8 +151,22 @@ public class SqlParser {
             }
         }
 
+        // Replace the special strings
+        if (!StrUtils.isEmpty(name) && replaces != null && replaces.size() > 0) {
+            for (Map.Entry<String, String> replace : replaces.entrySet()) {
+                if (StrUtils.isEmpty(replace.getKey()) || replace.getValue() == null) {
+                    continue;
+                }
+
+                name = name.replace(replace.getKey(), replace.getValue());
+                if (StrUtils.isEmpty(name)) {
+                    break;
+                }
+            }
+        }
+
         // Check if it should be ignored
-        if (!ArrayUtils.isEmpty(ignores)) {
+        if (!StrUtils.isEmpty(name) && !ArrayUtils.isEmpty(ignores)) {
             List<String> list = Arrays.asList(ignores);
             if (list.contains(name)) {
                 name = "";
@@ -181,19 +190,19 @@ public class SqlParser {
     public static String DB_Flag = "database";
     public static String DB_Splitter = ":";
     public static int DB_Index = 1;
-    public static String DB_Trim = " ";
+    public static String[] DB_Trim_List = {" "};
 
     public static String Table_Flag = "create table";
     public static String Table_Splitter = " ";
     public static int Table_Index = 2;
-    public static String Table_Trim = "`";
+    public static String[] Table_Trim_List = {"`"};
 
     public static String Field_Flag = "`";
     public static String Field_Splitter = " ";
     public static int Field_Index = 0;
-    public static String Field_Trim = "`";
+    public static String[] Field_Trim_List = {"`"};
     public static String[] Field_Ignore_list = {
-            "create_time", "create_by", "update_time", "update_by", "server_ip",
+            "id", "create_time", "create_by", "update_time", "update_by", "server_ip",
             "is_available", "is_deleted", "is_disable",
             "version", "version_no", "client_versionno", "company_id",
             "create_userid", "create_username", "create_userip", "create_usermac", "create_time_db",
@@ -204,5 +213,16 @@ public class SqlParser {
     public static String Comment_Flag = "comment";
     public static String Comment_Splitter = " ";
     public static int Comment_Index = 1;
-    public static String[] Comment_Trim_List = {",", "'", "\""};
+    public static String[] Comment_Trim_List = {",", "'", "\"", "()"};
+    public static Map<String, String> Comment_Replace_Map = new HashMap<String, String>() {{
+        put(",", "，");
+        put(":", "：");
+        put(";", "；");
+        put("(", "（");
+        put(")", "）");
+        put(".", "。");
+
+        put("\"", "'");
+        put("*", "x");
+    }};
 }

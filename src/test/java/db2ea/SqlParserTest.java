@@ -44,7 +44,8 @@ public class SqlParserTest {
             put("DROP TABLE IF EXISTS `ad_code`;", null);
 
             put("CREATE TABLE `ad_code` (", "ad_code,Class,table,2_ad_code,");
-            put("`id` bigint(20) NOT NULL AUTO_INCREMENT,", "id,Class,function,3_id,");
+//            put("`id` bigint(20) NOT NULL AUTO_INCREMENT,", "id,Class,function,3_id,");
+            put("`id` bigint(20) NOT NULL AUTO_INCREMENT,", null);
             put("`page_type` bigint(20) NOT NULL COMMENT '广告,页面',", "page_type广告，页面,Class,function,3_page_type,");
 
             put("PRIMARY KEY (`id`),", null);
@@ -67,14 +68,14 @@ public class SqlParserTest {
             put(new Object[] {"create table ea", " ", 2, null}, "ea");
             put(new Object[] {"create table `ea`", " ", 2, new String[] {"`"}}, "ea");
 
-            put(new Object[] {"Database: ad", SqlParser.DB_Splitter, SqlParser.DB_Index, new String[] {SqlParser.DB_Trim}}, "ad");
-            put(new Object[] {"Database       : oms-v2-st", SqlParser.DB_Splitter, SqlParser.DB_Index, new String[] {SqlParser.DB_Trim}}, "oms-v2-st");
+            put(new Object[] {"Database: ad", SqlParser.DB_Splitter, SqlParser.DB_Index, SqlParser.DB_Trim_List}, "ad");
+            put(new Object[] {"Database       : oms-v2-st", SqlParser.DB_Splitter, SqlParser.DB_Index, SqlParser.DB_Trim_List}, "oms-v2-st");
 
-            put(new Object[] {"CREATE TABLE `agif_agent` (", SqlParser.Table_Splitter, SqlParser.Table_Index, new String[] {SqlParser.Table_Trim}}, "agif_agent");
-            put(new Object[] {"CREATE TABLE `ad_code` (", SqlParser.Table_Splitter, SqlParser.Table_Index, new String[] {SqlParser.Table_Trim}}, "ad_code");
+            put(new Object[] {"CREATE TABLE `agif_agent` (", SqlParser.Table_Splitter, SqlParser.Table_Index, SqlParser.Table_Trim_List}, "agif_agent");
+            put(new Object[] {"CREATE TABLE `ad_code` (", SqlParser.Table_Splitter, SqlParser.Table_Index, SqlParser.Table_Trim_List}, "ad_code");
 
-            put(new Object[] {"`id` bigint(20) NOT NULL AUTO_INCREMENT,", SqlParser.Field_Splitter, SqlParser.Field_Index, new String[] {SqlParser.Field_Trim}}, "id");
-            put(new Object[] {"`AGENT_ID` varchar(36) COLLATE utf8_unicode_ci NOT NULL COMMENT '买手ID',", SqlParser.Field_Splitter, SqlParser.Field_Index, new String[] {SqlParser.Field_Trim}}, "AGENT_ID");
+            put(new Object[] {"`id` bigint(20) NOT NULL AUTO_INCREMENT,", SqlParser.Field_Splitter, SqlParser.Field_Index, SqlParser.Field_Trim_List}, "id");
+            put(new Object[] {"`AGENT_ID` varchar(36) COLLATE utf8_unicode_ci NOT NULL COMMENT '买手ID',", SqlParser.Field_Splitter, SqlParser.Field_Index, SqlParser.Field_Trim_List}, "AGENT_ID");
 
             put(new Object[]{"COMMENT '广告页面',", SqlParser.Comment_Splitter, SqlParser.Comment_Index, SqlParser.Comment_Trim_List}, "广告页面");
             put(new Object[]{"COMMENT '买手ID',", SqlParser.Comment_Splitter, SqlParser.Comment_Index, SqlParser.Comment_Trim_List}, "买手ID");
@@ -82,7 +83,7 @@ public class SqlParserTest {
 
         for (Map.Entry<Object[], String> io : mapIO.entrySet()) {
             Object[] params = io.getKey();
-            String ret = SqlParser.parseName((String) params[0], (String) params[1], (Integer) params[2], (String[]) params[3], null);
+            String ret = SqlParser.parseName((String) params[0], (String) params[1], (Integer) params[2], (String[]) params[3], null, null);
             Assert.assertEquals(io.getValue(), ret);
         }
     }
