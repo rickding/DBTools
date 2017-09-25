@@ -49,8 +49,20 @@ public class EAItem {
         projectSet.add(project);
     }
 
+    private boolean isGarbage() {
+        // Check if it's garbage
+        if (!StrUtils.isEmpty(name)) {
+            for (String garbage : SqlParser.Name_Garbage_List) {
+                if (name.endsWith(garbage)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void checkAndMarkProject(EAItem item) {
-        if (item == null || StrUtils.isEmpty(name) || !name.equalsIgnoreCase(item.getName())) {
+        if (item == null || StrUtils.isEmpty(name) || !name.equalsIgnoreCase(item.getName()) || isGarbage()) {
             return;
         }
 
@@ -90,7 +102,7 @@ public class EAItem {
     }
 
     public void saveToFile(EAWriter writer, boolean codeForExcel) {
-        if (writer == null || !writer.isOpen()) {
+        if (writer == null || !writer.isOpen() || isGarbage()) {
             return;
         }
 

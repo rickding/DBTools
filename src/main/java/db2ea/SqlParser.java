@@ -182,7 +182,9 @@ public class SqlParser {
     public static String File_SQL_Ext = ".sql";
     public static String File_EA_Ext = ".csv";
 
-    // DB, Table, Field (Comment).
+    public static String[] Name_Garbage_List = {"_copy"};
+
+    // DB, Table, Field, Comment (of table and field)..
     public static String DB_Flag = "database";
     public static String DB_Splitter = ":";
     public static int DB_Index = 1;
@@ -211,15 +213,4 @@ public class SqlParser {
     public static String Table_Comment_Splitter = "=";
     public static int Comment_Index = 1;
     public static String[] Comment_Trim_List = {",", ";", "'", "\"", "()"};
-    public static Map<String, String> Comment_Replace_Map = new HashMap<String, String>() {{
-        put(",", "，");
-        put(":", "：");
-        put(";", "；");
-        put("(", "（");
-        put(")", "）");
-        put(".", "。");
-
-        put("\"", "'");
-        put("*", "x");
-    }};
 }
