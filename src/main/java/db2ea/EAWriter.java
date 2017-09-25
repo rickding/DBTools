@@ -12,6 +12,7 @@ public class EAWriter {
     private String fileName;
     private BufferedWriter fileWriter;
     private EAItem pack;
+    private IdChecker idChecker;
 
     public static String Field_Separator = ",";
     public static String Field_Separator_Replace = "，";
@@ -43,6 +44,8 @@ public class EAWriter {
         }
 
         pack = null;
+        idChecker = new IdChecker();
+
         try {
             fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8"));
 
@@ -68,6 +71,8 @@ public class EAWriter {
         }
 
         pack = null;
+        idChecker = null;
+
         try {
             fileWriter.close();
         } catch (IOException e) {
@@ -81,6 +86,11 @@ public class EAWriter {
 
     public void write(EAItem item) {
         if (item == null) {
+            return;
+        }
+
+        if (idChecker != null && idChecker.isDuplicated(item.getId())) {
+            System.out.printf("Duplicated id: %s, %s\n", item.getId(), item.toString());
             return;
         }
 
