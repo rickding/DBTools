@@ -139,7 +139,7 @@ public class EAItem {
         // Combine name and comment
         String fullName = StrUtils.isEmpty(name) ? "" : name;
         if (!StrUtils.isEmpty(comment)) {
-            String tmp = comment.replace(EAWriter.Field_Separator, EAWriter.Field_Separator_Replace);
+            String tmp = comment.replace(EAWriter.Field_Marker, EAWriter.Field_Marker_Replace);
             fullName = String.format("%s%s", fullName, tmp);
         }
 
@@ -156,8 +156,8 @@ public class EAItem {
 
         // Combine the needed values
         String[] values = {
-                StrUtils.isEmpty(project) ? "" : String.format("\"%s\"", project),
-                fullName,
+                StrUtils.isEmpty(project) ? "" : String.format("%s%s%s", EAWriter.Field_Marker, project, EAWriter.Field_Marker),
+                StrUtils.isEmpty(fullName) ? "" : String.format("%s%s%s", EAWriter.Field_Marker, fullName, EAWriter.Field_Marker),
                 type == null ? "" : type.getCode(),
                 getStereotypeCode(),
                 getId(),

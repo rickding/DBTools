@@ -90,19 +90,19 @@ public class SqlParser {
         if (sqlLowercase.indexOf(DB_Flag) >= 0) {
             // Remove the unused beginning.
             sql = sql.substring(sqlLowercase.indexOf(DB_Flag));
-            String name = parseName(sql, DB_Splitter, DB_Index, DB_Trim_List, null, null);
+            String name = parseName(sql, DB_Splitter, DB_Index, DB_Trim_List, null);
             if (!StrUtils.isEmpty(name)) {
                 item = new EAItem(name, EAType.Artifact, EAStereotype.DB, parent);
             }
         } else if (sqlLowercase.startsWith(Table_Flag)) {
             sql = sql.substring(sqlLowercase.indexOf(Table_Flag));
-            String name = parseName(sql, Table_Splitter, Table_Index, Table_Trim_List, null, null);
+            String name = parseName(sql, Table_Splitter, Table_Index, Table_Trim_List, null);
             if (!StrUtils.isEmpty(name)) {
                 item = new EAItem(name, EAType.Class, EAStereotype.Table, parent);
             }
         } else if (sqlLowercase.startsWith(Field_Flag)) {
             sql = sql.substring(sqlLowercase.indexOf(Field_Flag));
-            String name = parseName(sql, Field_Splitter, Field_Index, Field_Trim_List, null, Field_Ignore_list);
+            String name = parseName(sql, Field_Splitter, Field_Index, Field_Trim_List, Field_Ignore_list);
             if (!StrUtils.isEmpty(name)) {
                 item = new EAItem(name, EAType.Class, EAStereotype.Field, parent);
 
@@ -110,7 +110,7 @@ public class SqlParser {
                 sqlLowercase = sql.toLowerCase();
                 if (sqlLowercase.indexOf(Comment_Flag) >= 0) {
                     sql = sql.substring(sqlLowercase.indexOf(Comment_Flag));
-                    name = parseName(sql, Field_Comment_Splitter, Comment_Index, Comment_Trim_List, Comment_Replace_Map, null);
+                    name = parseName(sql, Field_Comment_Splitter, Comment_Index, Comment_Trim_List, null);
                     if (!StrUtils.isEmpty(name)) {
                         item.setComment(name);
                     }
@@ -119,7 +119,7 @@ public class SqlParser {
         } else if (sqlLowercase.indexOf(Comment_Flag) >= 0) {
             // Find the comment of the table, which is at the end of the definition block.
             sql = sql.substring(sqlLowercase.indexOf(Comment_Flag));
-            String name = parseName(sql, Table_Comment_Splitter, Comment_Index, Comment_Trim_List, Comment_Replace_Map, null);
+            String name = parseName(sql, Table_Comment_Splitter, Comment_Index, Comment_Trim_List, null);
             if (!StrUtils.isEmpty(name)) {
                 item = new EAItem(name, EAType.Class, EAStereotype.None, parent);
             }
@@ -128,7 +128,7 @@ public class SqlParser {
         return item;
     }
 
-    public static String parseName(String str, String splitter, int index, String[] trims, Map<String, String> replaces, String[] ignores) {
+    public static String parseName(String str, String splitter, int index, String[] trims, String[] ignores) {
         if (StrUtils.isEmpty(str) || StrUtils.isEmpty(splitter) || index < 0) {
             return str == null ? "" : str;
         }
@@ -157,20 +157,6 @@ public class SqlParser {
                 // Trim the ending
                 if (name.endsWith(trim)) {
                     name = name.substring(0, name.length() - trim.length());
-                }
-            }
-        }
-
-        // Replace the special strings
-        if (!StrUtils.isEmpty(name) && replaces != null && replaces.size() > 0) {
-            for (Map.Entry<String, String> replace : replaces.entrySet()) {
-                if (StrUtils.isEmpty(replace.getKey()) || replace.getValue() == null) {
-                    continue;
-                }
-
-                name = name.replace(replace.getKey(), replace.getValue());
-                if (StrUtils.isEmpty(name)) {
-                    break;
                 }
             }
         }
