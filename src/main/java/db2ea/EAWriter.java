@@ -1,14 +1,16 @@
 package db2ea;
 
-import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 /**
  * Created by user on 2017/9/23.
  */
 public class EAWriter {
     private String fileName;
-    private FileWriter fileWriter;
+    private BufferedWriter fileWriter;
     private EAItem pack;
 
     public static String Field_Separator = ",";
@@ -42,10 +44,11 @@ public class EAWriter {
 
         pack = null;
         try {
-            fileWriter = new FileWriter(fileName);
+            fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8"));
+
             // headers
             fileWriter.write(Field_Header);
-            fileWriter.write("\n");
+            fileWriter.newLine();
 
             // package
             // pack = new EAItem("EA包", EAType.Package, EAStereotype.None, null);
