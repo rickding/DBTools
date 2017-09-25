@@ -1,5 +1,8 @@
 package db2ea;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Created by user on 2017/9/23.
  */
@@ -11,13 +14,16 @@ public class EAItem {
     private EAStereotype stereotype;
 
     private EAItem parent;
+    private Set<EAItem> children = new HashSet<EAItem>();
+
     private boolean codeForExcel = false;
 
     public EAItem(String name, EAType type, EAStereotype stereotype, EAItem parent) {
         this.name = name;
         this.type = type;
         this.stereotype = stereotype;
-        this.parent = parent;
+
+        setParent(parent);
     }
 
     public String getName() {
@@ -34,6 +40,14 @@ public class EAItem {
 
     public void setParent(EAItem parent) {
         this.parent = parent;
+        if (null != parent) {
+            parent.addChild(this);
+        }
+    }
+
+    public void addChild(EAItem child) {
+        // Set will remove the duplicated one.
+        children.add(child);
     }
 
     public void setCodeForExcel(boolean codeForExcel) {
@@ -46,6 +60,26 @@ public class EAItem {
 
     public int getStereotypeId() {
         return stereotype == null ? 0 : stereotype.getId();
+    }
+
+
+    public void saveToFile(EAWriter writer, boolean codeForExcel) {
+        if (writer == null || !writer.isOpen()) {
+            return;
+        }
+
+        // Save itself
+        setCodeForExcel(codeForExcel);
+        writer.write(this);
+
+        if (children == null || children.size() <= 0) {
+            return;
+        }
+
+        // Save children
+        for (EAItem child : children) {
+            child.saveToFile(writer, codeForExcel);
+        }
     }
 
     public String getId() {

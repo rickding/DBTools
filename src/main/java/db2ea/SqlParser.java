@@ -8,16 +8,17 @@ import java.util.*;
  * Created by user on 2017/9/23.
  */
 public class SqlParser {
-    public static void processFile(File file, EAWriter writer, boolean codeForExcel) {
-        if (file == null || !file.canRead() || writer == null || !writer.isOpen()) {
-            return;
+    public static List<EAItem> processFile(File file) {
+        if (file == null || !file.canRead()) {
+            return null;
         }
+
+        List<EAItem> dbList = new ArrayList<EAItem>();
 
         // http://www.cnblogs.com/lovebread/archive/2009/11/23/1609122.html
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(file));
-            EAItem pack = writer.getPack();
 
             // DB, table, field are parent-cline relationships.
             EAItem db = null, table = null;
@@ -34,7 +35,6 @@ public class SqlParser {
                     continue;
                 }
 
-                item.setCodeForExcel(codeForExcel);
                 EAStereotype type = item.getStereotype();
                 if (type == null) {
                     continue;
@@ -42,38 +42,22 @@ public class SqlParser {
 
                 if (type.isDB()) {
                     db = item;
-                    db.setParent(pack);
-
-                    // Write db
-                    writer.write(db);
+                    dbList.add(db);
                     System.out.println(db.toString());
                 } else if (type.isTable()) {
-                    if (table != null) {
-                        // Write the previous table, since it's comment is at the end of sql definition block.
-                        writer.write(table);
-                    }
-
                     table = item;
                     table.setParent(db);
                     System.out.println(table.toString());
                 } else if (type.isField()) {
                     item.setParent(table);
-
-                    // Write field
-                    writer.write(item);
                 } else {
-                    System.out.printf("Un-supported item: %s\n", item.toString());
-
-                    // Table's comment
                     if (table != null) {
+                        // Table's comment
                         table.setComment(item.getName());
+                    } else {
+                        System.out.printf("Un-supported item: %s\n", item.toString());
                     }
                 }
-            }
-
-            // Write the last table, since it's comment is at the end of sql definition block.
-            if (table != null) {
-                writer.write(table);
             }
 
             reader.close();
@@ -90,6 +74,8 @@ public class SqlParser {
                 }
             }
         }
+
+        return dbList;
     }
 
     public static EAItem parse(String sql, EAItem parent) {

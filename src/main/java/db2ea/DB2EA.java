@@ -3,6 +3,9 @@ package db2ea;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by user on 2017/9/23.
@@ -57,19 +60,43 @@ public class DB2EA {
                 continue;
             }
 
+            // Remember the project and DB list.
+            Map<String, List<EAItem>> projectMap = new HashMap<String, List<EAItem>>();
+            for (File f : files) {
+                List<EAItem> dbList = SqlParser.processFile(f);
+                if (dbList != null && dbList.size() > 0) {
+                    // Save the project and db list
+                    projectMap.put(f.getPath(), dbList);
+                }
+            }
+
+            // TODO: walk through the items to mark the project
+
+            // Save the items
             EAWriter writer = null;
             if (!separateCsv) {
                 writer = new EAWriter(file.getPath());
                 writer.open();
             }
 
-            for (File f : files) {
+            for (Map.Entry<String, List<EAItem>> project : projectMap.entrySet()) {
+                List<EAItem> dbList = project.getValue();
+                if (dbList == null || dbList.size() <= 0) {
+                    continue;
+                }
+
                 if (separateCsv) {
-                    writer = new EAWriter(f.getPath());
+                    writer = new EAWriter(project.getKey());
                     writer.open();
                 }
 
-                SqlParser.processFile(f, writer, codeForExcel);
+                for (EAItem db : dbList) {
+                    if (db == null) {
+                        continue;
+                    }
+
+                    db.saveToFile(writer, codeForExcel);
+                }
 
                 if (separateCsv) {
                     writer.close();
