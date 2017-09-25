@@ -9,7 +9,7 @@ import java.util.List;
  * Created by user on 2017/9/23.
  */
 public class SqlParser {
-    public static void processFile(File file, EAWriter writer) {
+    public static void processFile(File file, EAWriter writer, boolean codeForExcel) {
         if (file == null || !file.canRead() || writer == null || !writer.isOpen()) {
             return;
         }
@@ -35,6 +35,7 @@ public class SqlParser {
                     continue;
                 }
 
+                item.setCodeForExcel(codeForExcel);
                 EAStereotype type = item.getStereotype();
                 if (type == null) {
                     continue;
@@ -69,7 +70,6 @@ public class SqlParser {
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
-                    reader = null;
                 }
             }
         }

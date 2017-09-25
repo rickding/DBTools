@@ -10,7 +10,7 @@ public enum EAType {
 
     private String code;
 
-    private EAType(String code) {
+    EAType(String code) {
         this.code = code;
     }
 

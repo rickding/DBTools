@@ -11,14 +11,22 @@ public class DB2EA {
     public static void main(String[] args) {
         if (ArrayUtils.isEmpty(args)) {
             System.out.println("Please specify the MySQL dumped file or folder to convert multiple ones!");
+            System.out.println("-code-for-excel: specify to generate file for excel to parse.");
+            System.out.println("folder or *.sql file: specify the folder or sql file to parse.");
             return;
         }
 
         Date time_start = new Date();
+        boolean codeForExcel = false;
 
         // Read files
         for (String arg : args) {
             if (StrUtils.isEmpty(arg)) {
+                continue;
+            }
+
+            if (arg.equals("-code-for-excel")) {
+                codeForExcel = true;
                 continue;
             }
 
@@ -33,7 +41,7 @@ public class DB2EA {
                 files = new File[]{file};
             } else if (file.isDirectory()) {
                 files = file.listFiles(new FilenameFilter() {
-                    @Override
+                    // @Override
                     public boolean accept(File dir, String name) {
                         return !StrUtils.isEmpty(name) && name.toLowerCase().endsWith(SqlParser.File_SQL_Ext);
                     }
@@ -48,7 +56,7 @@ public class DB2EA {
             writer.open();
 
             for (File f : files) {
-                SqlParser.processFile(f, writer);
+                SqlParser.processFile(f, writer, codeForExcel);
             }
             writer.close();
         }

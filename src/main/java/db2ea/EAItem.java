@@ -11,6 +11,7 @@ public class EAItem {
     private EAStereotype stereotype;
 
     private EAItem parent;
+    private boolean codeForExcel = false;
 
     public EAItem(String name, EAType type, EAStereotype stereotype, EAItem parent) {
         this.name = name;
@@ -29,6 +30,10 @@ public class EAItem {
 
     public void setParent(EAItem parent) {
         this.parent = parent;
+    }
+
+    public void setCodeForExcel(boolean codeForExcel) {
+        this.codeForExcel = codeForExcel;
     }
 
     public String getId() {
@@ -62,7 +67,7 @@ public class EAItem {
         String[] values = {
                 fullName,
                 type == null ? "" : type.getCode(),
-                stereotype == null ? "" : stereotype.getCode(),
+                stereotype == null ? "" : (codeForExcel ? stereotype.getCodeForExcel() : stereotype.getCode()),
                 getId(),
                 parent == null ? "" : parent.getId()
         };
