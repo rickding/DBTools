@@ -17,7 +17,7 @@ public class EAWriter {
     public static String Field_Separator = ",";
     public static String Field_Separator_Replace = "，";
 
-    public static String Field_Header = "Name,Type,Stereotype,CSV_KEY,CSV_PARENT_KEY";
+    public static String Field_Header = "Alias,Name,Type,Stereotype,CSV_KEY,CSV_PARENT_KEY";
 
     public EAWriter(String fileName) {
         if (!StrUtils.isEmpty(fileName) && fileName.toLowerCase().endsWith(SqlParser.File_SQL_Ext)) {

@@ -2,10 +2,7 @@ package db2ea;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by user on 2017/9/23.
@@ -24,7 +21,10 @@ public class DB2EA {
         boolean codeForExcel = false;
         boolean separateCsv = false;
 
-        // Read files
+        // The project and DB list
+        List<Project> projects = new ArrayList<Project>();
+
+        // Parse files
         for (String arg : args) {
             if (StrUtils.isEmpty(arg)) {
                 continue;
@@ -60,7 +60,7 @@ public class DB2EA {
                 continue;
             }
 
-            // Remember the project and DB list.
+            // Check the project and DB list.
             Map<String, List<EAItem>> projectMap = new HashMap<String, List<EAItem>>();
             for (File f : files) {
                 List<EAItem> dbList = SqlParser.processFile(f);
@@ -70,41 +70,51 @@ public class DB2EA {
                 }
             }
 
-            // TODO: walk through the items to mark the project
+            if (projectMap != null && projectMap.size() > 0) {
+                projects.add(new Project(projectMap, file.getPath(), file.getName()));
+            }
+        }
 
-            // Save the items
-            EAWriter writer = null;
-            if (!separateCsv) {
-                writer = new EAWriter(file.getPath());
-                writer.open();
+        // Walk through the items to mark the project
+        for (int i = 0; i < projects.size() - 1; i++) {
+            Project p1 = projects.get(i);
+            for (int j = i + 1; j < projects.size(); j++) {
+                Project p2 = projects.get(j);
+                p2.checkAndMarkProject(p1);
+            }
+        }
+
+        // Save the projects
+        for (Project project : projects) {
+            if (project.getDbListMap() == null) {
+                continue;
             }
 
-            for (Map.Entry<String, List<EAItem>> project : projectMap.entrySet()) {
-                List<EAItem> dbList = project.getValue();
-                if (dbList == null || dbList.size() <= 0) {
-                    continue;
-                }
+            // Save to one file
+            if (!separateCsv) {
+                EAWriter writer = new EAWriter(project.getPath());
+                writer.open();
 
-                if (separateCsv) {
-                    writer = new EAWriter(project.getKey());
-                    writer.open();
-                }
-
-                for (EAItem db : dbList) {
-                    if (db == null) {
+                project.saveToFile(writer, codeForExcel);
+                writer.close();
+            } else {
+                // Save to multiple files
+                for (Map.Entry<String, List<EAItem>> dbListEntry : project.getDbListMap().entrySet()) {
+                    List<EAItem> dbList = dbListEntry.getValue();
+                    if (dbList == null || dbList.size() <= 0) {
                         continue;
                     }
 
-                    db.saveToFile(writer, codeForExcel);
-                }
+                    EAWriter writer = new EAWriter(dbListEntry.getKey());
+                    writer.open();
 
-                if (separateCsv) {
+                    for (EAItem db : dbList) {
+                        if (db != null) {
+                            db.saveToFile(writer, codeForExcel);
+                        }
+                    }
                     writer.close();
                 }
-            }
-
-            if (!separateCsv) {
-                writer.close();
             }
         }
 

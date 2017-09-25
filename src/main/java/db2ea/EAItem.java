@@ -7,6 +7,8 @@ import java.util.Set;
  * Created by user on 2017/9/23.
  */
 public class EAItem {
+    private String rootProject;
+    private Set<String> projectSet = new HashSet<String>();
     private String name;
     private String comment;
 
@@ -24,6 +26,43 @@ public class EAItem {
         this.stereotype = stereotype;
 
         setParent(parent);
+    }
+
+    public String getProject() {
+        return rootProject;
+    }
+
+    public void setProject(String project) {
+        this.rootProject = project;
+
+        if (children == null || children.size() <= 0) {
+            return;
+        }
+
+        // Save children
+        for (EAItem child : children) {
+            child.setProject(project);
+        }
+    }
+
+    private void addProject(String project) {
+        projectSet.add(project);
+    }
+
+    public void checkAndMarkProject(EAItem item) {
+        if (item == null || StrUtils.isEmpty(name) || !name.equalsIgnoreCase(item.getName())) {
+            return;
+        }
+
+        addProject(item.getProject());
+        item.addProject(getProject());
+
+        // Check the children
+        for (EAItem child1 : children) {
+            for (EAItem child2 : item.children) {
+                child1.checkAndMarkProject(child2);
+            }
+        }
     }
 
     public String getName() {
@@ -45,23 +84,10 @@ public class EAItem {
         }
     }
 
-    public void addChild(EAItem child) {
+    private void addChild(EAItem child) {
         // Set will remove the duplicated one.
         children.add(child);
     }
-
-    public void setCodeForExcel(boolean codeForExcel) {
-        this.codeForExcel = codeForExcel;
-    }
-
-    public String getStereotypeCode() {
-        return stereotype == null ? "" : (codeForExcel ? stereotype.getCodeForExcel() : stereotype.getCode());
-    }
-
-    public int getStereotypeId() {
-        return stereotype == null ? 0 : stereotype.getId();
-    }
-
 
     public void saveToFile(EAWriter writer, boolean codeForExcel) {
         if (writer == null || !writer.isOpen()) {
@@ -69,7 +95,7 @@ public class EAItem {
         }
 
         // Save itself
-        setCodeForExcel(codeForExcel);
+        this.codeForExcel = codeForExcel;
         writer.write(this);
 
         if (children == null || children.size() <= 0) {
@@ -80,6 +106,14 @@ public class EAItem {
         for (EAItem child : children) {
             child.saveToFile(writer, codeForExcel);
         }
+    }
+
+    private String getStereotypeCode() {
+        return stereotype == null ? "" : (codeForExcel ? stereotype.getCodeForExcel() : stereotype.getCode());
+    }
+
+    private int getStereotypeId() {
+        return stereotype == null ? 0 : stereotype.getId();
     }
 
     public String getId() {
@@ -109,8 +143,20 @@ public class EAItem {
             fullName = String.format("%s%s", fullName, tmp);
         }
 
+        StringBuilder sb = new StringBuilder();
+        if (!StrUtils.isEmpty(rootProject)) {
+            sb.append(", ");
+            sb.append(rootProject);
+        }
+        for (String project : projectSet) {
+            sb.append(", ");
+            sb.append(project);
+        }
+        String project = sb.length() > 0 ? sb.substring(2) : "";
+
         // Combine the needed values
         String[] values = {
+                StrUtils.isEmpty(project) ? "" : String.format("\"%s\"", project),
                 fullName,
                 type == null ? "" : type.getCode(),
                 getStereotypeCode(),
@@ -118,7 +164,7 @@ public class EAItem {
                 parent == null ? "" : parent.getId()
         };
 
-        StringBuilder sb = new StringBuilder();
+        sb = new StringBuilder();
         for (String str : values) {
             sb.append(EAWriter.Field_Separator);
             sb.append(str);
