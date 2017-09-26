@@ -200,7 +200,7 @@ public class SqlParser {
     public static int Field_Index = 0;
     public static String[] Field_Trim_List = {"`"};
     public static String[] Field_Ignore_list = {
-            "id", "create_time", "create_by", "update_time", "update_by", "server_ip",
+            "create_time", "create_by", "update_time", "update_by", "server_ip",
             "is_available", "is_deleted", "is_disable",
             "version", "version_no", "client_versionno", "company_id",
             "create_userid", "create_username", "create_userip", "create_usermac", "create_time_db",

@@ -14,6 +14,7 @@ public class EAItem {
 
     private EAType type;
     private EAStereotype stereotype;
+    private String phase;
 
     private EAItem parent;
     private Set<EAItem> children = new HashSet<EAItem>();
@@ -26,6 +27,18 @@ public class EAItem {
         this.stereotype = stereotype;
 
         setParent(parent);
+        markPhase();
+    }
+
+    private void markPhase() {
+        phase = null;
+
+        if (!StrUtils.isEmpty(name)) {
+            String tmp = name.toLowerCase();
+            if (tmp.equals("id") || tmp.endsWith("_id")) {
+                phase = name;
+            }
+        }
     }
 
     public String getProject() {
@@ -172,6 +185,7 @@ public class EAItem {
                 StrUtils.isEmpty(fullName) ? "" : String.format("%s%s%s", EAWriter.Field_Marker, fullName, EAWriter.Field_Marker),
                 type == null ? "" : type.getCode(),
                 getStereotypeCode(),
+                StrUtils.isEmpty(phase) ? "" : phase,
                 getId(),
                 parent == null ? "" : parent.getId()
         };

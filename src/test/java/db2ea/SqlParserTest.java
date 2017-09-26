@@ -18,7 +18,7 @@ public class SqlParserTest {
             put("Navicat MySQL Data Transfer", null);
             put("Source Server         : aliyundb2.0", null);
 
-            put("Source Database       : oms-v2-st", ",\"oms-v2-st\",Artifact,database connection,1_oms-v2-st,");
+            put("Source Database       : oms-v2-st", ",\"oms-v2-st\",Artifact,database connection,,1_oms-v2-st,");
             put("Date: 2017-09-22 17:13:25", null);
             put("*/", null);
             put("SET FOREIGN_KEY_CHECKS=0;", null);
@@ -26,8 +26,8 @@ public class SqlParserTest {
             put("-- Table structure for agif_agent", null);
             put("DROP TABLE IF EXISTS `agif_agent`;", null);
 
-            put("CREATE TABLE `agif_agent` (", ",\"agif_agent\",Class,table,2_agif_agent,");
-            put("`AGENT_ID` varchar(36) COLLATE utf8_unicode_ci NOT NULL COMMENT '买手ID',", ",\"AGENT_ID买手ID\",Class,function,3_AGENT_ID,");
+            put("CREATE TABLE `agif_agent` (", ",\"agif_agent\",Class,table,,2_agif_agent,");
+            put("`AGENT_ID` varchar(36) COLLATE utf8_unicode_ci NOT NULL COMMENT '买手ID',", ",\"AGENT_ID买手ID\",Class,function,AGENT_ID,3_AGENT_ID,");
 
             put("PRIMARY KEY (`TSP_STD_ID`),", null);
             put(") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ROW_FORMAT=DYNAMIC;", null);
@@ -36,17 +36,17 @@ public class SqlParserTest {
             put("-- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)", null);
             put("--", null);
 
-            put("-- Host: 192.168.1.140    Database: ad", ",\"ad\",Artifact,database connection,1_ad,");
+            put("-- Host: 192.168.1.140    Database: ad", ",\"ad\",Artifact,database connection,,1_ad,");
             put("-- ------------------------------------------------------", null);
             put("-- Server version\t5.6.29", null);
             put("/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;", null);
             put("-- Table structure for table `ad_code`", null);
             put("DROP TABLE IF EXISTS `ad_code`;", null);
 
-            put("CREATE TABLE `ad_code` (", ",\"ad_code\",Class,table,2_ad_code,");
-//            put("`id` bigint(20) NOT NULL AUTO_INCREMENT,", "id,Class,function,3_id,");
-            put("`id` bigint(20) NOT NULL AUTO_INCREMENT,", null);
-            put("`page_type` bigint(20) NOT NULL COMMENT '广告,页面',", ",\"page_type广告,页面\",Class,function,3_page_type,");
+            put("CREATE TABLE `ad_code` (", ",\"ad_code\",Class,table,,2_ad_code,");
+            put("`id` bigint(20) NOT NULL AUTO_INCREMENT,", ",\"id\",Class,function,id,3_id,");
+//            put("`id` bigint(20) NOT NULL AUTO_INCREMENT,", null);
+            put("`page_type` bigint(20) NOT NULL COMMENT '广告,页面',", ",\"page_type广告,页面\",Class,function,,3_page_type,");
 
             put("PRIMARY KEY (`id`),", null);
             put("KEY `index_adcode_page` (`page_type`,`code`,`is_deleted`),", null);
