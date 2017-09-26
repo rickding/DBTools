@@ -50,6 +50,11 @@ public class SqlParser {
                     System.out.println(table.toString());
                 } else if (type.isField()) {
                     item.setParent(table);
+
+//                    if ("company_id".equalsIgnoreCase(item.getName())) {
+//                        table.setPhase("company_id");
+//                    }
+
                 } else {
                     if (table != null) {
                         // Table's comment
@@ -202,7 +207,7 @@ public class SqlParser {
     public static String[] Field_Ignore_list = {
             "create_time", "create_by", "update_time", "update_by", "server_ip",
             "is_available", "is_deleted", "is_disable",
-            "version", "version_no", "client_versionno", "company_id",
+            "version", "version_no", "client_versionno",
             "create_userid", "create_username", "create_userip", "create_usermac", "create_time_db",
             "update_userid", "update_username", "update_userip", "update_usermac", "update_time_db",
             "del_flg", "crt_id", "crt_time", "upd_id", "upd_time"

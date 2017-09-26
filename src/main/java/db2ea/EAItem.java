@@ -41,6 +41,10 @@ public class EAItem {
         }
     }
 
+    public void setPhase(String phase) {
+        this.phase = phase;
+    }
+
     public String getProject() {
         return rootProject;
     }

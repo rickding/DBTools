@@ -47,6 +47,7 @@ public class SqlParserTest {
             put("`id` bigint(20) NOT NULL AUTO_INCREMENT,", ",\"id\",Class,function,id,3_id,");
 //            put("`id` bigint(20) NOT NULL AUTO_INCREMENT,", null);
             put("`page_type` bigint(20) NOT NULL COMMENT '广告,页面',", ",\"page_type广告,页面\",Class,function,,3_page_type,");
+            put("`company_id` bigint(20) DEFAULT NULL COMMENT '公司id',", ",\"company_id公司id\",Class,function,company_id,3_company_id,");
 
             put("PRIMARY KEY (`id`),", null);
             put("KEY `index_adcode_page` (`page_type`,`code`,`is_deleted`),", null);

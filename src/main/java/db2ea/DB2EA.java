@@ -17,6 +17,12 @@ public class DB2EA {
             return;
         }
 
+        /* The folders:
+        C:\Work\prod1.0\db\dump_prod_dev
+        C:\Work\prod1.0\db\dump_prod_test
+        C:\Work\prod1.0\db\dump_saas2.0_test
+        */
+
         Date time_start = new Date();
         boolean codeForExcel = false;
         boolean separateCsv = false;
