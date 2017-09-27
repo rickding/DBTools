@@ -31,12 +31,12 @@ public class EAItem {
     }
 
     private void markPhase() {
-        phase = null;
+        setPhase(null);
 
         if (!StrUtils.isEmpty(name)) {
             String tmp = name.toLowerCase();
             if (tmp.equals("id") || tmp.endsWith("_id")) {
-                phase = name;
+                setPhase(name);
             }
         }
     }
@@ -137,10 +137,6 @@ public class EAItem {
         }
     }
 
-    private String getStereotypeCode() {
-        return stereotype == null ? "" : (codeForExcel ? stereotype.getCodeForExcel() : stereotype.getCode());
-    }
-
     private int getStereotypeId() {
         return stereotype == null ? 0 : stereotype.getId();
     }
@@ -163,13 +159,35 @@ public class EAItem {
         return id;
     }
 
+    private String getStereotypeCode() {
+        if (stereotype == null) {
+            return "";
+        } else if (codeForExcel) {
+            return stereotype.getCodeForExcel();
+        } else if (stereotype.isDB()) {
+            // DB as package
+            return EAStereotype.None.getCode();
+        }
+
+        return stereotype.getCode();
+    }
+
+    private String getTypeCode() {
+        if (stereotype == null || !stereotype.isDB()) {
+            return type == null ? "" : type.getCode();
+        } else {
+            // DB as package
+            return EAType.Package.getCode();
+        }
+    }
+
     @Override
     public String toString() {
         // Combine name and comment
         String fullName = StrUtils.isEmpty(name) ? "" : name;
         if (!StrUtils.isEmpty(comment)) {
             String tmp = comment.replace(EAWriter.Field_Marker, EAWriter.Field_Marker_Replace);
-            fullName = String.format("%s%s", fullName, tmp);
+            fullName = String.format("%s %s", fullName, tmp);
         }
 
         StringBuilder sb = new StringBuilder();
@@ -187,7 +205,7 @@ public class EAItem {
         String[] values = {
                 StrUtils.isEmpty(project) ? "" : String.format("%s%s%s", EAWriter.Field_Marker, project, EAWriter.Field_Marker),
                 StrUtils.isEmpty(fullName) ? "" : String.format("%s%s%s", EAWriter.Field_Marker, fullName, EAWriter.Field_Marker),
-                type == null ? "" : type.getCode(),
+                getTypeCode(),
                 getStereotypeCode(),
                 StrUtils.isEmpty(phase) ? "" : phase,
                 getId(),

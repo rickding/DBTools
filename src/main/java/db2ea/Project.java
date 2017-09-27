@@ -9,7 +9,9 @@ public class Project {
     private static Map<String, String> codeNameMap = new HashMap<String, String>() {{
         put("prod", "产品化");
         put("hhplus", "海航erp");
+
         put("xcd", "润和");
+        put("owms", "OWMS");
         put("stb", "史泰博");
     }};
 

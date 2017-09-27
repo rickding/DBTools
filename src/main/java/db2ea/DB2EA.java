@@ -18,7 +18,13 @@ public class DB2EA {
         }
 
         /* The folders:
+        C:\Work\db2ea\xcd-oms-db.sql
+        C:\Work\prod1.0\db\dump_owms_dev
+        C:\Work\prod1.0\db\dump_stb_dev
+
+        C:\Work\prod1.0\db\dump_hhplus_dev
         C:\Work\prod1.0\db\dump_prod_dev
+
         C:\Work\prod1.0\db\dump_prod_test
         C:\Work\prod1.0\db\dump_saas2.0_test
         */
