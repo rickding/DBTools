@@ -52,9 +52,12 @@ public class SqlParser {
                     item.setParent(table);
 
 //                    if ("company_id".equalsIgnoreCase(item.getName())) {
-//                        table.setPhase("company_id");
+//                        table.setPhase(item.getName());
 //                    }
-
+//                    String name = item.getName().toLowerCase();
+//                    if (name.startsWith("is_delete")) {
+//                        table.setPhase(item.getName());
+//                    }
                 } else {
                     if (table != null) {
                         // Table's comment
