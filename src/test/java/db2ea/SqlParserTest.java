@@ -78,9 +78,11 @@ public class SqlParserTest {
             put(new Object[] {"`id` bigint(20) NOT NULL AUTO_INCREMENT,", SqlParser.Field_Splitter, SqlParser.Field_Index, SqlParser.Field_Trim_List}, "id");
             put(new Object[] {"`AGENT_ID` varchar(36) COLLATE utf8_unicode_ci NOT NULL COMMENT '买手ID',", SqlParser.Field_Splitter, SqlParser.Field_Index, SqlParser.Field_Trim_List}, "AGENT_ID");
 
-            put(new Object[]{"COMMENT '广告页面',", SqlParser.Field_Comment_Splitter, SqlParser.Comment_Index, SqlParser.Comment_Trim_List}, "广告页面");
+            put(new Object[]{"COMMENT '广告 页面',", SqlParser.Field_Comment_Splitter, SqlParser.Comment_Index, SqlParser.Comment_Trim_List}, "广告 页面");
             put(new Object[]{"COMMENT '买手ID',", SqlParser.Field_Comment_Splitter, SqlParser.Comment_Index, SqlParser.Comment_Trim_List}, "买手ID");
-            put(new Object[]{" COMMENT='客户表';", SqlParser.Table_Comment_Splitter, SqlParser.Comment_Index, SqlParser.Comment_Trim_List}, "客户表");
+            put(new Object[]{"`create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间 - 应用操作时间',", SqlParser.Field_Comment_Splitter, SqlParser.Comment_Index, SqlParser.Comment_Trim_List}, "创建时间 - 应用操作时间");
+            put(new Object[]{" COMMENT='客户= 表';", SqlParser.Table_Comment_Splitter, SqlParser.Comment_Index, SqlParser.Comment_Trim_List}, "客户= 表");
+            put(new Object[]{") ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='页面关联品牌';", SqlParser.Table_Comment_Splitter, SqlParser.Comment_Index, SqlParser.Comment_Trim_List}, "页面关联品牌");
         }};
 
         for (Map.Entry<Object[], String> io : mapIO.entrySet()) {

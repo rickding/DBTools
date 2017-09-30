@@ -217,8 +217,8 @@ public class SqlParser {
     };
 
     public static String Comment_Flag = "comment";
-    public static String Field_Comment_Splitter = " ";
-    public static String Table_Comment_Splitter = "=";
+    public static String Field_Comment_Splitter = "'";
+    public static String Table_Comment_Splitter = "'";
     public static int Comment_Index = 1;
     public static String[] Comment_Trim_List = {",", ";", "'", "\"", "()"};
 }
