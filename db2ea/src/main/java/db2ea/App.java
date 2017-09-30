@@ -12,7 +12,7 @@ import java.util.*;
 /**
  * Created by user on 2017/9/23.
  */
-public class DB2EA {
+public class App {
     public static void main(String[] args) {
         System.out.println("Specify the MySQL dumped file or folder to convert:");
         System.out.println("optional: -code-for-excel: specify to generate file for excel to parse.");
