@@ -12,6 +12,7 @@
     <modules>
         <module>db2ea</module>
         <module>sql-updater</module>
+        <module>common</module>
     </modules>
 
 </project>
