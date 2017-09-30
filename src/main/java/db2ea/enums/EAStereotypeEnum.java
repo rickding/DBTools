@@ -1,9 +1,9 @@
-package db2ea;
+package db2ea.enums;
 
 /**
  * Created by user on 2017/9/23.
  */
-public enum EAStereotype {
+public enum EAStereotypeEnum {
     None(0, "", ""),
     DB(1, "database connection", "数据库"),
     Table(2, "table", "数据表"),
@@ -13,7 +13,7 @@ public enum EAStereotype {
     private String code;
     private String codeForExcel;
 
-    EAStereotype(int id, String code, String codeForExcel) {
+    EAStereotypeEnum(int id, String code, String codeForExcel) {
         this.id = id;
         this.code = code;
         this.codeForExcel = codeForExcel;

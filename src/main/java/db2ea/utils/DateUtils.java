@@ -1,4 +1,4 @@
-package db2ea;
+package db2ea.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -1,5 +1,7 @@
 package db2ea;
 
+import db2ea.utils.StrUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

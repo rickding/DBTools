@@ -1,16 +1,16 @@
-package db2ea;
+package db2ea.enums;
 
 /**
  * Created by user on 2017/9/23.
  */
-public enum EAType {
+public enum EATypeEnum {
     Package("Package"),
     Artifact("Artifact"),
     Class("Class");
 
     private String code;
 
-    EAType(String code) {
+    EATypeEnum(String code) {
         this.code = code;
     }
 

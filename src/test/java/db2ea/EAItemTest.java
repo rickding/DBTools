@@ -1,5 +1,7 @@
 package db2ea;
 
+import db2ea.enums.EAStereotypeEnum;
+import db2ea.enums.EATypeEnum;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -36,8 +38,8 @@ public class EAItemTest {
             put(new EAItem(null, null, null, new EAItem("parent", null, null, null)), ",,,,,0_parent,0_parent");
 
             put(new EAItem("item", null, null, null), ",\"item\",,,,0_item,");
-            put(new EAItem("item", EAType.Class, null, new EAItem(null, null, null, null)), String.format(",\"item\",%s,,,0_item,", EAType.Class.getCode()));
-            put(new EAItem("item", null, EAStereotype.Field, new EAItem("parent", null, null, null)), String.format(",\"item\",,%s,,0_parent_3_item,0_parent", EAStereotype.Field.getCode()));
+            put(new EAItem("item", EATypeEnum.Class, null, new EAItem(null, null, null, null)), String.format(",\"item\",%s,,,0_item,", EATypeEnum.Class.getCode()));
+            put(new EAItem("item", null, EAStereotypeEnum.Field, new EAItem("parent", null, null, null)), String.format(",\"item\",,%s,,0_parent_3_item,0_parent", EAStereotypeEnum.Field.getCode()));
         }};
 
         for (Map.Entry<EAItem, String> io : mapIO.entrySet()) {

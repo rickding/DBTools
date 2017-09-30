@@ -1,5 +1,9 @@
 package db2ea;
 
+import db2ea.enums.EAStereotypeEnum;
+import db2ea.enums.EATypeEnum;
+import db2ea.utils.StrUtils;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,8 +16,8 @@ public class EAItem {
     private String name;
     private String comment;
 
-    private EAType type;
-    private EAStereotype stereotype;
+    private EATypeEnum type;
+    private EAStereotypeEnum stereotype;
     private String phase;
 
     private EAItem parent;
@@ -21,7 +25,7 @@ public class EAItem {
 
     private boolean codeForExcel = false;
 
-    public EAItem(String name, EAType type, EAStereotype stereotype, EAItem parent) {
+    public EAItem(String name, EATypeEnum type, EAStereotypeEnum stereotype, EAItem parent) {
         this.name = name;
         this.type = type;
         this.stereotype = stereotype;
@@ -102,7 +106,7 @@ public class EAItem {
         this.comment = comment;
     }
 
-    public EAStereotype getStereotype() {
+    public EAStereotypeEnum getStereotype() {
         return stereotype;
     }
 
@@ -166,7 +170,7 @@ public class EAItem {
             return stereotype.getCodeForExcel();
         } else if (stereotype.isDB()) {
             // DB as package
-            return EAStereotype.None.getCode();
+            return EAStereotypeEnum.None.getCode();
         }
 
         return stereotype.getCode();
@@ -177,7 +181,7 @@ public class EAItem {
             return type == null ? "" : type.getCode();
         } else {
             // DB as package
-            return EAType.Package.getCode();
+            return EATypeEnum.Package.getCode();
         }
     }
 

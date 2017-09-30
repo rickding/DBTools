@@ -1,4 +1,4 @@
-package db2ea;
+package db2ea.utils;
 
 import org.junit.Assert;
 import org.junit.Test;

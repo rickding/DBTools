@@ -1,7 +1,11 @@
 package db2ea;
 
+import db2ea.enums.EAStereotypeEnum;
+import db2ea.enums.EATypeEnum;
+import db2ea.utils.ArrayUtils;
+import db2ea.utils.StrUtils;
+
 import java.io.*;
-import java.sql.Struct;
 import java.util.*;
 
 /**
@@ -35,7 +39,7 @@ public class SqlParser {
                     continue;
                 }
 
-                EAStereotype type = item.getStereotype();
+                EAStereotypeEnum type = item.getStereotype();
                 if (type == null) {
                     continue;
                 }
@@ -100,19 +104,19 @@ public class SqlParser {
             sql = sql.substring(sqlLowercase.indexOf(DB_Flag));
             String name = parseName(sql, DB_Splitter, DB_Index, DB_Trim_List, null);
             if (!StrUtils.isEmpty(name)) {
-                item = new EAItem(name, EAType.Artifact, EAStereotype.DB, parent);
+                item = new EAItem(name, EATypeEnum.Artifact, EAStereotypeEnum.DB, parent);
             }
         } else if (sqlLowercase.startsWith(Table_Flag)) {
             sql = sql.substring(sqlLowercase.indexOf(Table_Flag));
             String name = parseName(sql, Table_Splitter, Table_Index, Table_Trim_List, null);
             if (!StrUtils.isEmpty(name)) {
-                item = new EAItem(name, EAType.Class, EAStereotype.Table, parent);
+                item = new EAItem(name, EATypeEnum.Class, EAStereotypeEnum.Table, parent);
             }
         } else if (sqlLowercase.startsWith(Field_Flag)) {
             sql = sql.substring(sqlLowercase.indexOf(Field_Flag));
             String name = parseName(sql, Field_Splitter, Field_Index, Field_Trim_List, Field_Ignore_list);
             if (!StrUtils.isEmpty(name)) {
-                item = new EAItem(name, EAType.Class, EAStereotype.Field, parent);
+                item = new EAItem(name, EATypeEnum.Class, EAStereotypeEnum.Field, parent);
 
                 // Find the comment of the field
                 sqlLowercase = sql.toLowerCase();
@@ -129,7 +133,7 @@ public class SqlParser {
             sql = sql.substring(sqlLowercase.indexOf(Comment_Flag));
             String name = parseName(sql, Table_Comment_Splitter, Comment_Index, Comment_Trim_List, null);
             if (!StrUtils.isEmpty(name)) {
-                item = new EAItem(name, EAType.Class, EAStereotype.None, parent);
+                item = new EAItem(name, EATypeEnum.Class, EAStereotypeEnum.None, parent);
             }
         }
 
