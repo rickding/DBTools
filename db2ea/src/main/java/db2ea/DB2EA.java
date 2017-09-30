@@ -1,5 +1,6 @@
 package db2ea;
 
+import db2ea.enums.ProjectEnum;
 import db2ea.utils.ArrayUtils;
 import db2ea.utils.DateUtils;
 import db2ea.utils.StrUtils;
@@ -13,34 +14,20 @@ import java.util.*;
  */
 public class DB2EA {
     public static void main(String[] args) {
-        if (ArrayUtils.isEmpty(args)) {
-            System.out.println("Please specify the MySQL dumped file or folder to convert multiple ones!");
-            System.out.println("optional: -code-for-excel: specify to generate file for excel to parse.");
-            System.out.println("optional: -separate-csv: specify to generate one csv file or multiple ones.");
-            System.out.println("folder or *.sql file: specify the folder or sql file to parse.");
-            return;
-        }
-
-        /* The folders:
-        C:\Work\db2ea\xcd-oms-db.sql
-        C:\Work\prod1.0\db\dump_owms_dev
-        C:\Work\prod1.0\db\dump_stb_dev
-
-        C:\Work\prod1.0\db\dump_hhplus_dev
-        C:\Work\prod1.0\db\dump_prod_dev
-
-        C:\Work\prod1.0\db\dump_prod_test
-        C:\Work\prod1.0\db\dump_saas2.0_test
-        */
+        System.out.println("Specify the MySQL dumped file or folder to convert:");
+        System.out.println("optional: -code-for-excel: specify to generate file for excel to parse.");
+        System.out.println("optional: -separate-csv: specify to generate one csv file or multiple ones.");
+        System.out.println("folder or *.sql file: one or multiple ones, to specify the folder or sql file to parse.");
 
         Date time_start = new Date();
         boolean codeForExcel = false;
         boolean separateCsv = false;
 
-        // The project and DB list
-        List<Project> projects = new ArrayList<Project>();
+        Set<String> filePaths = new HashSet<String>(){{
+            add(ProjectEnum.HHPLUS_DEV.getPath());
+            add(ProjectEnum.PROD_DEV.getPath());
+        }};
 
-        // Parse files
         for (String arg : args) {
             if (StrUtils.isEmpty(arg)) {
                 continue;
@@ -48,20 +35,30 @@ public class DB2EA {
 
             if (arg.equals("-code-for-excel")) {
                 codeForExcel = true;
-                continue;
             } else if (arg.equals("-separate-csv")) {
                 separateCsv = true;
+            } else {
+                filePaths.add(arg);
+            }
+        }
+
+        // The project and DB list
+        List<Project> projects = new ArrayList<Project>();
+
+        // Parse files
+        for (String filePath : filePaths) {
+            if (StrUtils.isEmpty(filePath)) {
                 continue;
             }
 
-            File file = new File(arg);
+            File file = new File(filePath);
             if (!file.exists()) {
                 continue;
             }
 
             // File or directory, while not iterate sub folders
             File[] files = null;
-            if (file.isFile() && arg.toLowerCase().endsWith(SqlParser.File_SQL_Ext)) {
+            if (file.isFile() && filePath.toLowerCase().endsWith(SqlParser.File_SQL_Ext)) {
                 files = new File[]{file};
             } else if (file.isDirectory()) {
                 files = file.listFiles(new FilenameFilter() {
@@ -134,7 +131,9 @@ public class DB2EA {
             }
         }
 
-        System.out.printf("Finished, start: %s, end: %s\n",
+        System.out.printf("Finished %d folders, %d projects, start: %s, end: %s\n",
+                filePaths.size(),
+                projects.size(),
                 DateUtils.format(time_start, "hh:mm:ss"),
                 DateUtils.format(new Date(), "hh:mm:ss")
         );

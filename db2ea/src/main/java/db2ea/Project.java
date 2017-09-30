@@ -1,5 +1,6 @@
 package db2ea;
 
+import db2ea.enums.ProjectEnum;
 import db2ea.utils.StrUtils;
 
 import java.util.ArrayList;
@@ -8,30 +9,26 @@ import java.util.List;
 import java.util.Map;
 
 public class Project {
-    private static Map<String, String> codeNameMap = new HashMap<String, String>() {{
-        put("prod", "产品化");
-        put("hhplus", "海航erp");
-
-        put("xcd", "润和");
-        put("owms", "OWMS");
-        put("stb", "史泰博");
-    }};
-
     Map<String, List<EAItem>> dbListMap;
     private String path;
     private String code;
-    private String name;
+    private ProjectEnum projectEnum;
 
     public Project(Map<String, List<EAItem>> dbListMap, String path, String code) {
         this.dbListMap = dbListMap;
         this.path = path;
         this.code = code;
 
-        setProject(getName());
+        findProjectEnum();
+        if (projectEnum != null) {
+            setProject(projectEnum.getName());
+        }
     }
 
     public void checkAndMarkProject(Project project) {
-        if (StrUtils.isEmpty(code) || StrUtils.isEmpty(project.code) || code.equals(project.code)) {
+        if (project == null || StrUtils.isEmpty(code)
+                || StrUtils.isEmpty(project.code) || code.equals(project.code)
+                || !ProjectEnum.isSameGroup(projectEnum, project.projectEnum)) {
             return;
         }
 
@@ -106,21 +103,18 @@ public class Project {
         return path;
     }
 
-    public String getName() {
-        if (StrUtils.isEmpty(name)) {
-            for (Map.Entry<String, String> codeName : codeNameMap.entrySet()) {
-                if (code.indexOf(codeName.getKey()) >= 0) {
-                    name = codeName.getValue();
+    private void findProjectEnum() {
+        if (projectEnum == null) {
+            for (ProjectEnum pro : ProjectEnum.getList()) {
+                if (code.indexOf(pro.getCode()) >= 0) {
+                    projectEnum = pro;
                     break;
                 }
             }
         }
 
-        if (StrUtils.isEmpty(name)) {
+        if (projectEnum == null) {
             System.out.printf("Can't find the project name: %s, %s\n", code, path);
-            return "";
         }
-
-        return name;
     }
 }
