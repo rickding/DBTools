@@ -1,8 +1,5 @@
 package db2ea.enums;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created by user on 2017/9/30.
  */

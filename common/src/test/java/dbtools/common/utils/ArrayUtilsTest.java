@@ -14,8 +14,8 @@ public class ArrayUtilsTest {
     public void testIsEmpty() {
         Map<String[], Boolean> mapIO = new HashMap<String[], Boolean>() {{
             put(null, true);
-            put(new String[] {}, true);
-            put(new String[] {"test"}, false);
+            put(new String[]{}, true);
+            put(new String[]{"test"}, false);
         }};
 
         for (Map.Entry<String[], Boolean> io : mapIO.entrySet()) {

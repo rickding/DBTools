@@ -1,4 +1,4 @@
-package dbtools;
+package dbtools.common;
 
 /**
  * Unit test for simple App.
