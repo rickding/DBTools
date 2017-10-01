@@ -17,7 +17,7 @@ public class App {
 
         Date time_start = new Date();
         Set<String> filePaths = new HashSet<String>() {{
-            add("E:\\work\\doc\\17-应用架构部\\03-部门管理\\prod1.0\\db\\dump_saas2.0_test");
+            add("E:\\work\\doc\\17-应用架构部\\03-部门管理\\prod1.0\\db\\dump_saas2.0_test_data");
         }};
 
         for (String arg : args) {
@@ -42,13 +42,17 @@ public class App {
 
             // File or directory, while not iterate sub folders
             File[] files = null;
-            if (file.isFile() && filePath.toLowerCase().endsWith(SqlUpdater.File_Ext)) {
+            if (file.isFile() && filePath.toLowerCase().endsWith(SqlUpdater.Sql_File_Ext)) {
                 files = new File[]{file};
             } else if (file.isDirectory()) {
                 files = file.listFiles(new FilenameFilter() {
                     // @Override
                     public boolean accept(File dir, String name) {
-                        return !StrUtils.isEmpty(name) && name.toLowerCase().endsWith(SqlUpdater.File_Ext);
+                        if (StrUtils.isEmpty(name)) {
+                            return false;
+                        }
+                        String str = name.toLowerCase();
+                        return str.endsWith(SqlUpdater.Sql_File_Ext) && !str.endsWith(SqlUpdater.Sql_File_name);
                     }
                 });
             }
