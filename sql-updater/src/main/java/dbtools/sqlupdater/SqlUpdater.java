@@ -14,10 +14,11 @@ import java.util.Map;
 public class SqlUpdater {
     public static String Sql_File_Ext = ".sql";
     public static String Sql_File_name = "_updated.sql";
+    public static String Sql_Folder_name = "_updated";
 
     private static String[] Sql_Update_Header_Array = {
             "set @companyId = 1000;",
-            "-- Original 51, replace:",
+            "-- Original 51 is replaced:",
             "-- ,51, => ,@companyId,",
             "-- ,51) => ,@companyId)};",
             ""
@@ -29,13 +30,13 @@ public class SqlUpdater {
     }};
 
 
-    public static void processFile(File file) {
-        if (file == null || !file.canRead()) {
+    public static void processFile(File inputFile, String outputFileName) {
+        if (inputFile == null || !inputFile.exists() || !inputFile.canRead() || StrUtils.isEmpty(outputFileName)) {
             return;
         }
 
         // Input
-        String filePath = file.getPath();
+        String filePath = inputFile.getPath();
         FileReader reader = new FileReader(filePath);
         if (!reader.open()) {
             System.out.printf("Fail to open file: %s\n", filePath);
@@ -43,21 +44,16 @@ public class SqlUpdater {
         }
 
         // Output
-        if (filePath.toLowerCase().endsWith(Sql_File_Ext)) {
-            filePath = filePath.substring(0, filePath.length() - Sql_File_Ext.length());
-        }
-        filePath = String.format("%s%s", filePath, Sql_File_name);
-
-        FileWriter writer = new FileWriter(filePath);
+        FileWriter writer = new FileWriter(outputFileName);
         if (!writer.open()) {
-            System.out.printf("Fail to create output file: %s\n", filePath);
+            System.out.printf("Fail to create output file: %s\n", outputFileName);
 
             // Close
             reader.close();
             return;
         }
 
-        writeHeader(writer);
+        writeHeaders(writer);
 
         // read and update, then write
         String str;
@@ -92,7 +88,7 @@ public class SqlUpdater {
         return sql;
     }
 
-    private static void writeHeader(FileWriter writer) {
+    private static void writeHeaders(FileWriter writer) {
         if (writer == null || !writer.isOpen()) {
             return;
         }

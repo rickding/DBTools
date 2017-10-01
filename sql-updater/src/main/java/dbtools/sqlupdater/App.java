@@ -62,8 +62,32 @@ public class App {
             }
 
             // Update
+            String outputFileName = null;
+            String outputFolderName = null;
             for (File f : files) {
-                SqlUpdater.processFile(f);
+                if (file.isFile()) {
+                    outputFileName = f.getPath();
+                    if (outputFileName.toLowerCase().endsWith(SqlUpdater.Sql_File_Ext)) {
+                        outputFileName = outputFileName.substring(0, filePath.length() - SqlUpdater.Sql_File_Ext.length());
+                    }
+                    outputFileName = String.format("%s%s", outputFileName, SqlUpdater.Sql_File_name);
+                } else if (file.isDirectory()) {
+                    // Prepare the folder firstly
+                    if (StrUtils.isEmpty(outputFolderName)) {
+                        outputFolderName = String.format("%s%s", file.getPath(), SqlUpdater.Sql_Folder_name);
+                        File folder = new File(outputFolderName);
+                        if (!folder.exists()) {
+                            folder.mkdir();
+                        }
+                    }
+
+                    outputFileName = String.format("%s\\%s", outputFolderName, f.getName());
+                    if (!outputFileName.toLowerCase().endsWith(SqlUpdater.Sql_File_Ext)) {
+                        outputFileName = String.format("%s%s", outputFileName, SqlUpdater.Sql_File_Ext);
+                    }
+                }
+
+                SqlUpdater.processFile(f, outputFileName);
                 projects.add(f.getPath());
             }
         }
