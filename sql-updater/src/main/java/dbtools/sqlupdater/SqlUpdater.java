@@ -16,6 +16,7 @@ public class SqlUpdater {
     public static String Sql_File_name = "_updated.sql";
     public static String Sql_Folder_name = "_updated";
 
+    private static long Sql_Update_Header_Line_Index = 17;
     private static String[] Sql_Update_Header_Array = {
             "set @companyId = 1000;",
             "-- Original 51 is replaced:",
@@ -53,7 +54,9 @@ public class SqlUpdater {
             return;
         }
 
-        writeHeaders(writer);
+        // Mark the header written or not
+        long index = 0;
+        boolean headerWritten = false;
 
         // read and update, then write
         String str;
@@ -63,7 +66,13 @@ public class SqlUpdater {
                 str = updateSql(str);
             }
 
-            // Write
+            // Write header
+            if (!headerWritten && Sql_Update_Header_Line_Index <= index++) {
+                headerWritten = true;
+                index += writeHeaders(writer);
+            }
+
+            // Write line
             writer.writeLine(str);
         }
 
@@ -88,13 +97,14 @@ public class SqlUpdater {
         return sql;
     }
 
-    private static void writeHeaders(FileWriter writer) {
+    private static long writeHeaders(FileWriter writer) {
         if (writer == null || !writer.isOpen()) {
-            return;
+            return 0;
         }
 
         for (String str : Sql_Update_Header_Array) {
             writer.writeLine(str);
         }
+        return Sql_Update_Header_Array.length;
     }
 }
