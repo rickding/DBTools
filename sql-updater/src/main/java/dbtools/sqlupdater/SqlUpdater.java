@@ -20,7 +20,7 @@ public class SqlUpdater {
             "set @companyId = 1000;",
             "-- Original 51 is replaced:",
             "-- ,51, => ,@companyId,",
-            "-- ,51) => ,@companyId)};",
+            "-- ,51) => ,@companyId)",
             ""
     };
 
