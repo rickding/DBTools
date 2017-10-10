@@ -55,7 +55,8 @@ public class SqlParser {
 
                     // Mark the special tables
 //                    String name = table.getName();
-//                    if (name != null && name.toLowerCase().endsWith("log")) {
+//                    if (name != null && (name.toLowerCase().endsWith("_log")
+//                            || name.toLowerCase().endsWith("_logs"))) {
 //                        table.setPhase(name);
 //                    }
 

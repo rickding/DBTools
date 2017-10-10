@@ -16,6 +16,10 @@ public class SqlUpdater {
     public static String Sql_File_name = "_updated.sql";
     public static String Sql_Folder_name = "_updated";
 
+    // Check if the tail existed.
+    public static String Sql_Tail_Flag = "-- dump completed";
+
+    // Write the header into file
     private static long Sql_Update_Header_Line_Index = 17;
     private static String[] Sql_Update_Header_Array = {
             "set @companyId = 1000;",
@@ -25,11 +29,14 @@ public class SqlUpdater {
             ""
     };
 
+    // Replace the special strings
     private static Map<String, String> Sql_Replace_Map = new HashMap<String, String>() {{
         put(",51,", ",@companyId,");
         put(",51)", ",@companyId)");
-    }};
 
+        // Some special strings are replaced wrongly.
+        put(",@companyId,2,'Autographs-Original',", ",51,2,'Autographs-Original',");
+    }};
 
     public static void processFile(File inputFile, String outputFileName) {
         if (inputFile == null || !inputFile.exists() || !inputFile.canRead() || StrUtils.isEmpty(outputFileName)) {
@@ -57,11 +64,18 @@ public class SqlUpdater {
         // Mark the header written or not
         long index = 0;
         boolean headerWritten = false;
+        boolean tailFound = false;
 
         // read and update, then write
         String str;
         while ((str = reader.readLine()) != null) {
             if (!StrUtils.isEmpty(str)) {
+                // Check if it's the tail
+                if (!tailFound && isTail(str)) {
+                    tailFound = true;
+                    System.out.printf("Tail is found: %s\n", outputFileName);
+                }
+
                 // Update the str;
                 str = updateSql(str);
             }
@@ -70,6 +84,7 @@ public class SqlUpdater {
             if (!headerWritten && Sql_Update_Header_Line_Index <= index++) {
                 headerWritten = true;
                 index += writeHeaders(writer);
+                System.out.printf("Header is written: %d, %s\n", index, outputFileName);
             }
 
             // Write line
@@ -79,6 +94,14 @@ public class SqlUpdater {
         // close
         writer.close();
         reader.close();
+    }
+
+    private static boolean isTail(String str) {
+        if (StrUtils.isEmpty(str)) {
+            return false;
+        }
+
+        return str.toLowerCase().startsWith(Sql_Tail_Flag);
     }
 
     private static String updateSql(String sql) {
