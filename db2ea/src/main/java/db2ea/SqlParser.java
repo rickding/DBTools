@@ -52,15 +52,28 @@ public class SqlParser {
                     table = item;
                     table.setParent(db);
                     System.out.println(table.toString());
+
+                    // Mark the special tables
+//                    String name = table.getName();
+//                    if (name != null && name.toLowerCase().endsWith("log")) {
+//                        table.setPhase(name);
+//                    }
+
+//                    String name = table.getName();
+//                    if (name != null && name.toLowerCase().contains("_copy")) {
+//                        table.setPhase(name);
+//                    }
                 } else if (type.isField()) {
                     item.setParent(table);
 
+                    // Mark the special fields
 //                    if ("company_id".equalsIgnoreCase(item.getName())) {
 //                        table.setPhase(item.getName());
 //                    }
-//                    String name = item.getName().toLowerCase();
-//                    if (name.startsWith("is_delete")) {
-//                        table.setPhase(item.getName());
+
+//                    String name = item.getName();
+//                    if (name != null && name.toLowerCase().startsWith("is_delete")) {
+//                        table.setPhase(name);
 //                    }
                 } else {
                     if (table != null) {
