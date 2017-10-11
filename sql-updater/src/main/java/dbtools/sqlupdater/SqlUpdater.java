@@ -33,8 +33,10 @@ public class SqlUpdater {
     private static Map<String, String> Sql_Replace_Map = new HashMap<String, String>() {{
         put(",51,", ",@companyId,");
         put(",51)", ",@companyId)");
+    }};
 
-        // Some special strings are replaced wrongly.
+    // Some special strings are replaced wrongly, which should be restored.
+    private static Map<String, String> Sql_Restore_Map = new HashMap<String, String>() {{
         put(",@companyId,2,'Autographs-Original',", ",51,2,'Autographs-Original',");
     }};
 
@@ -109,12 +111,21 @@ public class SqlUpdater {
             return sql;
         }
 
+        // Replace
         for (Map.Entry<String, String> replace : Sql_Replace_Map.entrySet()) {
             String str = replace.getKey();
             if (StrUtils.isEmpty(str)) {
                 continue;
             }
+            sql = sql.replace(str, replace.getValue());
+        }
 
+        // Restore after replace
+        for (Map.Entry<String, String> replace : Sql_Restore_Map.entrySet()) {
+            String str = replace.getKey();
+            if (StrUtils.isEmpty(str)) {
+                continue;
+            }
             sql = sql.replace(str, replace.getValue());
         }
         return sql;
