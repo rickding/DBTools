@@ -4,7 +4,9 @@ import db2ea.enums.EAStereotypeEnum;
 import db2ea.enums.EATypeEnum;
 import db2ea.utils.StrUtils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -194,14 +196,23 @@ public class EAItem {
             fullName = String.format("%s %s", fullName, tmp);
         }
 
-        StringBuilder sb = new StringBuilder();
+        // Combine the projects
+        List<String> projects = new ArrayList<String>();
         if (!StrUtils.isEmpty(rootProject)) {
-            sb.append(",");
-            sb.append(rootProject);
+            projects.add(rootProject);
         }
-        for (String project : projectSet) {
+        projects.addAll(projectSet);
+
+        StringBuilder sb = new StringBuilder();
+        for (String project : projects) {
             sb.append(",");
             sb.append(project);
+        }
+
+        // Append the project number
+        if (projects.size() > 0) {
+            sb.append(" ");
+            sb.append(projects.size());
         }
         String project = sb.length() > 0 ? sb.substring(1) : "";
 

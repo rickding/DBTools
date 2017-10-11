@@ -10,6 +10,8 @@ public enum ProjectEnum {
     PROD_TEST("prod", "prod_test", "产品化主干", "C:\\Work\\prod1.0\\db\\dump_prod_test"),
     SAAS2_TEST("prod", "saas2.0_test", "SaaS2.0", "C:\\Work\\prod1.0\\db\\dump_saas2.0_test"),
 
+    YIHE_PRO("prod", "yihe_pro", "宜和线上", "C:\\Work\\dbtools\\yihe_pro"),
+
     WMS_DEV("wms", "wms_dev", "OWMS", "C:\\Work\\prod1.0\\db\\dump_owms_dev"),
     STB_DEV("stb", "stb_dev", "史泰博", "C:\\Work\\prod1.0\\db\\dump_stb_dev"),
     RUN_HE("xcd", "xcd", "润和", "C:\\Work\\db2ea\\xcd-oms-db.sql");
@@ -17,6 +19,7 @@ public enum ProjectEnum {
     private static ProjectEnum[] list = {
             HHPLUS_DEV, PROD_DEV,
             PROD_TEST, SAAS2_TEST,
+            YIHE_PRO,
             WMS_DEV, STB_DEV, RUN_HE
     };
 

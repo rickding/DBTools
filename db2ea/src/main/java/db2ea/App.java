@@ -24,8 +24,8 @@ public class App {
         boolean separateCsv = false;
 
         Set<String> filePaths = new HashSet<String>(){{
-            add(ProjectEnum.PROD_TEST.getPath());
             add(ProjectEnum.PROD_DEV.getPath());
+            add(ProjectEnum.YIHE_PRO.getPath());
         }};
 
         for (String arg : args) {
