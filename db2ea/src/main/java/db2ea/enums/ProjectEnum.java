@@ -4,16 +4,16 @@ package db2ea.enums;
  * Created by user on 2017/9/30.
  */
 public enum ProjectEnum {
-    HHPLUS_DEV("prod", "hhplus_dev", "海航erp", " C:\\Work\\prod1.0\\db\\dump_hhplus_dev"),
-    PROD_DEV("prod", "prod_dev", "产品化", "C:\\Work\\prod1.0\\db\\dump_prod_dev"),
+    HHPLUS_DEV("prod", "hhplus_dev", "海航erp", " C:\\Work\\prod1.0\\db\\hhplus_dev"),
+    PROD_DEV("prod", "prod_dev", "产品化", "C:\\Work\\prod1.0\\db\\prod1.0_dev"),
 
-    PROD_TEST("prod", "prod_test", "产品化主干", "C:\\Work\\prod1.0\\db\\dump_prod_test"),
-    SAAS2_TEST("prod", "saas2.0_test", "SaaS2.0", "C:\\Work\\prod1.0\\db\\dump_saas2.0_test"),
+    PROD_TEST("prod", "prod_test", "产品化主干", "C:\\Work\\prod1.0\\db\\prod1.0_test"),
+    SAAS2_TEST("prod", "saas2.0_test", "SaaS2.0", "C:\\Work\\prod1.0\\db\\saas2.0_test"),
 
     YIHE_PRO("prod", "yihe_pro", "宜和线上", "C:\\Work\\dbtools\\yihe_pro"),
 
-    WMS_DEV("wms", "wms_dev", "OWMS", "C:\\Work\\prod1.0\\db\\dump_owms_dev"),
-    STB_DEV("stb", "stb_dev", "史泰博", "C:\\Work\\prod1.0\\db\\dump_stb_dev"),
+    WMS_DEV("wms", "wms_dev", "OWMS", "C:\\Work\\prod1.0\\db\\owms_dev"),
+    STB_DEV("stb", "stb_dev", "史泰博", "C:\\Work\\prod1.0\\db\\stb_dev"),
     RUN_HE("xcd", "xcd", "润和", "C:\\Work\\db2ea\\xcd-oms-db.sql");
 
     private static ProjectEnum[] list = {

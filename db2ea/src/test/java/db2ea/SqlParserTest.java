@@ -45,13 +45,15 @@ public class SqlParserTest {
 
             put("CREATE TABLE `ad_code` (", ",\"ad_code\",Class,table,,2_ad_code,");
             put("`id` bigint(20) NOT NULL AUTO_INCREMENT,", ",\"id\",Class,function,id,3_id,");
-//            put("`id` bigint(20) NOT NULL AUTO_INCREMENT,", null);
             put("`page_type` bigint(20) NOT NULL COMMENT '广告,页面',", ",\"page_type 广告,页面\",Class,function,,3_page_type,");
             put("`company_id` bigint(20) DEFAULT NULL COMMENT '公司id',", ",\"company_id 公司id\",Class,function,company_id,3_company_id,");
 
             put("PRIMARY KEY (`id`),", null);
             put("KEY `index_adcode_page` (`page_type`,`code`,`is_deleted`),", null);
             put(") ENGINE=InnoDB AUTO_INCREMENT=1194020000000001 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;", null);
+
+            // art
+            put("CREATE TABLE `ART_DATABASES` (", ",\"ART_DATABASES\",Class,table,,2_ART_DATABASES,");
         }};
 
         for (Map.Entry<String, String> io : mapIO.entrySet()) {

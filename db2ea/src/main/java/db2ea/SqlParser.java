@@ -110,49 +110,57 @@ public class SqlParser {
             return null;
         }
 
-        EAItem item = null;
         String sqlLowercase = sql.toLowerCase();
 
         // Check DB, table, field and comment. Note: DB and comment are not at the beginning, while table and field are the first ones.
         if (sqlLowercase.indexOf(DB_Flag) >= 0) {
             // Remove the unused beginning.
-            sql = sql.substring(sqlLowercase.indexOf(DB_Flag));
-            String name = parseName(sql, DB_Splitter, DB_Index, DB_Trim_List, null);
+            String name = sql.substring(sqlLowercase.indexOf(DB_Flag));
+            name = parseName(name, DB_Splitter, DB_Index, DB_Trim_List, null);
             if (!StrUtils.isEmpty(name)) {
-                item = new EAItem(name, EATypeEnum.Artifact, EAStereotypeEnum.DB, parent);
+                return new EAItem(name, EATypeEnum.Artifact, EAStereotypeEnum.DB, parent);
             }
-        } else if (sqlLowercase.startsWith(Table_Flag)) {
-            sql = sql.substring(sqlLowercase.indexOf(Table_Flag));
-            String name = parseName(sql, Table_Splitter, Table_Index, Table_Trim_List, null);
+        }
+
+        if (sqlLowercase.startsWith(Table_Flag)) {
+            String name = sql.substring(sqlLowercase.indexOf(Table_Flag));
+            name = parseName(name, Table_Splitter, Table_Index, Table_Trim_List, null);
             if (!StrUtils.isEmpty(name)) {
-                item = new EAItem(name, EATypeEnum.Class, EAStereotypeEnum.Table, parent);
+                return new EAItem(name, EATypeEnum.Class, EAStereotypeEnum.Table, parent);
             }
-        } else if (sqlLowercase.startsWith(Field_Flag)) {
-            sql = sql.substring(sqlLowercase.indexOf(Field_Flag));
-            String name = parseName(sql, Field_Splitter, Field_Index, Field_Trim_List, Field_Ignore_list);
+        }
+
+        if (sqlLowercase.startsWith(Field_Flag)) {
+            String name = sql.substring(sqlLowercase.indexOf(Field_Flag));
+            name = parseName(name, Field_Splitter, Field_Index, Field_Trim_List, Field_Ignore_list);
             if (!StrUtils.isEmpty(name)) {
-                item = new EAItem(name, EATypeEnum.Class, EAStereotypeEnum.Field, parent);
+                EAItem item = new EAItem(name, EATypeEnum.Class, EAStereotypeEnum.Field, parent);
 
                 // Find the comment of the field
+                sql = sql.substring(sqlLowercase.indexOf(Field_Flag));
                 sqlLowercase = sql.toLowerCase();
                 if (sqlLowercase.indexOf(Comment_Flag) >= 0) {
-                    sql = sql.substring(sqlLowercase.indexOf(Comment_Flag));
-                    name = parseName(sql, Field_Comment_Splitter, Comment_Index, Comment_Trim_List, null);
+                    name = sql.substring(sqlLowercase.indexOf(Comment_Flag));
+                    name = parseName(name, Field_Comment_Splitter, Comment_Index, Comment_Trim_List, null);
                     if (!StrUtils.isEmpty(name)) {
                         item.setComment(name);
                     }
                 }
-            }
-        } else if (sqlLowercase.indexOf(Comment_Flag) >= 0) {
-            // Find the comment of the table, which is at the end of the definition block.
-            sql = sql.substring(sqlLowercase.indexOf(Comment_Flag));
-            String name = parseName(sql, Table_Comment_Splitter, Comment_Index, Comment_Trim_List, null);
-            if (!StrUtils.isEmpty(name)) {
-                item = new EAItem(name, EATypeEnum.Class, EAStereotypeEnum.None, parent);
+
+                return item;
             }
         }
 
-        return item;
+        if (sqlLowercase.indexOf(Comment_Flag) >= 0) {
+            // Find the comment of the table, which is at the end of the definition block.
+            String name = sql.substring(sqlLowercase.indexOf(Comment_Flag));
+            name = parseName(name, Table_Comment_Splitter, Comment_Index, Comment_Trim_List, null);
+            if (!StrUtils.isEmpty(name)) {
+                return new EAItem(name, EATypeEnum.Class, EAStereotypeEnum.None, parent);
+            }
+        }
+
+        return null;
     }
 
     public static String parseName(String str, String splitter, int index, String[] trims, String[] ignores) {
