@@ -69,7 +69,7 @@ public class SqlParser {
 
                     // Mark the special fields
 //                    String name = item.getName();
-//                    if ("company_id".equalsIgnoreCase(name)) {
+//                    if ("company_id".equalsIgnoreCase(name) || "compay_id".equalsIgnoreCase(name) || "companyId".equalsIgnoreCase(name)) {
 //                        table.setPhase(name);
 //                    }
 
