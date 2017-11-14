@@ -9,7 +9,7 @@ import java.util.Map;
 public class CsvUpdater {
     public static String File_Ext = ".csv";
     public static String File_Name = "_updated.csv";
-    public static String Folder_name = "_updated";
+    public static String Folder_name = "";
 
     // Check if the tail existed.
     public static String Tail_Flag = "";

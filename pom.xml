@@ -14,6 +14,7 @@
         <module>db2ea</module>
         <module>sql-updater</module>
         <module>csv-updater</module>
+        <module>jira-report</module>
     </modules>
 
 </project>
