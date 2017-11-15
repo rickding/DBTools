@@ -4,6 +4,7 @@
 target/
 *.iml
 dependency-reduced-pom.xml
+workbook.xlsx
 
 # Log file
 *.log

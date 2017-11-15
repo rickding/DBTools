@@ -59,7 +59,10 @@ public class ExcelSample {
 
                 c.setCellValue("标题" + cellnum);
                 c2.setCellValue("测试汉纸" + (cellnum + 1));
-                topLeft = c;
+
+                if (topLeft == null) {
+                    topLeft = c;
+                }
             }
 
             // Define a few rows
@@ -75,17 +78,17 @@ public class ExcelSample {
                 }
             }
 
-            // PivotTable new CellReference(topLeft), new CellReference(botRight)
+            // PivotTable "A1:J30"
             XSSFSheet s2 = wb.createSheet();
             ExcelUtil.fillSheet(s2, 10, 10, null);
-            XSSFPivotTable pivotTable = s2.createPivotTable(new AreaReference("A1:H10"), new CellReference("I1"));
+            XSSFPivotTable pivotTable = s2.createPivotTable(new AreaReference(new CellReference(topLeft), new CellReference(botRight)), new CellReference("A5"), s);
             //Configure the pivot table
             //Use first column as row label
             pivotTable.addRowLabel(0);
             //Sum up the second column
-            pivotTable.addColumnLabel(DataConsolidateFunction.SUM, 1);
+            pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, 1);
             //Set the third column as filter
-            pivotTable.addColumnLabel(DataConsolidateFunction.AVERAGE, 2);
+            pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, 2);
             //Add filter on forth column
             pivotTable.addReportFilter(3);
 

@@ -61,7 +61,7 @@ public class ExcelUtil {
      * @param sheet   name of a excel file that will store the transformed file
      * @param csvFile name of a csv file that will be transformed
      */
-    public final static void csvToExcel(XSSFSheet sheet, String csvFile) {
+    public final static void csvToExcel(XSSFSheet sheet, String csvFile, BaseReport report) {
         if (sheet == null || StrUtils.isEmpty(csvFile)) {
             return;
         }
@@ -74,31 +74,51 @@ public class ExcelUtil {
             System.out.printf("Fail to open file: %s\n", csvFile);
         }
 
-        try {
-            reader.readHeaders();
+        if (reader == null) {
+            return;
+        }
 
-            String[] headers = reader.getHeaders();
-            if (headers == null || headers.length < 0) {
-                reader.close();
-                return;
+        try {
+            // Read and add new headers
+            reader.readHeaders();
+            String[] strHeaders = reader.getHeaders();
+
+            ReportHeader[] headers = null;
+            if (report != null) {
+                headers = report.processHeaders(strHeaders);
+            } else {
+                headers = ReportHeader.fromStrings(strHeaders);
             }
 
+            // Save the headers
             int row = 0;
-            fillRow(sheet, row++, headers);
+            fillRow(sheet, row++, ReportHeader.toStrings(headers));
 
             while (reader.readRecord()) {
+                // New row
                 Row r = sheet.createRow(row++);
 
                 int col = 0;
-                for (String header : headers) {
-                    String v = reader.get(header);
+                for (ReportHeader header : headers) {
+                    // Read and convert the value
+                    String v = reader.get(header.getValue());
+                    if (!StrUtils.isEmpty(v)) {
+                        v = report.processValue(header.getName(), v);
+                    }
+
+                    // Save value to cell
                     Cell cell = r.createCell(col++);
                     cell.setCellValue(v);
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.printf("Fail to read headers: %s\n", csvFile);
+            System.out.printf("Fail to read file: %s\n", csvFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.printf("Fail to process file: %s\n", csvFile);
+        } finally {
+            reader.close();
         }
     }
 }

@@ -17,6 +17,8 @@ public class App {
     public static String Folder_name = "";
 
     public static void main(String[] args) {
+//        ExcelSample.excelSample();
+
         System.out.println("Specify the file or folder to update:");
         System.out.println("folder or file: one or multiple ones, to specify the one(s) to update.");
 
@@ -35,6 +37,7 @@ public class App {
         }
 
         List<String> projects = new ArrayList<String>();
+        BaseReport report = new BaseReport();
 
         // Update files
         for (String filePath : filePaths) {
@@ -47,7 +50,7 @@ public class App {
             // Update and save
             for (File f : files) {
                 XSSFWorkbook wb = new XSSFWorkbook();
-                ExcelUtil.csvToExcel(wb.createSheet(), f.getPath());
+                ExcelUtil.csvToExcel(wb.createSheet(), f.getPath(), report);
 
                 String outputFileName = FileUtils.getOutputFileName(file, f, File_Ext, File_Name, Folder_name);
                 ExcelUtil.saveToFile(wb, outputFileName);
