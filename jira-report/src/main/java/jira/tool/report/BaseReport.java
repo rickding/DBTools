@@ -151,18 +151,33 @@ public class BaseReport {
     }
 
     /**
-     * Create data graph based on data
-     * @param graphSheet
+     * Create data graph based on data "A1:J30" new CellReference(topLeft), new CellReference(botRight)
+     * @param graphSheet new CellReference(rowStart, colStart), new CellReference(rowEnd, 24)
      * @param dataSheet
      */
     public XSSFPivotTable createPivotTable(XSSFSheet graphSheet, XSSFSheet dataSheet, Cell topLeft, Cell botRight) {
         if (graphSheet == null || dataSheet == null) {
             return null;
         }
-        XSSFPivotTable pivotTable = graphSheet.createPivotTable(new AreaReference("A1:J30"), new CellReference("A5"), dataSheet);
+
+        int[] cellArea = getCellArea(dataSheet);
+        if (cellArea == null || cellArea.length < 4) {
+            return null;
+        }
+
+        int rowStart = cellArea[0];
+        int rowEnd = cellArea[1];
+        int colStart = cellArea[2];
+        int colEnd = cellArea[3];
+
+        XSSFPivotTable pivotTable = graphSheet.createPivotTable(new AreaReference(new CellReference(rowStart, colStart), new CellReference(rowEnd, 24)), new CellReference("A5"), dataSheet);
         return pivotTable;
     }
 
+    /**
+     * configure the pivot table
+     * @param pivotTable
+     */
     protected void decoratePivotTable(XSSFPivotTable pivotTable) {
         if (pivotTable == null) {
             return;
@@ -171,11 +186,10 @@ public class BaseReport {
         //Configure the pivot table
         //Use first column as row label
         pivotTable.addRowLabel(0);
+        pivotTable.addRowLabel(7);
         //Sum up the second column
-        pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, 1);
-        //Set the third column as filter
         pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, 2);
         //Add filter on forth column
-        pivotTable.addReportFilter(3);
+        pivotTable.addReportFilter(4);
     }
 }

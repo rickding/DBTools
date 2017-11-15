@@ -53,7 +53,7 @@ public class ExcelSample {
             Cell topLeft = null, botRight = null;
 
             Row r = s.createRow(0);
-            for (int cellnum = 0; cellnum < 10; cellnum += 2) {
+            for (int cellnum = 0; cellnum < 100; cellnum += 2) {
                 Cell c = r.createCell(cellnum);
                 Cell c2 = r.createCell(cellnum + 1);
 
@@ -66,9 +66,9 @@ public class ExcelSample {
             }
 
             // Define a few rows
-            for (int rownum = 1; rownum < 30; rownum++) {
+            for (int rownum = 1; rownum < 130; rownum++) {
                 r = s.createRow(rownum);
-                for (int cellnum = 0; cellnum < 10; cellnum += 2) {
+                for (int cellnum = 0; cellnum < 100; cellnum += 2) {
                     Cell c = r.createCell(cellnum);
                     Cell c2 = r.createCell(cellnum + 1);
 
@@ -78,10 +78,11 @@ public class ExcelSample {
                 }
             }
 
-            // PivotTable "A1:J30"
+            // PivotTable "A1:J30" new CellReference(topLeft), new CellReference(botRight)
+            // new CellReference(0, 0), new CellReference(129, 99)
             XSSFSheet s2 = wb.createSheet();
 //            ExcelUtil.fillSheet(s2, 10, 10, null);
-            XSSFPivotTable pivotTable = s2.createPivotTable(new AreaReference(new CellReference(topLeft), new CellReference(botRight)), new CellReference("A5"), s);
+            XSSFPivotTable pivotTable = s2.createPivotTable(new AreaReference(new CellReference(0, 0), new CellReference(129, 99)), new CellReference("A5"), s);
             //Configure the pivot table
             //Use first column as row label
             pivotTable.addRowLabel(0);
