@@ -2,6 +2,7 @@ package jira.tool.report;
 
 import com.csvreader.CsvReader;
 import dbtools.common.utils.StrUtils;
+import jira.tool.report.processor.HeaderProcessor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -83,23 +84,23 @@ public class ExcelUtil {
             reader.readHeaders();
             String[] strHeaders = reader.getHeaders();
 
-            ReportHeader[] headers = null;
+            HeaderProcessor[] headers = null;
             if (report != null) {
                 headers = report.processHeaders(strHeaders);
             } else {
-                headers = ReportHeader.fromStrings(strHeaders);
+                headers = HeaderProcessor.fromStrings(strHeaders);
             }
 
             // Save the headers
             int row = 0;
-            fillRow(sheet, row++, ReportHeader.toStrings(headers));
+            fillRow(sheet, row++, HeaderProcessor.toStrings(headers));
 
             while (reader.readRecord()) {
                 // New row
                 Row r = sheet.createRow(row++);
 
                 int col = 0;
-                for (ReportHeader header : headers) {
+                for (HeaderProcessor header : headers) {
                     // Read and convert the value
                     String v = reader.get(header.getValue());
                     if (!StrUtils.isEmpty(v)) {

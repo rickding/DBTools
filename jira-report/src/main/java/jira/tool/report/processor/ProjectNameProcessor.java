@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProjectNameProcessor implements ValueProcessor {
+    // Map the project name to team name
     Map<String, String> values = new HashMap<String, String>() {{
         put("Android", "APP");
         put("IOS", "APP");

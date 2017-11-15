@@ -1,15 +1,17 @@
-package jira.tool.report;
+package jira.tool.report.processor;
 
 import dbtools.common.utils.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReportHeader {
+public class HeaderProcessor {
+    public static HeaderProcessor releaseDateHeader = new HeaderProcessor("Release Date", "到期日");
+
     private String name;
     private String value;
 
-    public ReportHeader(String name, String value) {
+    public HeaderProcessor(String name, String value) {
         this.name = name;
         this.value = value;
     }
@@ -22,25 +24,27 @@ public class ReportHeader {
         return value;
     }
 
-    public static ReportHeader[] fromStrings(String[] headers) {
-        List<ReportHeader> newHeaders = new ArrayList<ReportHeader>(ArrayUtils.isEmpty(headers) ? 16 : headers.length + 16);
+    // Create the header object from string arrays
+    public static HeaderProcessor[] fromStrings(String[] headers) {
+        List<HeaderProcessor> newHeaders = new ArrayList<HeaderProcessor>(ArrayUtils.isEmpty(headers) ? 16 : headers.length + 16);
 
         if (!ArrayUtils.isEmpty(headers)) {
             for (String header : headers) {
-                newHeaders.add(new ReportHeader(header, header));
+                newHeaders.add(new HeaderProcessor(header, header));
             }
         }
 
-        ReportHeader[] tmp = new ReportHeader[newHeaders.size()];
+        HeaderProcessor[] tmp = new HeaderProcessor[newHeaders.size()];
         newHeaders.toArray(tmp);
         return tmp;
     }
 
-    public static String[] toStrings(ReportHeader[] headers) {
+    // Return the array of header names
+    public static String[] toStrings(HeaderProcessor[] headers) {
         List<String> newHeaders = new ArrayList<String>(headers == null ? 16 : headers.length + 16);
 
         if (headers != null && headers.length > 0) {
-            for (ReportHeader header : headers) {
+            for (HeaderProcessor header : headers) {
                 newHeaders.add(header.getName());
             }
         }

@@ -1,5 +1,7 @@
 package dbtools.common.utils;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -20,5 +22,20 @@ public class DateUtils {
         }
 
         return "";
+    }
+
+    public static Date parse(String str, String format) {
+        if (StrUtils.isEmpty(str) || StrUtils.isEmpty(format)) {
+            return null;
+        }
+
+        try {
+            DateFormat df = new SimpleDateFormat(format);
+            return df.parse(str);
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
     }
 }
