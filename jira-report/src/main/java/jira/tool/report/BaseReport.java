@@ -5,8 +5,13 @@ import jira.tool.report.processor.HeaderProcessor;
 import jira.tool.report.processor.ProjectNameProcessor;
 import jira.tool.report.processor.ReleaseDateProcessor;
 import jira.tool.report.processor.ValueProcessor;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataConsolidateFunction;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.AreaReference;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.xssf.usermodel.XSSFPivotTable;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import java.util.*;
@@ -53,7 +58,6 @@ public class BaseReport {
 
     /**
      * Combine the headers
-     *
      * @param headers
      * @return
      */
@@ -75,7 +79,6 @@ public class BaseReport {
 
     /**
      * Process and return the new value
-     *
      * @param header
      * @param value
      * @return
@@ -96,15 +99,40 @@ public class BaseReport {
 
     /**
      * Add the filter and lock
-     *
      * @param sheet
      */
-    public void processDataSheet(XSSFSheet sheet) {
+    public void decorateDataSheet(XSSFSheet sheet) {
         if (sheet == null) {
             return;
         }
 
+        int[] cellArea = getCellArea(sheet);
+        if (cellArea == null || cellArea.length < 4) {
+            return;
+        }
+
+        int rowStart = cellArea[0];
+        int rowEnd = cellArea[1];
+        int colStart = cellArea[2];
+        int colEnd = cellArea[3];
+
         // Add the filter
+        sheet.setAutoFilter(new CellRangeAddress(rowStart, rowEnd, colStart, colEnd));
+
+        // Set the free panes, the first row
+        sheet.createFreezePane(0, 1, colStart, rowStart + 1);
+    }
+
+    /**
+     * Return cell area: row start, row end, col start, col end
+     * @param sheet
+     * @return
+     */
+    public int[] getCellArea(XSSFSheet sheet) {
+        if (sheet == null) {
+            return null;
+        }
+
         int rowStart = sheet.getFirstRowNum();
         int rowEnd = sheet.getLastRowNum();
         int colStart = 0;
@@ -118,9 +146,36 @@ public class BaseReport {
                 break;
             }
         }
-        sheet.setAutoFilter(new CellRangeAddress(rowStart, rowEnd, colStart, colEnd));
 
-        // Set the free panes, the first row
-        sheet.createFreezePane(0, 1, colStart, rowStart + 1);
+        return new int[]{rowStart, rowEnd, colStart, colEnd};
+    }
+
+    /**
+     * Create data graph based on data
+     * @param graphSheet
+     * @param dataSheet
+     */
+    public XSSFPivotTable createPivotTable(XSSFSheet graphSheet, XSSFSheet dataSheet, Cell topLeft, Cell botRight) {
+        if (graphSheet == null || dataSheet == null) {
+            return null;
+        }
+        XSSFPivotTable pivotTable = graphSheet.createPivotTable(new AreaReference("A1:J30"), new CellReference("A5"), dataSheet);
+        return pivotTable;
+    }
+
+    protected void decoratePivotTable(XSSFPivotTable pivotTable) {
+        if (pivotTable == null) {
+            return;
+        }
+
+        //Configure the pivot table
+        //Use first column as row label
+        pivotTable.addRowLabel(0);
+        //Sum up the second column
+        pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, 1);
+        //Set the third column as filter
+        pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, 2);
+        //Add filter on forth column
+        pivotTable.addReportFilter(3);
     }
 }

@@ -80,7 +80,7 @@ public class ExcelSample {
 
             // PivotTable "A1:J30"
             XSSFSheet s2 = wb.createSheet();
-            ExcelUtil.fillSheet(s2, 10, 10, null);
+//            ExcelUtil.fillSheet(s2, 10, 10, null);
             XSSFPivotTable pivotTable = s2.createPivotTable(new AreaReference(new CellReference(topLeft), new CellReference(botRight)), new CellReference("A5"), s);
             //Configure the pivot table
             //Use first column as row label

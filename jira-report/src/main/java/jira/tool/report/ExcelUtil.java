@@ -15,6 +15,7 @@ import java.nio.charset.Charset;
 
 public class ExcelUtil {
     /**
+     * http://poi.apache.org/spreadsheet/quick-guide.html
      * Save excel file
      * @param wb
      * @param filename
@@ -72,6 +73,11 @@ public class ExcelUtil {
         for (int j = 0; j < values.length; j++) {
             Cell cell = r.createCell(j);
             cell.setCellValue(values[j]);
+
+            if (left == null) {
+                left = cell;
+            }
+            right = cell;
         }
 
         return new Cell[]{left, right};
@@ -83,9 +89,9 @@ public class ExcelUtil {
      * @param sheet   name of a excel file that will store the transformed file
      * @param csvFile name of a csv file that will be transformed
      */
-    public final static void csvToExcel(XSSFSheet sheet, String csvFile, BaseReport report) {
+    public final static Cell[] csvToExcel(XSSFSheet sheet, String csvFile, BaseReport report) {
         if (sheet == null || StrUtils.isEmpty(csvFile)) {
-            return;
+            return null;
         }
 
         CsvReader reader = null;
@@ -97,8 +103,11 @@ public class ExcelUtil {
         }
 
         if (reader == null) {
-            return;
+            return null;
         }
+
+        Cell topLeft = null;
+        Cell botRight = null;
 
         try {
             // Read and add new headers
@@ -115,8 +124,7 @@ public class ExcelUtil {
             // Save the headers
             int row = 0;
             Cell[] cells = fillRow(sheet, row++, HeaderProcessor.toStrings(headers));
-            Cell leftTop = cells == null || cells.length < 1 ? null : cells[0];
-            Cell botRight = null;
+            topLeft = cells == null || cells.length < 1 ? null : cells[0];
 
             // Save the data
             while (reader.readRecord()) {
@@ -137,10 +145,6 @@ public class ExcelUtil {
                     botRight = cell;
                 }
             }
-
-            if (report != null) {
-                report.processDataSheet(sheet);
-            }
         } catch (IOException e) {
             e.printStackTrace();
             System.out.printf("Fail to read file: %s\n", csvFile);
@@ -150,5 +154,7 @@ public class ExcelUtil {
         } finally {
             reader.close();
         }
+
+        return new Cell[] {topLeft, botRight};
     }
 }
