@@ -2,6 +2,7 @@ package jira.tool.report;
 
 import com.csvreader.CsvReader;
 import dbtools.common.utils.StrUtils;
+import jira.tool.report.processor.BaseReport;
 import jira.tool.report.processor.HeaderProcessor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -14,6 +15,11 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 public class ExcelUtil {
+    /**
+     * Save excel file
+     * @param wb
+     * @param filename
+     */
     public static void saveToFile(XSSFWorkbook wb, String filename) {
         if (wb == null || StrUtils.isEmpty(filename)) {
             return;
@@ -28,6 +34,13 @@ public class ExcelUtil {
         }
     }
 
+    /**
+     * Fill cells with value
+     * @param sheet
+     * @param row
+     * @param col
+     * @param value
+     */
     public static void fillSheet(XSSFSheet sheet, int row, int col, String value) {
         if (sheet == null || row <= 0 || col <= 0) {
             return;
@@ -44,16 +57,25 @@ public class ExcelUtil {
         }
     }
 
-    public static void fillRow(XSSFSheet sheet, int row, String[] values) {
+    /**
+     * @param sheet
+     * @param row
+     * @param values
+     * @return return the first left and the last right cells
+     */
+    public static Cell[] fillRow(XSSFSheet sheet, int row, String[] values) {
         if (sheet == null || row < 0 || values == null || values.length <= 0) {
-            return;
+            return null;
         }
 
+        Cell left = null, right = null;
         Row r = sheet.createRow(row);
         for (int j = 0; j < values.length; j++) {
             Cell cell = r.createCell(j);
             cell.setCellValue(values[j]);
         }
+
+        return new Cell[]{left, right};
     }
 
     /**
@@ -93,8 +115,11 @@ public class ExcelUtil {
 
             // Save the headers
             int row = 0;
-            fillRow(sheet, row++, HeaderProcessor.toStrings(headers));
+            Cell[] cells = fillRow(sheet, row++, HeaderProcessor.toStrings(headers));
+            Cell leftTop = cells == null || cells.length < 1 ? null : cells[0];
+            Cell botRight = null;
 
+            // Save the data
             while (reader.readRecord()) {
                 // New row
                 Row r = sheet.createRow(row++);
@@ -103,14 +128,19 @@ public class ExcelUtil {
                 for (HeaderProcessor header : headers) {
                     // Read and convert the value
                     String v = reader.get(header.getValue());
-                    if (!StrUtils.isEmpty(v)) {
+                    if (!StrUtils.isEmpty(v) && report != null) {
                         v = report.processValue(header.getName(), v);
                     }
 
                     // Save value to cell
                     Cell cell = r.createCell(col++);
                     cell.setCellValue(v);
+                    botRight = cell;
                 }
+            }
+
+            if (report != null) {
+                report.processSheet(sheet);
             }
         } catch (IOException e) {
             e.printStackTrace();
