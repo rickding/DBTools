@@ -44,6 +44,9 @@ public class BaseReport {
     // Configure the headers
     protected List<HeaderProcessor> newHeaders = new ArrayList<HeaderProcessor>() {{
         add(HeaderProcessor.releaseDateHeader);
+        add(HeaderProcessor.projectNameHeader);
+        add(HeaderProcessor.issueKeyHeader);
+        add(HeaderProcessor.projectHeader);
     }};
 
     // Configure the sheet name
@@ -169,8 +172,11 @@ public class BaseReport {
         int rowEnd = cellArea[1];
         int colStart = cellArea[2];
         int colEnd = cellArea[3];
+        if (colEnd > newHeaders.size() - 1) {
+            colEnd = newHeaders.size() - 1;
+        }
 
-        XSSFPivotTable pivotTable = graphSheet.createPivotTable(new AreaReference(new CellReference(rowStart, colStart), new CellReference(rowEnd, 24)), new CellReference("A5"), dataSheet);
+        XSSFPivotTable pivotTable = graphSheet.createPivotTable(new AreaReference(new CellReference(rowStart, colStart), new CellReference(rowEnd, colEnd)), new CellReference("A5"), dataSheet);
         return pivotTable;
     }
 
@@ -183,13 +189,14 @@ public class BaseReport {
             return;
         }
 
-        //Configure the pivot table
-        //Use first column as row label
-        pivotTable.addRowLabel(0);
-        pivotTable.addRowLabel(7);
-        //Sum up the second column
-        pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, 2);
-        //Add filter on forth column
-        pivotTable.addReportFilter(4);
+        // configure the pivot table
+        // row label
+        pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.projectHeader));
+        // col label
+        pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.projectNameHeader));
+        // sum up
+        pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, newHeaders.indexOf(HeaderProcessor.issueKeyHeader));
+        // add filter
+        pivotTable.addReportFilter(newHeaders.indexOf(HeaderProcessor.releaseDateHeader));
     }
 }

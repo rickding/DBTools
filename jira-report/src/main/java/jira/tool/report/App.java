@@ -20,15 +20,15 @@ public class App {
     public static String Folder_name = "";
 
     public static void main(String[] args) {
-        ExcelSample.excelSample();
+//        ExcelSample.excelSample();
 
         System.out.println("Specify the file or folder to update:");
         System.out.println("folder or file: one or multiple ones, to specify the one(s) to update.");
 
         Date time_start = new Date();
         Set<String> filePaths = new HashSet<String>() {{
-//            add("C:\\Work\\doc\\30-项目-PMO\\PMO报表\\Jira统计日报");
-            add("C:\\Work\\doc\\30-项目-PMO\\PMO报表\\交付计划");
+            add("C:\\Work\\doc\\30-项目-PMO\\PMO报表\\Jira统计日报");
+//            add("C:\\Work\\doc\\30-项目-PMO\\PMO报表\\交付计划");
         }};
 
         if (args != null) {
@@ -54,16 +54,17 @@ public class App {
                 BaseReport report = BaseReport.getReport(f.getName());
                 XSSFWorkbook wb = new XSSFWorkbook();
 
-                // Data from csv file
-                String sheetName = report.getSheetName("data");
+                String sheetName = report.getSheetName("graph");
+                XSSFSheet graphSheet = StrUtils.isEmpty(sheetName) ? wb.createSheet() : wb.createSheet(sheetName);
+
+                sheetName = report.getSheetName("data");
                 XSSFSheet dataSheet = StrUtils.isEmpty(sheetName) ? wb.createSheet() : wb.createSheet(sheetName);
+
+                // Data from csv file
                 Cell[] cells = ExcelUtil.csvToExcel(dataSheet, f.getPath(), report);
                 report.decorateDataSheet(dataSheet);
 
                 // Pivot table
-                sheetName = report.getSheetName("graph");
-                XSSFSheet graphSheet = StrUtils.isEmpty(sheetName) ? wb.createSheet() : wb.createSheet(sheetName);
-
                 Cell topLeft = cells == null || cells.length < 1 ? null : cells[0];
                 Cell botRight = cells == null || cells.length < 2 ? null : cells[1];
                 XSSFPivotTable pivotTable = report.createPivotTable(graphSheet, dataSheet, topLeft, botRight);
