@@ -1,4 +1,4 @@
-package jira.tool.report.processor;
+package jira.tool.report;
 
 public class SprintReport extends BaseReport {
     public SprintReport() {

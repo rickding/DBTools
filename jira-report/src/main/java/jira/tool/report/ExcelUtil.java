@@ -2,7 +2,6 @@ package jira.tool.report;
 
 import com.csvreader.CsvReader;
 import dbtools.common.utils.StrUtils;
-import jira.tool.report.processor.BaseReport;
 import jira.tool.report.processor.HeaderProcessor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -140,7 +139,7 @@ public class ExcelUtil {
             }
 
             if (report != null) {
-                report.processSheet(sheet);
+                report.processDataSheet(sheet);
             }
         } catch (IOException e) {
             e.printStackTrace();

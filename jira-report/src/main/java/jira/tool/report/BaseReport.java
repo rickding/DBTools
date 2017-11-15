@@ -1,5 +1,6 @@
-package jira.tool.report.processor;
+package jira.tool.report;
 
+import dbtools.common.utils.StrUtils;
 import jira.tool.report.processor.HeaderProcessor;
 import jira.tool.report.processor.ProjectNameProcessor;
 import jira.tool.report.processor.ReleaseDateProcessor;
@@ -11,6 +12,24 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import java.util.*;
 
 public class BaseReport {
+    /**
+     * Create report instance for special file
+     * @param fileName
+     * @return
+     */
+    public static BaseReport getReport(String fileName) {
+        if (!StrUtils.isEmpty(fileName)) {
+            if (fileName.startsWith("未完成开发")) {
+                return new SprintReport();
+            } else if (fileName.startsWith("到期日没有或超过4周")) {
+                return new NoDueDateReport();
+            } else if (fileName.startsWith("完成开发待提测")) {
+                return new DevFinishReport();
+            }
+        }
+        return new BaseReport();
+    }
+
     // Configure the processors
     protected List<ValueProcessor> valueProcessors = new ArrayList<ValueProcessor>() {{
         add(new ProjectNameProcessor());
@@ -34,6 +53,7 @@ public class BaseReport {
 
     /**
      * Combine the headers
+     *
      * @param headers
      * @return
      */
@@ -55,6 +75,7 @@ public class BaseReport {
 
     /**
      * Process and return the new value
+     *
      * @param header
      * @param value
      * @return
@@ -75,9 +96,10 @@ public class BaseReport {
 
     /**
      * Add the filter and lock
+     *
      * @param sheet
      */
-    public void processSheet(XSSFSheet sheet) {
+    public void processDataSheet(XSSFSheet sheet) {
         if (sheet == null) {
             return;
         }

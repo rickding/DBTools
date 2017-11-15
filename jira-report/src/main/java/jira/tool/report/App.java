@@ -3,8 +3,6 @@ package jira.tool.report;
 import dbtools.common.file.FileUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
-import jira.tool.report.processor.BaseReport;
-import jira.tool.report.processor.SprintReport;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -27,6 +25,7 @@ public class App {
 
         Date time_start = new Date();
         Set<String> filePaths = new HashSet<String>() {{
+            add("C:\\Work\\doc\\30-项目-PMO\\PMO报表\\Jira统计日报");
             add("C:\\Work\\doc\\30-项目-PMO\\PMO报表\\交付计划");
         }};
 
@@ -40,7 +39,6 @@ public class App {
         }
 
         List<String> projects = new ArrayList<String>();
-        BaseReport report = new SprintReport();
 
         // Update files
         for (String filePath : filePaths) {
@@ -52,9 +50,12 @@ public class App {
 
             // Update and save
             for (File f : files) {
+                BaseReport report = BaseReport.getReport(f.getName());
+
                 XSSFWorkbook wb = new XSSFWorkbook();
                 String sheetName = report.getSheetName("data");
                 XSSFSheet sheet = StrUtils.isEmpty(sheetName) ? wb.createSheet() : wb.createSheet(sheetName);
+
                 ExcelUtil.csvToExcel(sheet, f.getPath(), report);
 
                 String outputFileName = FileUtils.getOutputFileName(file, f, File_Ext, File_Name, Folder_name);
