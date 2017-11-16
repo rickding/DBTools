@@ -2,8 +2,8 @@ package jira.tool.report;
 
 import dbtools.common.utils.StrUtils;
 import jira.tool.report.processor.HeaderProcessor;
-import jira.tool.report.processor.TeamNameProcessor;
 import jira.tool.report.processor.ReleaseDateProcessor;
+import jira.tool.report.processor.TeamNameProcessor;
 import jira.tool.report.processor.ValueProcessor;
 import org.apache.poi.ss.usermodel.DataConsolidateFunction;
 import org.apache.poi.ss.util.AreaReference;
@@ -16,6 +16,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.util.*;
 
 public class BaseReport {
+    public static Map<String, BaseReport> reportMap = new HashMap<String, BaseReport>() {{
+        put("未完成开发", new ReleasePlanReport());
+        put("计划交付", new WeeklyReport());
+        put("到期日没有或超过4周", new NoDueDateReport());
+        put("完成开发待提测", new DevFinishReport());
+    }};
+
     /**
      * Create report instance for special file
      *
@@ -24,12 +31,10 @@ public class BaseReport {
      */
     public static BaseReport getReport(String fileName) {
         if (!StrUtils.isEmpty(fileName)) {
-            if (fileName.startsWith("未完成开发")) {
-                return new ReleasePlanReport();
-            } else if (fileName.startsWith("到期日没有或超过4周")) {
-                return new NoDueDateReport();
-            } else if (fileName.startsWith("完成开发待提测")) {
-                return new DevFinishReport();
+            for (Map.Entry<String, BaseReport> report : reportMap.entrySet()) {
+                if (fileName.startsWith(report.getKey())) {
+                    return report.getValue();
+                }
             }
         }
         return new BaseReport();
@@ -70,21 +75,20 @@ public class BaseReport {
      * Fill data sheets from csv files
      */
     public XSSFSheet[] fillDataSheets(XSSFWorkbook wb, String[] csvFiles) {
-        String sheetName = getSheetName("graph");
-        XSSFSheet graphSheet = StrUtils.isEmpty(sheetName) ? wb.createSheet() : wb.createSheet(sheetName);
-
-        sheetName = getSheetName("data");
-        XSSFSheet dataSheet = StrUtils.isEmpty(sheetName) ? wb.createSheet() : wb.createSheet(sheetName);
+        XSSFSheet dataSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("data"));
 
         // Base data from csv file
         ExcelUtil.fillSheetFromCsv(dataSheet, csvFiles[0], this);
-        decorateDataSheet(dataSheet);
 
-        // Pivot table
-        XSSFPivotTable pivotTable = createPivotTable(graphSheet, dataSheet, newHeaders.size() - 1);
-        decoratePivotTable(pivotTable);
+        if (!isTemplateUsed()) {
+            decorateDataSheet(dataSheet);
 
-        return new XSSFSheet[]{graphSheet, dataSheet};
+            // Pivot table
+            XSSFSheet graphSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("graph"));
+            XSSFPivotTable pivotTable = createPivotTable(graphSheet, dataSheet, newHeaders.size() - 1);
+            decoratePivotTable(pivotTable);
+        }
+        return new XSSFSheet[]{dataSheet};
     }
 
     /**
@@ -95,6 +99,18 @@ public class BaseReport {
      */
     protected String getSheetName(String sheet) {
         return mapSheetName.get(sheet);
+    }
+
+    /**
+     * return the template file
+     * @return
+     */
+    public String getTemplateName() {
+        return "template.xlsx";
+    }
+
+    public boolean isTemplateUsed() {
+        return !StrUtils.isEmpty(getTemplateName());
     }
 
     /**

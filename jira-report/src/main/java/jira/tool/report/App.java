@@ -9,6 +9,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -31,6 +32,7 @@ public class App {
             add(".\\");
 //            add("C:\\Work\\doc\\30-项目-PMO\\PMO报表\\Jira统计日报");
 //            add("C:\\Work\\doc\\30-项目-PMO\\PMO报表\\交付计划");
+            add("C:\\Work\\doc\\30-项目-PMO\\PMO报表\\PMO周报");
         }};
 
         if (args != null) {
@@ -54,7 +56,24 @@ public class App {
             // Update and save
             for (File f : files) {
                 BaseReport report = BaseReport.getReport(f.getName());
-                XSSFWorkbook wb = new XSSFWorkbook();
+                String templateName = report.getTemplateName();
+
+                XSSFWorkbook wb = null;
+                if (StrUtils.isEmpty(templateName)) {
+                    wb = new XSSFWorkbook();
+                } else {
+                    // Open the template
+                    templateName = String.format("%s\\%s", filePath, templateName);
+                    try {
+                        wb = new XSSFWorkbook(templateName);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (wb == null) {
+                    continue;
+                }
 
                 // Data
                 report.fillDataSheets(wb, new String[] {f.getPath()});

@@ -34,6 +34,23 @@ public class ExcelUtil {
         }
     }
 
+    public static XSSFSheet getOrCreateSheet(XSSFWorkbook wb, String sheetName) {
+        if (wb == null) {
+            return null;
+        }
+
+        XSSFSheet sheet = null;
+        if (!StrUtils.isEmpty(sheetName)) {
+            sheet = wb.getSheet(sheetName);
+            if (sheet == null) {
+                sheet = wb.createSheet(sheetName);
+            }
+        } else {
+            sheet = wb.createSheet();
+        }
+        return sheet;
+    }
+
     /**
      * Return cell area: row start, row end, col start, col end
      *

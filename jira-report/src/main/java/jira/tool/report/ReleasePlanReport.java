@@ -1,6 +1,5 @@
 package jira.tool.report;
 
-import dbtools.common.utils.StrUtils;
 import jira.tool.report.processor.HeaderProcessor;
 import jira.tool.report.processor.TeamProcessor;
 import org.apache.poi.ss.usermodel.DataConsolidateFunction;
@@ -16,9 +15,14 @@ import java.util.Map;
 public class ReleasePlanReport extends BaseReport {
     public ReleasePlanReport() {
         mapSheetName.put("data", "未完成开发");
-        mapSheetName.put("data2", "人力库存");
         mapSheetName.put("graph", "各项目交付节奏表");
+        mapSheetName.put("data2", "人力库存");
         mapSheetName.put("graph2", "人力库存警戒线");
+    }
+
+    @Override
+    public String getTemplateName() {
+        return null; // "未完成开发-4周内-交付计划-template.xlsx";
     }
 
     /**
@@ -106,11 +110,7 @@ public class ReleasePlanReport extends BaseReport {
         TeamProcessor[] teams = calculateData(wb);
 
         // Fill the team data
-        String sheetName = getSheetName("graph2");
-        XSSFSheet graphSheet = StrUtils.isEmpty(sheetName) ? wb.createSheet() : wb.createSheet(sheetName);
-
-        sheetName = getSheetName("data2");
-        XSSFSheet dataSheet = StrUtils.isEmpty(sheetName) ? wb.createSheet() : wb.createSheet(sheetName);
+        XSSFSheet dataSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("data2"));
 
         // Headers
         int row = 0;
@@ -122,24 +122,27 @@ public class ReleasePlanReport extends BaseReport {
             row += team.fillRow(dataSheet, row);
         }
 
-        // Decorate data
-        decorateDataSheet(dataSheet);
+        if (!isTemplateUsed()) {
+            // Decorate data
+            decorateDataSheet(dataSheet);
 
-        // Pivot table
-        XSSFPivotTable pivotTable = createPivotTable(graphSheet, dataSheet, TeamProcessor.getHeaders().length - 1);
+            // Pivot table
+            XSSFSheet graphSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("graph2"));
+            XSSFPivotTable pivotTable = createPivotTable(graphSheet, dataSheet, TeamProcessor.getHeaders().length - 1);
 
-        // Decorate graph
-        // row label
-        List<HeaderProcessor> list = Arrays.asList(TeamProcessor.getHeaders());
-        pivotTable.addRowLabel(list.indexOf(TeamProcessor.dateHeader));
-        pivotTable.addRowLabel(list.indexOf(TeamProcessor.nameHeader));
+            // Decorate graph
+            // row label
+            List<HeaderProcessor> list = Arrays.asList(TeamProcessor.getHeaders());
+            pivotTable.addRowLabel(list.indexOf(TeamProcessor.dateHeader));
+            pivotTable.addRowLabel(list.indexOf(TeamProcessor.nameHeader));
 
-        // sum up
-        pivotTable.addColumnLabel(DataConsolidateFunction.SUM, list.indexOf(TeamProcessor.releaseMaxHeader));
-        pivotTable.addColumnLabel(DataConsolidateFunction.SUM, list.indexOf(TeamProcessor.releaseHeader));
+            // sum up
+            pivotTable.addColumnLabel(DataConsolidateFunction.SUM, list.indexOf(TeamProcessor.releaseMaxHeader));
+            pivotTable.addColumnLabel(DataConsolidateFunction.SUM, list.indexOf(TeamProcessor.releaseHeader));
 //        pivotTable.addColumnLabel(DataConsolidateFunction.SUM, list.indexOf(TeamProcessor.releaseMinHeader));
 
-        pivotTable.addReportFilter(list.indexOf(TeamProcessor.releaseMinHeader));
-        return new XSSFSheet[]{dataSheet, graphSheet};
+            pivotTable.addReportFilter(list.indexOf(TeamProcessor.releaseMinHeader));
+        }
+        return new XSSFSheet[]{dataSheet};
     }
 }
