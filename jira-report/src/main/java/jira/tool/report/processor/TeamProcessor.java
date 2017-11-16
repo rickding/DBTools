@@ -1,0 +1,111 @@
+package jira.tool.report.processor;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class TeamProcessor {
+    public static HeaderProcessor dateHeader = new HeaderProcessor("交付日期", "date");
+    public static HeaderProcessor nameHeader = new HeaderProcessor("产品线", "name");
+    public static HeaderProcessor storyHeader = new HeaderProcessor("计划交付数量", "story");
+    public static HeaderProcessor releaseMaxHeader = new HeaderProcessor("交付/人天警戒值上限", "releaseMax");
+    public static HeaderProcessor releaseHeader = new HeaderProcessor("交付/人天", "release");
+    public static HeaderProcessor releaseMinHeader = new HeaderProcessor("交付/人天警戒值下限", "releaseMin");
+    public static HeaderProcessor manDayHeader = new HeaderProcessor("剩余人天", "manDay");
+    public static HeaderProcessor dayHeader = new HeaderProcessor("剩余天数", "day");
+    public static HeaderProcessor memberHeader = new HeaderProcessor("人数", "member");
+
+    private static final HeaderProcessor[] headers = {
+            dateHeader, nameHeader, storyHeader, releaseMaxHeader, releaseHeader, releaseMinHeader, manDayHeader, dayHeader, memberHeader
+    };
+
+    /**
+     * Return the headers
+     * @return
+     */
+    public static HeaderProcessor[] getHeaders() {
+        return headers;
+    }
+
+    /**
+     * Create the team processors
+     * @return
+     */
+    public static Map<String, TeamProcessor> createTeamProcessors() {
+        TeamEnum[] teams = TeamEnum.getList();
+        if (teams == null || teams.length <= 0) {
+            return null;
+        }
+
+        Map<String, TeamProcessor> teamProcessors = new HashMap<String, TeamProcessor>();
+        for (TeamEnum team : teams) {
+            if (!TeamEnum.AA.getName().equalsIgnoreCase(team.getName())) { // Skip AA
+                teamProcessors.put(team.getName(), new TeamProcessor(team));
+            }
+        }
+        return teamProcessors;
+    }
+
+    private TeamEnum team;
+    private Map<String, Integer> dateStoryMap = new HashMap<String, Integer>();
+
+    public TeamProcessor(TeamEnum team) {
+        this.team = team;
+    }
+
+    /**
+     * Count the story
+     * @param date
+     */
+    public void countStory(String date) {
+        Integer count = null;
+        if (!dateStoryMap.containsKey(date) || dateStoryMap.get(date) == null) {
+            count = new Integer(1);
+        } else {
+            count = dateStoryMap.get(date) + 1;
+        }
+        dateStoryMap.put(date, count);
+    }
+
+    /**
+     * Fill the data
+     * @param sheet
+     * @param row
+     * @return
+     */
+    public int fillRow(XSSFSheet sheet, int row) {
+        if (sheet == null || row < 0 || team == null || dateStoryMap == null || dateStoryMap.size() <= 0) {
+            return 0;
+        }
+
+        // Walk through the data
+        int newRow = row;
+        for (Map.Entry<String, Integer> dateStory : dateStoryMap.entrySet()) {
+            String date = dateStory.getKey();
+            Integer story = dateStory.getValue();
+            if (story == null) {
+                story = 0;
+            }
+
+            // Check the date
+            int day = 3, manDay = team.getMember() * day;
+
+            Row r = sheet.createRow(newRow++);
+            int col = 0;
+            r.createCell(col++).setCellValue(date);
+            r.createCell(col++).setCellValue(team.getName());
+            r.createCell(col++).setCellValue(story);
+            r.createCell(col++).setCellValue(team.getReleaseMax());
+            r.createCell(col++).setCellValue((double) story / manDay);
+            r.createCell(col++).setCellValue(team.getReleaseMin());
+            r.createCell(col++).setCellValue(manDay);
+            r.createCell(col++).setCellValue(day);
+            r.createCell(col++).setCellValue(team.getMember());
+        }
+
+        return newRow - row;
+    }
+}
