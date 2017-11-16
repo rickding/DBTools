@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ReleaseDateProcessorTest {
-    ReleaseDateProcessor processor = new ReleaseDateProcessor();
+    private ReleaseDateProcessor processor = new ReleaseDateProcessor();
 
     @Test
     public void testProcess() {

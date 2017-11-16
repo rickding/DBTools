@@ -3,6 +3,8 @@ package jira.tool.report;
 import dbtools.common.file.FileUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
+import jira.tool.report.db.DB;
+import jira.tool.report.mapper.UserMapper;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFPivotTable;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -21,6 +23,8 @@ public class App {
 
     public static void main(String[] args) {
 //        ExcelSample.excelSample();
+
+//        DB.getDb().getMapper(UserMapper.class).countUser();
 
         System.out.println("Specify the file or folder to update:");
         System.out.println("folder or file: one or multiple ones, to specify the one(s) to update.");

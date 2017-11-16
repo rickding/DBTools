@@ -18,6 +18,7 @@ public class ProjectNameProcessor implements ValueProcessor {
         put("分销", "商家线");
         put("用户线", "商家线");
         put("雨燕平台", "基础架构");
+        put("应用架构", "应用架构(one-instance)");
     }};
 
     public boolean accept(String header) {
