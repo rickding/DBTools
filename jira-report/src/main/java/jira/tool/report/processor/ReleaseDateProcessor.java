@@ -7,7 +7,20 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class ReleaseDateProcessor implements ValueProcessor {
-    private Date today = DateUtils.parse(DateUtils.format(new Date(), "yyyy-MM-dd"), "yyyy-MM-dd");
+    public static Date today = DateUtils.parse(DateUtils.format(new Date(), "yyyy-MM-dd"), "yyyy-MM-dd");
+
+    public static int getLeftDays(String date1, String date2) {
+        int days = DateUtils.diffDays(date1, date2);
+
+        // Adjust the release date
+        days += 2;
+        if (days < 0) {
+            days = 0;
+        } else if (days > 5) {
+            days = 5;
+        }
+        return days;
+    }
 
     public boolean accept(String header) {
         return !StrUtils.isEmpty(header) && header.equalsIgnoreCase(HeaderProcessor.releaseDateHeader.getName());

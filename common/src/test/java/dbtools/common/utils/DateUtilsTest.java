@@ -14,6 +14,25 @@ import java.util.Map;
  */
 public class DateUtilsTest {
     @Test
+    public void testGetLeftDays() {
+        Map<String[], Integer> mapIO = new HashMap<String[], Integer>(){{
+            put(new String[]{null, ""}, 0);
+            put(new String[]{"", ""}, 0);
+            put(new String[]{"", "yyyy/MM/dd HH:mm"}, 0);
+            put(new String[]{"2017-12-07 18:00", null}, 0);
+            put(new String[]{"2017-12-09 18:00", "2017-12-09 12:00"}, 0);
+            put(new String[]{"2017-12-07", "2017-12-09"}, -2);
+            put(new String[]{"2018-01-02", "2017-12-30"}, 3);
+        }};
+
+        for (Map.Entry<String[], Integer> io : mapIO.entrySet()) {
+            String[] params = io.getKey();
+            int ret = DateUtils.diffDays(params[0], params[1]);
+            Assert.assertEquals(io.getValue().intValue(), ret);
+        }
+    }
+
+    @Test
     public void testParse() {
         Map<String[], String[]> mapIO = new HashMap<String[], String[]>(){{
             put(new String[]{null, ""}, new String[]{"", ""});

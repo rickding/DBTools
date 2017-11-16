@@ -7,8 +7,8 @@ import java.util.List;
 
 public class HeaderProcessor {
     public static HeaderProcessor releaseDateHeader = new HeaderProcessor("Release Date", "到期日");
-    public static HeaderProcessor projectKeyHeader = new HeaderProcessor("Project Key", "Project key");
-    public static HeaderProcessor projectNameHeader = new HeaderProcessor("Project Name", "Project name");
+    public static HeaderProcessor teamKeyHeader = new HeaderProcessor("Project Key", "Project key");
+    public static HeaderProcessor teamNameHeader = new HeaderProcessor("Project Name", "Project name");
     public static HeaderProcessor issueKeyHeader = new HeaderProcessor("Issue Key", "Issue key");
     public static HeaderProcessor projectHeader = new HeaderProcessor("Project", "Custom field (所属项目)");
 

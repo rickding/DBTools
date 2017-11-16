@@ -1,5 +1,6 @@
 package jira.tool.report.processor;
 
+import dbtools.common.utils.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -8,6 +9,33 @@ import java.util.Map;
 
 public class ReleaseDateProcessorTest {
     private ReleaseDateProcessor processor = new ReleaseDateProcessor();
+
+    @Test
+    public void testGetLeftDays() {
+        Map<String[], Integer> mapIO = new HashMap<String[], Integer>(){{
+            put(new String[]{"2017-11-15", "2017-11-15"}, 2);
+            put(new String[]{"2017-11-15", "2017-11-16"}, 1);
+            put(new String[]{"2017-11-15", "2017-11-17"}, 0);
+            put(new String[]{"2017-11-15", "2017-11-18"}, 0);
+            put(new String[]{"2017-11-15", "2017-11-19"}, 0);
+            put(new String[]{"2017-11-15", "2017-11-20"}, 0);
+            put(new String[]{"2017-11-15", "2017-11-21"}, 0);
+
+            put(new String[]{"2017-11-22", "2017-11-15"}, 5);
+            put(new String[]{"2017-11-22", "2017-11-16"}, 5);
+            put(new String[]{"2017-11-22", "2017-11-17"}, 5);
+            put(new String[]{"2017-11-22", "2017-11-18"}, 5);
+            put(new String[]{"2017-11-22", "2017-11-19"}, 5);
+            put(new String[]{"2017-11-22", "2017-11-20"}, 4);
+            put(new String[]{"2017-11-22", "2017-11-21"}, 3);
+        }};
+
+        for (Map.Entry<String[], Integer> io : mapIO.entrySet()) {
+            String[] params = io.getKey();
+            int ret = ReleaseDateProcessor.getLeftDays(params[0], params[1]);
+            Assert.assertEquals(io.getValue().intValue(), ret);
+        }
+    }
 
     @Test
     public void testProcess() {

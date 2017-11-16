@@ -1,6 +1,6 @@
 package jira.tool.report.processor;
 
-import org.apache.poi.ss.usermodel.Cell;
+import dbtools.common.utils.DateUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
@@ -81,6 +81,8 @@ public class TeamProcessor {
             return 0;
         }
 
+        String today = DateUtils.format(ReleaseDateProcessor.today, "yyyy-MM-dd");
+
         // Walk through the data
         int newRow = row;
         for (Map.Entry<String, Integer> dateStory : dateStoryMap.entrySet()) {
@@ -91,15 +93,17 @@ public class TeamProcessor {
             }
 
             // Check the date
-            int day = 3, manDay = team.getMember() * day;
+            int day = ReleaseDateProcessor.getLeftDays(date, today);
+            int manDay = team.getMember() * day;
 
+            // Write data
             Row r = sheet.createRow(newRow++);
             int col = 0;
             r.createCell(col++).setCellValue(date);
             r.createCell(col++).setCellValue(team.getName());
             r.createCell(col++).setCellValue(story);
             r.createCell(col++).setCellValue(team.getReleaseMax());
-            r.createCell(col++).setCellValue((double) story / manDay);
+            r.createCell(col++).setCellValue(manDay == 0 ? 0.0 : (double) story / manDay);
             r.createCell(col++).setCellValue(team.getReleaseMin());
             r.createCell(col++).setCellValue(manDay);
             r.createCell(col++).setCellValue(day);

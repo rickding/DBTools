@@ -28,8 +28,9 @@ public class App {
 
         Date time_start = new Date();
         Set<String> filePaths = new HashSet<String>() {{
+            add(".\\");
 //            add("C:\\Work\\doc\\30-项目-PMO\\PMO报表\\Jira统计日报");
-            add("C:\\Work\\doc\\30-项目-PMO\\PMO报表\\交付计划");
+//            add("C:\\Work\\doc\\30-项目-PMO\\PMO报表\\交付计划");
         }};
 
         if (args != null) {

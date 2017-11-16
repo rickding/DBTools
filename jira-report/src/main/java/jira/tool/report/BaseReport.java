@@ -44,8 +44,8 @@ public class BaseReport {
     // Configure the headers
     protected List<HeaderProcessor> newHeaders = new ArrayList<HeaderProcessor>() {{
         add(HeaderProcessor.releaseDateHeader);
-        add(HeaderProcessor.projectKeyHeader);
-        add(HeaderProcessor.projectNameHeader);
+        add(HeaderProcessor.teamKeyHeader);
+        add(HeaderProcessor.teamNameHeader);
         add(HeaderProcessor.issueKeyHeader);
         add(HeaderProcessor.projectHeader);
     }};
@@ -209,7 +209,7 @@ public class BaseReport {
         // row label
         pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.projectHeader));
         // col label
-        pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.projectNameHeader));
+        pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.teamNameHeader));
         // sum up
         pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, newHeaders.indexOf(HeaderProcessor.issueKeyHeader));
         // add filter

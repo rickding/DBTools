@@ -38,4 +38,13 @@ public class DateUtils {
 
         return null;
     }
+
+    public static int diffDays(String date1, String date2) {
+        Date d1 = DateUtils.parse(date1, "yyyy-MM-dd");
+        Date d2 = DateUtils.parse(date2, "yyyy-MM-dd");
+        if (d1 == null || d2 == null) {
+            return 0;
+        }
+        return (int) (d1.getTime() - d2.getTime()) / (1000 * 3600 * 24);
+    }
 }

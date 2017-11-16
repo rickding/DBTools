@@ -2,7 +2,6 @@ package jira.tool.report;
 
 import dbtools.common.utils.StrUtils;
 import jira.tool.report.processor.HeaderProcessor;
-import jira.tool.report.processor.TeamEnum;
 import jira.tool.report.processor.TeamProcessor;
 import org.apache.poi.ss.usermodel.DataConsolidateFunction;
 import org.apache.poi.ss.usermodel.Row;
@@ -10,7 +9,6 @@ import org.apache.poi.xssf.usermodel.XSSFPivotTable;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +36,7 @@ public class ReleasePlanReport extends BaseReport {
         // row label
         pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.releaseDateHeader));
         // col label
-        pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.projectNameHeader));
+        pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.teamNameHeader));
         // sum up
         pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, newHeaders.indexOf(HeaderProcessor.issueKeyHeader));
         // add filter
@@ -68,7 +66,7 @@ public class ReleasePlanReport extends BaseReport {
         rowStart++; // Skip headers
 
         int dateIndex = newHeaders.indexOf(HeaderProcessor.releaseDateHeader);
-        int teamIndex = newHeaders.indexOf(HeaderProcessor.projectNameHeader);
+        int teamIndex = newHeaders.indexOf(HeaderProcessor.teamNameHeader);
 
         while (rowStart++ <= rowEnd) {
             Row row = sheet.getRow(rowStart);
