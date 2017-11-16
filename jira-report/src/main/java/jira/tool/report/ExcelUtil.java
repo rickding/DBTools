@@ -35,6 +35,34 @@ public class ExcelUtil {
     }
 
     /**
+     * Return cell area: row start, row end, col start, col end
+     *
+     * @param sheet
+     * @return
+     */
+    public static int[] getCellArea(XSSFSheet sheet) {
+        if (sheet == null) {
+            return null;
+        }
+
+        int rowStart = sheet.getFirstRowNum();
+        int rowEnd = sheet.getLastRowNum();
+        int colStart = 0;
+        int colEnd = 0;
+
+        while (true) {
+            Row row = sheet.getRow(rowStart);
+            if (row != null) {
+                colStart = row.getFirstCellNum();
+                colEnd = row.getLastCellNum();
+                break;
+            }
+        }
+
+        return new int[]{rowStart, rowEnd, colStart, colEnd};
+    }
+
+    /**
      * Fill cells with value
      * @param sheet
      * @param row
@@ -89,7 +117,7 @@ public class ExcelUtil {
      * @param sheet   name of a excel file that will store the transformed file
      * @param csvFile name of a csv file that will be transformed
      */
-    public final static Cell[] csvToExcel(XSSFSheet sheet, String csvFile, BaseReport report) {
+    public final static Cell[] fillSheetFromCsv(XSSFSheet sheet, String csvFile, BaseReport report) {
         if (sheet == null || StrUtils.isEmpty(csvFile)) {
             return null;
         }
