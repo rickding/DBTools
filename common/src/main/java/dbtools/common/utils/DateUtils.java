@@ -45,6 +45,6 @@ public class DateUtils {
         if (d1 == null || d2 == null) {
             return 0;
         }
-        return (int) (d1.getTime() - d2.getTime()) / (1000 * 3600 * 24);
+        return (int) ((d1.getTime() - d2.getTime()) / (1000 * 3600 * 24));
     }
 }

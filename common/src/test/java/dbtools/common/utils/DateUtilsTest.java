@@ -23,6 +23,7 @@ public class DateUtilsTest {
             put(new String[]{"2017-12-09 18:00", "2017-12-09 12:00"}, 0);
             put(new String[]{"2017-12-07", "2017-12-09"}, -2);
             put(new String[]{"2018-01-02", "2017-12-30"}, 3);
+            put(new String[]{"2017-12-13", "2017-11-16"}, 27);
         }};
 
         for (Map.Entry<String[], Integer> io : mapIO.entrySet()) {

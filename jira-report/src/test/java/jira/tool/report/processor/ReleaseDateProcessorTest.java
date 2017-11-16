@@ -28,6 +28,8 @@ public class ReleaseDateProcessorTest {
             put(new String[]{"2017-11-22", "2017-11-19"}, 5);
             put(new String[]{"2017-11-22", "2017-11-20"}, 4);
             put(new String[]{"2017-11-22", "2017-11-21"}, 3);
+
+            put(new String[]{"2017-12-13", "2017-11-16"}, 5);
         }};
 
         for (Map.Entry<String[], Integer> io : mapIO.entrySet()) {
