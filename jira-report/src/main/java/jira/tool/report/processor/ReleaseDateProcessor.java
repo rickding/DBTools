@@ -2,6 +2,7 @@ package jira.tool.report.processor;
 
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
+import org.apache.poi.ss.usermodel.Cell;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -26,8 +27,11 @@ public class ReleaseDateProcessor implements ValueProcessor {
         return !StrUtils.isEmpty(header) && header.equalsIgnoreCase(HeaderProcessor.releaseDateHeader.getName());
     }
 
-    public String process(String value) {
-        return process(value, true);
+    public void process(String value, Cell cell) {
+        if (cell == null) {
+            return;
+        }
+        cell.setCellValue(process(value, true));
     }
 
     public String process(String value, boolean checkDelay) {

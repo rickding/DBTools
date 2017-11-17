@@ -178,15 +178,16 @@ public class ExcelUtil {
 
                 int col = 0;
                 for (HeaderProcessor header : headers) {
+                    Cell cell = r.createCell(col++);
+
                     // Read and convert the value
                     String v = reader.get(header.getValue());
                     if (!StrUtils.isEmpty(v) && report != null) {
-                        v = report.processValue(header.getName(), v);
+                        report.processValue(header.getName(), v, cell);
+                    } else {
+                        // Save value to cell directly
+                        cell.setCellValue(v);
                     }
-
-                    // Save value to cell
-                    Cell cell = r.createCell(col++);
-                    cell.setCellValue(v);
                     botRight = cell;
                 }
             }

@@ -11,6 +11,7 @@ public class HeaderProcessor {
     public static HeaderProcessor teamNameHeader = new HeaderProcessor("Project Name", "Project name");
     public static HeaderProcessor issueKeyHeader = new HeaderProcessor("Issue Key", "Issue key");
     public static HeaderProcessor projectHeader = new HeaderProcessor("Project", "Custom field (所属项目)");
+    public static HeaderProcessor timeHeader = new HeaderProcessor("Time", "剩余时间");
 
     private String name;
     private String value;

@@ -5,6 +5,7 @@ import jira.tool.report.processor.HeaderProcessor;
 import jira.tool.report.processor.ReleaseDateProcessor;
 import jira.tool.report.processor.TeamNameProcessor;
 import jira.tool.report.processor.ValueProcessor;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataConsolidateFunction;
 import org.apache.poi.ss.util.AreaReference;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -75,6 +76,10 @@ public class BaseReport {
      * Fill data sheets from csv files
      */
     public XSSFSheet[] fillDataSheets(XSSFWorkbook wb, String[] csvFiles) {
+        if (csvFiles == null || csvFiles.length <= 0 || wb == null) {
+            return null;
+        }
+
         XSSFSheet dataSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("data"));
 
         // Base data from csv file
@@ -142,18 +147,21 @@ public class BaseReport {
      * @param value
      * @return
      */
-    protected String processValue(String header, String value) {
-        if (valueProcessors == null || valueProcessors.size() <= 0) {
-            return value;
+    protected void processValue(String header, String value, Cell cell) {
+        if (valueProcessors == null || valueProcessors.size() <= 0 || cell == null) {
+            return;
         }
 
         // Call the processors
         for (ValueProcessor valueProcessor : valueProcessors) {
             if (valueProcessor.accept(header)) {
-                value = valueProcessor.process(value);
+                valueProcessor.process(value, cell);
+                return;
             }
         }
-        return value;
+
+        // Set directly
+        cell.setCellValue(value);
     }
 
     /**

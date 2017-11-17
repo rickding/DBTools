@@ -1,6 +1,7 @@
 package jira.tool.report.processor;
 
 import dbtools.common.utils.StrUtils;
+import org.apache.poi.ss.usermodel.Cell;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,10 +26,15 @@ public class TeamNameProcessor implements ValueProcessor {
         return !StrUtils.isEmpty(header) && header.equalsIgnoreCase("Project name");
     }
 
-    public String process(String value) {
-        if (values.containsKey(value)) {
-            return values.get(value);
+    public void process(String value, Cell cell) {
+        if (cell == null) {
+            return;
         }
-        return value;
+
+        if (values.containsKey(value)) {
+            cell.setCellValue(values.get(value));
+        } else {
+            cell.setCellValue(value);
+        }
     }
 }
