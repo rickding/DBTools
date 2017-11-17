@@ -47,7 +47,7 @@ public class ReleasePlanReport extends BaseReport {
         pivotTable.addReportFilter(newHeaders.indexOf(HeaderProcessor.projectHeader));
     }
 
-    private TeamProcessor[] calculateData(XSSFWorkbook wb) {
+    protected TeamProcessor[] calculateData(XSSFWorkbook wb) {
         if (wb == null) {
             return null;
         }
@@ -71,6 +71,7 @@ public class ReleasePlanReport extends BaseReport {
 
         int dateIndex = newHeaders.indexOf(HeaderProcessor.releaseDateHeader);
         int teamIndex = newHeaders.indexOf(HeaderProcessor.teamNameHeader);
+        int timeIndex = newHeaders.indexOf(HeaderProcessor.timeHeader);
 
         while (rowStart++ <= rowEnd) {
             Row row = sheet.getRow(rowStart);
@@ -81,10 +82,12 @@ public class ReleasePlanReport extends BaseReport {
                 if (dateIndex >= colStart && dateIndex <= colEnd && teamIndex >= colStart && teamIndex <= colEnd) {
                     String date = row.getCell(dateIndex).getStringCellValue();
                     String team = row.getCell(teamIndex).getStringCellValue();
+                    double time = row.getCell(timeIndex).getNumericCellValue();
 
                     // Find the team
                     if (teamProcessors.containsKey(team)) {
-                        teamProcessors.get(team).countStory(date);
+                        TeamProcessor processor = teamProcessors.get(team);
+                        processor.countStory(date, time);
                     }
                 }
             }

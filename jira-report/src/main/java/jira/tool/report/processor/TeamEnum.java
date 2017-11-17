@@ -10,7 +10,7 @@ public enum TeamEnum {
     JY("交易线", "", 8),
     SJ("商家线", "", 10),
     SP("商品线", "", 8),
-    AA("应用架构", "", 1),
+    AA("应用架构", "", 0),
     BI("智能平台", "", 7);
 
     private static final TeamEnum[] list = {
@@ -19,6 +19,14 @@ public enum TeamEnum {
 
     public static TeamEnum[] getList() {
         return list;
+    }
+
+    public static int getTotalMember() {
+        int count = 0;
+        for (TeamEnum team : getList()) {
+            count += team.member;
+        }
+        return count;
     }
 
     private String name;

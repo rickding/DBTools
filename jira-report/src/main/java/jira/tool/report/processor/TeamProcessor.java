@@ -11,6 +11,7 @@ public class TeamProcessor {
     public static HeaderProcessor dateHeader = new HeaderProcessor("交付日期", "date");
     public static HeaderProcessor nameHeader = new HeaderProcessor("产品线", "name");
     public static HeaderProcessor storyHeader = new HeaderProcessor("计划交付数量", "story");
+    public static HeaderProcessor timeHeader = new HeaderProcessor("Story估时人天", "time");
     public static HeaderProcessor releaseMaxHeader = new HeaderProcessor("交付/人天警戒值上限", "releaseMax");
     public static HeaderProcessor releaseHeader = new HeaderProcessor("交付/人天", "release");
     public static HeaderProcessor releaseMinHeader = new HeaderProcessor("交付/人天警戒值下限", "releaseMin");
@@ -19,7 +20,7 @@ public class TeamProcessor {
     public static HeaderProcessor memberHeader = new HeaderProcessor("人数", "member");
 
     private static final HeaderProcessor[] headers = {
-            dateHeader, nameHeader, storyHeader, releaseMaxHeader, releaseHeader, releaseMinHeader, manDayHeader, dayHeader, memberHeader
+            dateHeader, nameHeader, storyHeader, timeHeader, releaseMaxHeader, releaseHeader, releaseMinHeader, manDayHeader, dayHeader, memberHeader
     };
 
     /**
@@ -49,8 +50,24 @@ public class TeamProcessor {
         return teamProcessors;
     }
 
+    public static int getWorkDays(TeamProcessor[] teams) {
+        if (null == teams || teams.length < 0) {
+            return 0;
+        }
+
+        int maxCount = Integer.MIN_VALUE;
+        for (TeamProcessor team : teams) {
+            int tmp = team.getWorkDays();
+            if (maxCount < tmp) {
+                maxCount = tmp;
+            }
+        }
+        return maxCount;
+    }
+
     private TeamEnum team;
     private Map<String, Integer> dateStoryMap = new HashMap<String, Integer>();
+    private Map<String, Double> dateTimeMap = new HashMap<String, Double>();
 
     public TeamProcessor(TeamEnum team) {
         this.team = team;
@@ -60,7 +77,7 @@ public class TeamProcessor {
      * Count the story
      * @param date
      */
-    public void countStory(String date) {
+    public void countStory(String date, double time) {
         Integer count = null;
         if (!dateStoryMap.containsKey(date) || dateStoryMap.get(date) == null) {
             count = new Integer(1);
@@ -68,6 +85,28 @@ public class TeamProcessor {
             count = dateStoryMap.get(date) + 1;
         }
         dateStoryMap.put(date, count);
+
+        Double totalTime = null;
+        if (!dateTimeMap.containsKey(date) || dateTimeMap.get(date) == null) {
+            totalTime = new Double(0.0);
+        } else {
+            totalTime = dateTimeMap.get(date) + time;
+        }
+        dateTimeMap.put(date, totalTime);
+    }
+
+    public int getWorkDays() {
+        if (dateStoryMap == null || dateStoryMap.size() <= 0) {
+            return 0;
+        }
+
+        int count = 0;
+        String today = DateUtils.format(ReleaseDateProcessor.today, "yyyy-MM-dd");
+        for (Map.Entry<String, Integer> dateStory : dateStoryMap.entrySet()) {
+            String date = dateStory.getKey();
+            count += ReleaseDateProcessor.getLeftWorkDays(date, today);
+        }
+        return count;
     }
 
     /**
@@ -93,7 +132,7 @@ public class TeamProcessor {
             }
 
             // Check the date
-            int day = ReleaseDateProcessor.getLeftDays(date, today);
+            int day = ReleaseDateProcessor.getLeftWorkDays(date, today);
             int manDay = team.getMember() * day;
 
             // Write data
@@ -102,6 +141,7 @@ public class TeamProcessor {
             r.createCell(col++).setCellValue(date);
             r.createCell(col++).setCellValue(team.getName());
             r.createCell(col++).setCellValue(story);
+            r.createCell(col++).setCellValue(dateTimeMap.get(date));
             r.createCell(col++).setCellValue(team.getReleaseMax());
             r.createCell(col++).setCellValue(manDay == 0 ? 0.0 : (double) story / manDay);
             r.createCell(col++).setCellValue(team.getReleaseMin());

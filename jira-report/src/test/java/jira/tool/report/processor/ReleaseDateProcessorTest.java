@@ -1,6 +1,5 @@
 package jira.tool.report.processor;
 
-import dbtools.common.utils.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -34,7 +33,7 @@ public class ReleaseDateProcessorTest {
 
         for (Map.Entry<String[], Integer> io : mapIO.entrySet()) {
             String[] params = io.getKey();
-            int ret = ReleaseDateProcessor.getLeftDays(params[0], params[1]);
+            int ret = ReleaseDateProcessor.getLeftWorkDays(params[0], params[1]);
             Assert.assertEquals(io.getValue().intValue(), ret);
         }
     }

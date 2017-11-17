@@ -182,7 +182,7 @@ public class ExcelUtil {
 
                     // Read and convert the value
                     String v = reader.get(header.getValue());
-                    if (!StrUtils.isEmpty(v) && report != null) {
+                    if (report != null) {
                         report.processValue(header.getName(), v, cell);
                     } else {
                         // Save value to cell directly

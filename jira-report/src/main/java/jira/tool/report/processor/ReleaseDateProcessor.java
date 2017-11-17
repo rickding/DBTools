@@ -10,7 +10,7 @@ import java.util.Date;
 public class ReleaseDateProcessor implements ValueProcessor {
     public static Date today = DateUtils.parse(DateUtils.format(new Date(), "yyyy-MM-dd"), "yyyy-MM-dd");
 
-    public static int getLeftDays(String date1, String date2) {
+    public static int getLeftWorkDays(String date1, String date2) {
         int days = DateUtils.diffDays(date1, date2);
 
         // Adjust the release date
