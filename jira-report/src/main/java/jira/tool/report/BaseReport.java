@@ -18,10 +18,11 @@ import java.util.*;
 
 public class BaseReport {
     public static Map<String, BaseReport> reportMap = new HashMap<String, BaseReport>() {{
-        put("未完成开发", new ReleasePlanReport());
-        put("计划交付", new WeeklyReport());
         put("到期日没有或超过4周", new NoDueDateReport());
         put("完成开发待提测", new DevFinishReport());
+        put("未完成开发", new ReleasePlanReport());
+        put("计划交付", new WeeklyReleasePlanReport());
+        put("计划开始", new StartPlanReport());
     }};
 
     /**
@@ -91,7 +92,11 @@ public class BaseReport {
             // Pivot table
             XSSFSheet graphSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("graph"));
             XSSFPivotTable pivotTable = createPivotTable(graphSheet, dataSheet, newHeaders.size() - 1);
-            decoratePivotTable(pivotTable);
+            if (pivotTable != null) {
+                decoratePivotTable(pivotTable);
+            } else {
+                wb.removeSheetAt(wb.getSheetIndex(graphSheet));
+            }
         }
         return new XSSFSheet[]{dataSheet};
     }

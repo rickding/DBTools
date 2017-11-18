@@ -2,6 +2,7 @@ package jira.tool.report;
 
 import jira.tool.report.processor.HeaderProcessor;
 import jira.tool.report.processor.TeamProcessor;
+import jira.tool.report.processor.TimeProcessor;
 import org.apache.poi.ss.usermodel.DataConsolidateFunction;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFPivotTable;
@@ -14,6 +15,9 @@ import java.util.Map;
 
 public class ReleasePlanReport extends BaseReport {
     public ReleasePlanReport() {
+        valueProcessors.add(new TimeProcessor());
+        newHeaders.add(HeaderProcessor.timeHeader);
+
         mapSheetName.put("data", "未完成开发");
         mapSheetName.put("graph", "各项目交付节奏表");
         mapSheetName.put("data2", "人力库存");
@@ -73,7 +77,7 @@ public class ReleasePlanReport extends BaseReport {
         int teamIndex = newHeaders.indexOf(HeaderProcessor.teamNameHeader);
         int timeIndex = newHeaders.indexOf(HeaderProcessor.timeHeader);
 
-        while (rowStart++ <= rowEnd) {
+        while (rowStart <= rowEnd) {
             Row row = sheet.getRow(rowStart);
             if (row != null) {
                 int colStart = row.getFirstCellNum();
@@ -91,6 +95,7 @@ public class ReleasePlanReport extends BaseReport {
                     }
                 }
             }
+            rowStart++;
         }
 
         TeamProcessor[] tmp = new TeamProcessor[teamProcessors.size()];
@@ -132,20 +137,31 @@ public class ReleasePlanReport extends BaseReport {
             // Pivot table
             XSSFSheet graphSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("graph2"));
             XSSFPivotTable pivotTable = createPivotTable(graphSheet, dataSheet, TeamProcessor.getHeaders().length - 1);
-
-            // Decorate graph
-            // row label
-            List<HeaderProcessor> list = Arrays.asList(TeamProcessor.getHeaders());
-            pivotTable.addRowLabel(list.indexOf(TeamProcessor.dateHeader));
-            pivotTable.addRowLabel(list.indexOf(TeamProcessor.nameHeader));
-
-            // sum up
-            pivotTable.addColumnLabel(DataConsolidateFunction.SUM, list.indexOf(TeamProcessor.releaseMaxHeader));
-            pivotTable.addColumnLabel(DataConsolidateFunction.SUM, list.indexOf(TeamProcessor.releaseHeader));
-//        pivotTable.addColumnLabel(DataConsolidateFunction.SUM, list.indexOf(TeamProcessor.releaseMinHeader));
-
-            pivotTable.addReportFilter(list.indexOf(TeamProcessor.releaseMinHeader));
+            if (pivotTable != null) {
+                decoratePivotTable2(pivotTable);
+            } else {
+                wb.removeSheetAt(wb.getSheetIndex(graphSheet));
+            }
         }
         return new XSSFSheet[]{dataSheet};
+    }
+
+    protected void decoratePivotTable2(XSSFPivotTable pivotTable) {
+        if (pivotTable == null) {
+            return;
+        }
+
+        // Decorate graph
+        // row label
+        List<HeaderProcessor> list = Arrays.asList(TeamProcessor.getHeaders());
+        pivotTable.addRowLabel(list.indexOf(TeamProcessor.dateHeader));
+        pivotTable.addRowLabel(list.indexOf(TeamProcessor.nameHeader));
+
+        // sum up
+        pivotTable.addColumnLabel(DataConsolidateFunction.SUM, list.indexOf(TeamProcessor.releaseMaxHeader));
+        pivotTable.addColumnLabel(DataConsolidateFunction.SUM, list.indexOf(TeamProcessor.releaseHeader));
+//        pivotTable.addColumnLabel(DataConsolidateFunction.SUM, list.indexOf(TeamProcessor.releaseMinHeader));
+
+        pivotTable.addReportFilter(list.indexOf(TeamProcessor.releaseMinHeader));
     }
 }
