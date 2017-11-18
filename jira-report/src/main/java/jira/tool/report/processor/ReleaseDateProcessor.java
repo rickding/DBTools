@@ -24,7 +24,7 @@ public class ReleaseDateProcessor implements ValueProcessor {
     }
 
     public boolean accept(String header) {
-        return !StrUtils.isEmpty(header) && header.equalsIgnoreCase(HeaderProcessor.releaseDateHeader.getName());
+        return !StrUtils.isEmpty(header) && header.equalsIgnoreCase(HeaderProcessor.dueDateHeader.getName());
     }
 
     public void process(String value, Cell cell) {

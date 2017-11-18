@@ -8,10 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TeamProcessor {
-    public static HeaderProcessor dateHeader = new HeaderProcessor("交付日期", "date");
+    public static HeaderProcessor dateHeader = new HeaderProcessor("到期日", "date");
     public static HeaderProcessor nameHeader = new HeaderProcessor("产品线", "name");
-    public static HeaderProcessor storyHeader = new HeaderProcessor("计划交付数量", "story");
-    public static HeaderProcessor timeHeader = new HeaderProcessor("Story估时人天", "time");
+    public static HeaderProcessor storyHeader = new HeaderProcessor("Story数量", "story");
+    public static HeaderProcessor timeHeader = new HeaderProcessor("Story估时（人天）", "estimation");
     public static HeaderProcessor releaseMaxHeader = new HeaderProcessor("交付/人天警戒值上限", "releaseMax");
     public static HeaderProcessor releaseHeader = new HeaderProcessor("交付/人天", "release");
     public static HeaderProcessor releaseMinHeader = new HeaderProcessor("交付/人天警戒值下限", "releaseMin");

@@ -85,7 +85,7 @@ public class ReleaseDateProcessorTest {
             put("", false);
             put("header name", false);
             put("Release Date", true);
-            put(HeaderProcessor.releaseDateHeader.getName(), true);
+            put(HeaderProcessor.dueDateHeader.getName(), true);
         }};
 
         for (Map.Entry<String, Boolean> io : mapIO.entrySet()) {

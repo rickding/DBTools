@@ -2,7 +2,6 @@ package jira.tool.report;
 
 import jira.tool.report.processor.HeaderProcessor;
 import jira.tool.report.processor.TeamProcessor;
-import jira.tool.report.processor.TimeProcessor;
 import org.apache.poi.ss.usermodel.DataConsolidateFunction;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFPivotTable;
@@ -15,9 +14,6 @@ import java.util.Map;
 
 public class ReleasePlanReport extends BaseReport {
     public ReleasePlanReport() {
-        valueProcessors.add(new TimeProcessor());
-        newHeaders.add(HeaderProcessor.timeHeader);
-
         mapSheetName.put("data", "未完成开发");
         mapSheetName.put("graph", "各项目交付节奏表");
         mapSheetName.put("data2", "人力库存");
@@ -42,7 +38,7 @@ public class ReleasePlanReport extends BaseReport {
 
         // configure the pivot table
         // row label
-        pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.releaseDateHeader));
+        pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.dueDateHeader));
         // col label
         pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.teamNameHeader));
         // sum up
@@ -73,7 +69,7 @@ public class ReleasePlanReport extends BaseReport {
         int rowEnd = sheet.getLastRowNum();
         rowStart++; // Skip headers
 
-        int dateIndex = newHeaders.indexOf(HeaderProcessor.releaseDateHeader);
+        int dateIndex = newHeaders.indexOf(HeaderProcessor.dueDateHeader);
         int teamIndex = newHeaders.indexOf(HeaderProcessor.teamNameHeader);
         int timeIndex = newHeaders.indexOf(HeaderProcessor.timeHeader);
 
@@ -86,7 +82,12 @@ public class ReleasePlanReport extends BaseReport {
                 if (dateIndex >= colStart && dateIndex <= colEnd && teamIndex >= colStart && teamIndex <= colEnd) {
                     String date = row.getCell(dateIndex).getStringCellValue();
                     String team = row.getCell(teamIndex).getStringCellValue();
-                    double time = row.getCell(timeIndex).getNumericCellValue();
+                    double time = 0.0;
+                    try {
+                        time = row.getCell(timeIndex).getNumericCellValue();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                     // Find the team
                     if (teamProcessors.containsKey(team)) {

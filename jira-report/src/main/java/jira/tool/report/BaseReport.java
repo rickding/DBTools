@@ -1,10 +1,7 @@
 package jira.tool.report;
 
 import dbtools.common.utils.StrUtils;
-import jira.tool.report.processor.HeaderProcessor;
-import jira.tool.report.processor.ReleaseDateProcessor;
-import jira.tool.report.processor.TeamNameProcessor;
-import jira.tool.report.processor.ValueProcessor;
+import jira.tool.report.processor.*;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataConsolidateFunction;
 import org.apache.poi.ss.util.AreaReference;
@@ -46,15 +43,17 @@ public class BaseReport {
     protected List<ValueProcessor> valueProcessors = new ArrayList<ValueProcessor>() {{
         add(new TeamNameProcessor());
         add(new ReleaseDateProcessor());
+        add(new TimeProcessor());
     }};
 
     // Configure the headers
     protected List<HeaderProcessor> newHeaders = new ArrayList<HeaderProcessor>() {{
-        add(HeaderProcessor.releaseDateHeader);
+        add(HeaderProcessor.dueDateHeader);
         add(HeaderProcessor.teamKeyHeader);
         add(HeaderProcessor.teamNameHeader);
         add(HeaderProcessor.issueKeyHeader);
         add(HeaderProcessor.projectHeader);
+        add(HeaderProcessor.timeHeader);
     }};
 
     // Configure the sheet name
@@ -116,7 +115,7 @@ public class BaseReport {
      * @return
      */
     public String getTemplateName() {
-        return "template.xlsx";
+        return null; // "template.xlsx";
     }
 
     public boolean isTemplateUsed() {
@@ -242,6 +241,6 @@ public class BaseReport {
         // sum up
         pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, newHeaders.indexOf(HeaderProcessor.issueKeyHeader));
         // add filter
-        pivotTable.addReportFilter(newHeaders.indexOf(HeaderProcessor.releaseDateHeader));
+        pivotTable.addReportFilter(newHeaders.indexOf(HeaderProcessor.dueDateHeader));
     }
 }
