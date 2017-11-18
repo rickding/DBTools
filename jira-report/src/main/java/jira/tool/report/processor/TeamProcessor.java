@@ -1,11 +1,14 @@
 package jira.tool.report.processor;
 
 import dbtools.common.utils.DateUtils;
+import dbtools.common.utils.StrUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class TeamProcessor {
     public static HeaderProcessor dateHeader = new HeaderProcessor("到期日", "date");
@@ -25,6 +28,7 @@ public class TeamProcessor {
 
     /**
      * Return the headers
+     *
      * @return
      */
     public static HeaderProcessor[] getHeaders() {
@@ -33,6 +37,7 @@ public class TeamProcessor {
 
     /**
      * Create the team processors
+     *
      * @return
      */
     public static Map<String, TeamProcessor> createTeamProcessors() {
@@ -43,9 +48,29 @@ public class TeamProcessor {
 
         Map<String, TeamProcessor> teamProcessors = new HashMap<String, TeamProcessor>();
         for (TeamEnum team : teams) {
+            if (TeamEnum.AA.getName().equalsIgnoreCase(team.getName())) {
+                continue;
+            }
             teamProcessors.put(team.getName().toLowerCase(), new TeamProcessor(team));
         }
         return teamProcessors;
+    }
+
+    public static void fillWholeDate(TeamProcessor[] teams) {
+        if (teams == null || teams.length < 0) {
+            return;
+        }
+
+        Set<String> dateSet = new HashSet<String>();
+        for (TeamProcessor team : teams) {
+            dateSet.addAll(team.dateStoryMap.keySet());
+        }
+
+        if (dateSet.size() > 0) {
+            for (TeamProcessor team : teams) {
+                team.fillDate(dateSet);
+            }
+        }
     }
 
     public static int getWorkDays(TeamProcessor[] teams) {
@@ -73,6 +98,7 @@ public class TeamProcessor {
 
     /**
      * Count the story
+     *
      * @param date
      */
     public void countStory(String date, double time) {
@@ -93,6 +119,25 @@ public class TeamProcessor {
         dateTimeMap.put(date, totalTime);
     }
 
+    public void fillDate(Set<String> dateSet) {
+        if (dateSet == null || dateSet.size() <= 0) {
+            return;
+        }
+
+        for (String date : dateSet) {
+            if (!StrUtils.isEmpty(date)) {
+                if (!dateStoryMap.containsKey(date)) {
+                    dateStoryMap.put(date, new Integer(0));
+                    System.out.printf("Fill date to story map: %s, %s\n", team.getName(), date);
+                }
+                if (!dateTimeMap.containsKey(date)) {
+                    dateTimeMap.put(date, new Double(0.0));
+                    System.out.printf("Fill date to estimation map: %s, %s\n", team.getName(), date);
+                }
+            }
+        }
+    }
+
     public int getWorkDays() {
         if (dateStoryMap == null || dateStoryMap.size() <= 0) {
             return 0;
@@ -109,6 +154,7 @@ public class TeamProcessor {
 
     /**
      * Fill the data
+     *
      * @param sheet
      * @param row
      * @return

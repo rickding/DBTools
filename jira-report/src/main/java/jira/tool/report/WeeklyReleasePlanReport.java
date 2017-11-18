@@ -17,6 +17,8 @@ public class WeeklyReleasePlanReport extends ReleasePlanReport {
         mapSheetName.put("graph", "客户统计");
         mapSheetName.put("data2", "人力库存");
         mapSheetName.put("graph2", "人天统计");
+
+//        fillWholeDate = true;
     }
 
     @Override

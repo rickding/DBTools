@@ -16,6 +16,7 @@ import java.util.Map;
 public class ReleasePlanReport extends BaseReport {
     protected HeaderProcessor dateProcessor = HeaderProcessor.dueDateHeader;
     protected boolean isPlanDate = true;
+    protected boolean fillWholeDate = false;
 
     public ReleasePlanReport() {
         mapSheetName.put("data", "未完成开发");
@@ -108,6 +109,11 @@ public class ReleasePlanReport extends BaseReport {
 
         TeamProcessor[] tmp = new TeamProcessor[teamProcessors.size()];
         teamProcessors.values().toArray(tmp);
+
+        // Check the whole dates and fill them
+        if (fillWholeDate) {
+            TeamProcessor.fillWholeDate(tmp);
+        }
         return tmp;
     }
 
