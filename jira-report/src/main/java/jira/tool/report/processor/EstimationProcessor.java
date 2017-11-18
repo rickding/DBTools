@@ -5,7 +5,7 @@ import org.apache.poi.ss.usermodel.Cell;
 
 public class EstimationProcessor implements ValueProcessor {
     public boolean accept(String header) {
-        return !StrUtils.isEmpty(header) && header.equalsIgnoreCase(HeaderProcessor.timeHeader.getName());
+        return !StrUtils.isEmpty(header) && header.equalsIgnoreCase(HeaderProcessor.estimationHeader.getName());
     }
 
     public void process(String value, Cell cell) {

@@ -15,11 +15,12 @@ import java.util.*;
 
 public class BaseReport {
     public static Map<String, BaseReport> reportMap = new HashMap<String, BaseReport>() {{
-        put("到期日没有或超过4周", new NoDueDateReport());
-        put("完成开发待提测", new DevFinishReport());
+        put("到期日没有或超过4周", new DailyDueDateReport());
+        put("完成开发待提测", new DailyDevFinishReport());
         put("未完成开发", new ReleasePlanReport());
         put("计划交付", new WeeklyReleasePlanReport());
-        put("计划开始", new StartPlanReport());
+        put("计划开始", new WeeklyStartPlanReport());
+        put("人天交付运营能力", new WeeklyReleaseReport());
     }};
 
     /**
@@ -55,7 +56,7 @@ public class BaseReport {
         add(HeaderProcessor.teamNameHeader);
         add(HeaderProcessor.issueKeyHeader);
         add(HeaderProcessor.projectHeader);
-        add(HeaderProcessor.timeHeader);
+        add(HeaderProcessor.estimationHeader);
     }};
 
     // Configure the sheet name

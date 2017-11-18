@@ -43,9 +43,7 @@ public class TeamProcessor {
 
         Map<String, TeamProcessor> teamProcessors = new HashMap<String, TeamProcessor>();
         for (TeamEnum team : teams) {
-            if (!TeamEnum.AA.getName().equalsIgnoreCase(team.getName())) { // Skip AA
-                teamProcessors.put(team.getName(), new TeamProcessor(team));
-            }
+            teamProcessors.put(team.getName().toLowerCase(), new TeamProcessor(team));
         }
         return teamProcessors;
     }
@@ -115,7 +113,7 @@ public class TeamProcessor {
      * @param row
      * @return
      */
-    public int fillRow(XSSFSheet sheet, int row) {
+    public int fillRow(XSSFSheet sheet, int row, boolean isPlanDate) {
         if (sheet == null || row < 0 || team == null || dateStoryMap == null || dateStoryMap.size() <= 0) {
             return 0;
         }
@@ -132,7 +130,7 @@ public class TeamProcessor {
             }
 
             // Check the date
-            int day = SprintDateProcessor.getLeftWorkDays(date, today);
+            int day = isPlanDate ? SprintDateProcessor.getLeftWorkDays(date, today) : 5;
             int manDay = team.getMember() * day;
 
             // Write data

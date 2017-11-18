@@ -1,5 +1,6 @@
 package jira.tool.report;
 
+import dbtools.common.utils.StrUtils;
 import jira.tool.report.processor.HeaderProcessor;
 import jira.tool.report.processor.TeamProcessor;
 import org.apache.poi.ss.usermodel.DataConsolidateFunction;
@@ -13,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 
 public class ReleasePlanReport extends BaseReport {
+    protected HeaderProcessor dateProcessor = HeaderProcessor.dueDateHeader;
+    protected boolean isPlanDate = true;
+
     public ReleasePlanReport() {
         mapSheetName.put("data", "未完成开发");
         mapSheetName.put("graph", "各项目交付节奏表");
@@ -69,9 +73,9 @@ public class ReleasePlanReport extends BaseReport {
         int rowEnd = sheet.getLastRowNum();
         rowStart++; // Skip headers
 
-        int dateIndex = newHeaders.indexOf(HeaderProcessor.dueDateHeader);
+        int dateIndex = newHeaders.indexOf(dateProcessor);
         int teamIndex = newHeaders.indexOf(HeaderProcessor.teamNameHeader);
-        int timeIndex = newHeaders.indexOf(HeaderProcessor.timeHeader);
+        int timeIndex = newHeaders.indexOf(HeaderProcessor.estimationHeader);
 
         while (rowStart <= rowEnd) {
             Row row = sheet.getRow(rowStart);
@@ -90,9 +94,12 @@ public class ReleasePlanReport extends BaseReport {
                     }
 
                     // Find the team
-                    if (teamProcessors.containsKey(team)) {
-                        TeamProcessor processor = teamProcessors.get(team);
-                        processor.countStory(date, time);
+                    if (!StrUtils.isEmpty(team)) {
+                        team = team.toLowerCase();
+                        if (teamProcessors.containsKey(team)) {
+                            TeamProcessor processor = teamProcessors.get(team);
+                            processor.countStory(date, time);
+                        }
                     }
                 }
             }
@@ -128,7 +135,7 @@ public class ReleasePlanReport extends BaseReport {
 
         // Data
         for (TeamProcessor team : teams) {
-            row += team.fillRow(dataSheet, row);
+            row += team.fillRow(dataSheet, row, isPlanDate);
         }
 
         if (!isTemplateUsed()) {

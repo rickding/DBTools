@@ -12,7 +12,7 @@ public class HeaderProcessor {
     public static HeaderProcessor teamNameHeader = new HeaderProcessor("Team Name", "Project name");
     public static HeaderProcessor issueKeyHeader = new HeaderProcessor("Issue Key", "Issue key");
     public static HeaderProcessor projectHeader = new HeaderProcessor("Project", "Custom field (所属项目)");
-    public static HeaderProcessor timeHeader = new HeaderProcessor("Estimation Man-day", "剩余时间");
+    public static HeaderProcessor estimationHeader = new HeaderProcessor("Estimation Man-day", "剩余时间");
 
     private String name;
     private String value;

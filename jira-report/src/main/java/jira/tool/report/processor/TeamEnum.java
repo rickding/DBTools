@@ -2,6 +2,7 @@ package jira.tool.report.processor;
 
 public enum TeamEnum {
     APP("APP", "", 9),
+    SAAS("SaaS", "", 0),
     CW("财务线", "", 5),
     DG("导购线", "", 14),
     DD("订单线", "", 7),
@@ -14,7 +15,7 @@ public enum TeamEnum {
     BI("智能平台", "", 7);
 
     private static final TeamEnum[] list = {
-            APP, CW, DG, DD, GYL, BA, JY, SJ, SP, AA, BI
+            APP, SAAS, CW, DG, DD, GYL, BA, JY, SJ, SP, AA, BI
     };
 
     public static TeamEnum[] getList() {
