@@ -41,14 +41,16 @@ public class BaseReport {
 
     // Configure the processors
     protected List<ValueProcessor> valueProcessors = new ArrayList<ValueProcessor>() {{
+        add(new SprintDateProcessor());
+        add(new ResolveDateProcessor());
         add(new TeamNameProcessor());
-        add(new ReleaseDateProcessor());
-        add(new TimeProcessor());
+        add(new EstimationProcessor());
     }};
 
     // Configure the headers
     protected List<HeaderProcessor> newHeaders = new ArrayList<HeaderProcessor>() {{
         add(HeaderProcessor.dueDateHeader);
+        add(HeaderProcessor.resolveDateHeader);
         add(HeaderProcessor.teamKeyHeader);
         add(HeaderProcessor.teamNameHeader);
         add(HeaderProcessor.issueKeyHeader);

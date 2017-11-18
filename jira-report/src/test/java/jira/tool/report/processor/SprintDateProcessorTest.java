@@ -6,8 +6,8 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReleaseDateProcessorTest {
-    private ReleaseDateProcessor processor = new ReleaseDateProcessor();
+public class SprintDateProcessorTest {
+    private SprintDateProcessor processor = new SprintDateProcessor();
 
     @Test
     public void testGetLeftDays() {
@@ -33,7 +33,7 @@ public class ReleaseDateProcessorTest {
 
         for (Map.Entry<String[], Integer> io : mapIO.entrySet()) {
             String[] params = io.getKey();
-            int ret = ReleaseDateProcessor.getLeftWorkDays(params[0], params[1]);
+            int ret = SprintDateProcessor.getLeftWorkDays(params[0], params[1]);
             Assert.assertEquals(io.getValue().intValue(), ret);
         }
     }
@@ -42,6 +42,8 @@ public class ReleaseDateProcessorTest {
     public void testProcess() {
         Map<String, String> mapIO = new HashMap<String, String>() {{
             put(null, null);
+            put("2017/10/24 12:00", "2017/10/24 12:00");
+
             put("2018/01/04 12:00 上午", "2018-01-10");
             put("2018/01/03 12:00 上午", "2018-01-10");
             put("2018/01/02 12:00 上午", "2018-01-03");
@@ -84,7 +86,7 @@ public class ReleaseDateProcessorTest {
             put(null, false);
             put("", false);
             put("header name", false);
-            put("Release Date", true);
+            put("Due Date", true);
             put(HeaderProcessor.dueDateHeader.getName(), true);
         }};
 

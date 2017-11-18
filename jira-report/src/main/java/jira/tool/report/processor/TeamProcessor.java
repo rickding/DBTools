@@ -101,10 +101,10 @@ public class TeamProcessor {
         }
 
         int count = 0;
-        String today = DateUtils.format(ReleaseDateProcessor.today, "yyyy-MM-dd");
+        String today = DateUtils.format(SprintDateProcessor.today, "yyyy-MM-dd");
         for (Map.Entry<String, Integer> dateStory : dateStoryMap.entrySet()) {
             String date = dateStory.getKey();
-            count += ReleaseDateProcessor.getLeftWorkDays(date, today);
+            count += SprintDateProcessor.getLeftWorkDays(date, today);
         }
         return count;
     }
@@ -120,7 +120,7 @@ public class TeamProcessor {
             return 0;
         }
 
-        String today = DateUtils.format(ReleaseDateProcessor.today, "yyyy-MM-dd");
+        String today = DateUtils.format(SprintDateProcessor.today, "yyyy-MM-dd");
 
         // Walk through the data
         int newRow = row;
@@ -132,7 +132,7 @@ public class TeamProcessor {
             }
 
             // Check the date
-            int day = ReleaseDateProcessor.getLeftWorkDays(date, today);
+            int day = SprintDateProcessor.getLeftWorkDays(date, today);
             int manDay = team.getMember() * day;
 
             // Write data

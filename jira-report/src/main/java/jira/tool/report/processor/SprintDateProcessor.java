@@ -7,7 +7,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import java.util.Calendar;
 import java.util.Date;
 
-public class ReleaseDateProcessor implements ValueProcessor {
+public class SprintDateProcessor implements ValueProcessor {
     public static Date today = DateUtils.parse(DateUtils.format(new Date(), "yyyy-MM-dd"), "yyyy-MM-dd");
 
     public static int getLeftWorkDays(String date1, String date2) {
@@ -23,6 +23,10 @@ public class ReleaseDateProcessor implements ValueProcessor {
         return days;
     }
 
+    protected String format = "yyyy/MM/dd HH:mm a";
+    protected int sprintEnd = Calendar.WEDNESDAY;
+    protected boolean adjustDelay = true;
+
     public boolean accept(String header) {
         return !StrUtils.isEmpty(header) && header.equalsIgnoreCase(HeaderProcessor.dueDateHeader.getName());
     }
@@ -31,15 +35,15 @@ public class ReleaseDateProcessor implements ValueProcessor {
         if (cell == null) {
             return;
         }
-        cell.setCellValue(process(value, true));
+        cell.setCellValue(process(value, adjustDelay));
     }
 
-    public String process(String value, boolean checkDelay) {
+    public String process(String value, boolean adjustDelay) {
         if (StrUtils.isEmpty(value)) {
             return value;
         }
 
-        Date date = DateUtils.parse(value, "yyyy/MM/dd HH:mm a");
+        Date date = DateUtils.parse(value, format);
         if (date == null) {
             return value;
         }
@@ -48,7 +52,7 @@ public class ReleaseDateProcessor implements ValueProcessor {
         date = DateUtils.parse(DateUtils.format(date, "yyyy-MM-dd"), "yyyy-MM-dd");
 
         // The delay will be set as today
-        if (checkDelay && date.compareTo(today) < 0) {
+        if (adjustDelay && date.compareTo(today) < 0) {
             date = today;
         }
 
@@ -57,7 +61,7 @@ public class ReleaseDateProcessor implements ValueProcessor {
         cal.setTime(date);
 
         int day = cal.get(Calendar.DAY_OF_WEEK);
-        day = (Calendar.WEDNESDAY - day + 7) % 7;
+        day = (sprintEnd - day + 7) % 7;
         if (day == 0) {
             day = 7;
         }
