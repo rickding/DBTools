@@ -7,7 +7,7 @@ import java.util.Calendar;
 public class ResolveDateProcessor extends SprintDateProcessor {
     public ResolveDateProcessor() {
         format = "yyyy/MM/dd HH:mm";
-        sprintEnd = Calendar.FRIDAY;
+        sprintEnd = Calendar.SATURDAY;
         adjustDelay = false;
     }
 

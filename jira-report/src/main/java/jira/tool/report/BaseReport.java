@@ -18,9 +18,9 @@ public class BaseReport {
         put("到期日没有或超过4周", new DailyDueDateReport());
         put("完成开发待提测", new DailyDevFinishReport());
         put("未完成开发", new ReleasePlanReport());
-        put("计划交付", new WeeklyReleasePlanReport());
-        put("计划开始", new WeeklyStartPlanReport());
-        put("人天交付运营能力", new WeeklyReleaseReport());
+        put("4，周报，计划交付", new WeeklyReleasePlanReport());
+        put("5，周报，计划开始", new WeeklyStartPlanReport());
+        put("6，周报，人天交付运营能力", new WeeklyReleaseReport());
     }};
 
     /**
@@ -44,6 +44,7 @@ public class BaseReport {
     protected List<ValueProcessor> valueProcessors = new ArrayList<ValueProcessor>() {{
         add(new SprintDateProcessor());
         add(new ResolveDateProcessor());
+        add(new StartDateProcessor());
         add(new TeamNameProcessor());
         add(new EstimationProcessor());
     }};
@@ -52,6 +53,7 @@ public class BaseReport {
     protected List<HeaderProcessor> newHeaders = new ArrayList<HeaderProcessor>() {{
         add(HeaderProcessor.dueDateHeader);
         add(HeaderProcessor.resolveDateHeader);
+        add(HeaderProcessor.startDateHeader);
         add(HeaderProcessor.teamKeyHeader);
         add(HeaderProcessor.teamNameHeader);
         add(HeaderProcessor.issueKeyHeader);

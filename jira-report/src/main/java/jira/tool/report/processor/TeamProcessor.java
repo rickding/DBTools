@@ -14,11 +14,11 @@ public class TeamProcessor {
     public static HeaderProcessor dateHeader = new HeaderProcessor("到期日", "date");
     public static HeaderProcessor nameHeader = new HeaderProcessor("产品线", "name");
     public static HeaderProcessor storyHeader = new HeaderProcessor("Story数量", "story");
-    public static HeaderProcessor timeHeader = new HeaderProcessor("Story估时（人天）", "estimation");
+    public static HeaderProcessor timeHeader = new HeaderProcessor("Story估时人天", "estimation");
     public static HeaderProcessor releaseMaxHeader = new HeaderProcessor("交付/人天警戒值上限", "releaseMax");
     public static HeaderProcessor releaseHeader = new HeaderProcessor("交付/人天", "release");
     public static HeaderProcessor releaseMinHeader = new HeaderProcessor("交付/人天警戒值下限", "releaseMin");
-    public static HeaderProcessor manDayHeader = new HeaderProcessor("剩余人天", "manDay");
+    public static HeaderProcessor manDayHeader = new HeaderProcessor("库存人天", "manDay");
     public static HeaderProcessor dayHeader = new HeaderProcessor("剩余天数", "day");
     public static HeaderProcessor memberHeader = new HeaderProcessor("人数", "member");
 
@@ -132,7 +132,6 @@ public class TeamProcessor {
                 }
                 if (!dateTimeMap.containsKey(date)) {
                     dateTimeMap.put(date, new Double(0.0));
-                    System.out.printf("Fill date to estimation map: %s, %s\n", team.getName(), date);
                 }
             }
         }

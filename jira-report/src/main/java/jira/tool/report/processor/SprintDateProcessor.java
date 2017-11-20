@@ -24,7 +24,7 @@ public class SprintDateProcessor implements ValueProcessor {
     }
 
     protected String format = "yyyy/MM/dd HH:mm a";
-    protected int sprintEnd = Calendar.WEDNESDAY;
+    protected int sprintEnd = Calendar.SATURDAY;
     protected boolean adjustDelay = true;
 
     public boolean accept(String header) {
