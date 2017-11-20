@@ -3,14 +3,12 @@ package jira.tool.report;
 import jira.tool.report.processor.HeaderProcessor;
 import jira.tool.report.processor.TeamProcessor;
 import org.apache.poi.ss.usermodel.DataConsolidateFunction;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFPivotTable;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class WeeklyReleaseReport extends ReleasePlanReport {
     public WeeklyReleaseReport() {
