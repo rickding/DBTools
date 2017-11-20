@@ -1,4 +1,4 @@
-package jira.tool.report;
+package jira.tool.ea;
 
 import dbtools.common.file.ExcelUtil;
 import dbtools.common.file.FileUtils;
@@ -7,7 +7,6 @@ import dbtools.common.utils.StrUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -19,18 +18,13 @@ public class App {
     public static String Folder_name = "";
 
     public static void main(String[] args) {
-//        ExcelSample.excelSample();
-//        DB.getDb().getMapper(UserMapper.class).countUser();
-
         System.out.println("Specify the file or folder to update:");
         System.out.println("folder or file: one or multiple ones, to specify the one(s) to update.");
 
         Date time_start = new Date();
         Set<String> filePaths = new HashSet<String>() {{
-            add(".\\");
-//            add("C:\\Work\\doc\\30-项目-PMO\\PMO报表\\Jira统计日报");
-//            add("C:\\Work\\doc\\30-项目-PMO\\PMO报表\\交付计划");
-//            add("C:\\Work\\doc\\30-项目-PMO\\PMO报表\\PMO周报");
+//            add(".\\");
+            add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹");
         }};
 
         if (args != null) {
@@ -53,29 +47,13 @@ public class App {
 
             // Update and save
             for (File f : files) {
-                BaseReport report = BaseReport.getReport(f.getName());
-                String templateName = report.getTemplateName();
-
-                XSSFWorkbook wb = null;
-                if (StrUtils.isEmpty(templateName)) {
-                    wb = new XSSFWorkbook();
-                } else {
-                    // Open the template
-                    templateName = String.format("%s\\%s", filePath, templateName);
-                    try {
-                        wb = new XSSFWorkbook(templateName);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
+                XSSFWorkbook wb = new XSSFWorkbook();
                 if (wb == null) {
                     continue;
                 }
 
                 // Data
-                report.fillDataSheets(wb, new String[] {f.getPath()});
-                report.fillDataSheets(wb);
+                ExcelUtil.fillSheetFromCsv(wb.createSheet(), f.getPath());
 
                 // Save file
                 String outputFileName = FileUtils.getOutputFileName(file, f, File_Ext, File_Name, Folder_name);

@@ -1,5 +1,6 @@
 package jira.tool.report;
 
+import dbtools.common.file.ExcelUtil;
 import dbtools.common.utils.StrUtils;
 import jira.tool.report.processor.*;
 import org.apache.poi.ss.usermodel.Cell;
@@ -88,7 +89,7 @@ public class BaseReport {
         XSSFSheet dataSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("data"));
 
         // Base data from csv file
-        ExcelUtil.fillSheetFromCsv(dataSheet, csvFiles[0], this);
+        ExcelUtilEx.fillSheetFromCsv(dataSheet, csvFiles[0], this);
 
         if (!isTemplateUsed()) {
             decorateDataSheet(dataSheet);

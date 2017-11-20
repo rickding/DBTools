@@ -1,8 +1,7 @@
-package jira.tool.report;
+package dbtools.common.file;
 
 import com.csvreader.CsvReader;
 import dbtools.common.utils.StrUtils;
-import jira.tool.report.processor.HeaderProcessor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -134,7 +133,7 @@ public class ExcelUtil {
      * @param sheet   name of a excel file that will store the transformed file
      * @param csvFile name of a csv file that will be transformed
      */
-    public final static Cell[] fillSheetFromCsv(XSSFSheet sheet, String csvFile, BaseReport report) {
+    public final static Cell[] fillSheetFromCsv(XSSFSheet sheet, String csvFile) {
         if (sheet == null || StrUtils.isEmpty(csvFile)) {
             return null;
         }
@@ -157,18 +156,11 @@ public class ExcelUtil {
         try {
             // Read and add new headers
             reader.readHeaders();
-            String[] strHeaders = reader.getHeaders();
-
-            HeaderProcessor[] headers = null;
-            if (report != null) {
-                headers = report.processHeaders(strHeaders);
-            } else {
-                headers = HeaderProcessor.fromStrings(strHeaders);
-            }
+            String[] headers = reader.getHeaders();
 
             // Save the headers
             int row = 0;
-            Cell[] cells = fillRow(sheet, row++, HeaderProcessor.toStrings(headers));
+            Cell[] cells = fillRow(sheet, row++, headers);
             topLeft = cells == null || cells.length < 1 ? null : cells[0];
 
             // Save the data
@@ -177,17 +169,14 @@ public class ExcelUtil {
                 Row r = sheet.createRow(row++);
 
                 int col = 0;
-                for (HeaderProcessor header : headers) {
+                for (String header : headers) {
                     Cell cell = r.createCell(col++);
 
                     // Read and convert the value
-                    String v = reader.get(header.getValue());
-                    if (report != null) {
-                        report.processValue(header.getName(), v, cell);
-                    } else {
-                        // Save value to cell directly
-                        cell.setCellValue(v);
-                    }
+                    String v = reader.get(header);
+
+                    // Save value to cell directly
+                    cell.setCellValue(v);
                     botRight = cell;
                 }
             }
