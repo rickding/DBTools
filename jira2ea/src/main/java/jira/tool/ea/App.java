@@ -4,6 +4,7 @@ import dbtools.common.file.ExcelUtil;
 import dbtools.common.file.FileUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
@@ -52,8 +53,12 @@ public class App {
                     continue;
                 }
 
-                // Data
-                ExcelUtil.fillSheetFromCsv(wb.createSheet(), f.getPath());
+                // Read file
+                XSSFSheet sheet = wb.createSheet(f.getName());
+                ExcelUtil.fillSheetFromCsv(sheet, f.getPath());
+
+                // Process
+                EA2Jira.process(sheet, wb);
 
                 // Save file
                 String outputFileName = FileUtils.getOutputFileName(file, f, File_Ext, File_Name, Folder_name);
