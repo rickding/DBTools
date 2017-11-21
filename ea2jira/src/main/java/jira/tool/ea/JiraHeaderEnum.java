@@ -20,6 +20,7 @@ public enum JiraHeaderEnum {
     QAFinishDate(13, "测试完成日期"), // DueDate
     DueDate(14, "到期日"), // DueDate
     Label(15, "标签"),
+    Importance(17, "重要性"),
     EAGUID(16, "EA-GUID"); // GUID
 
     public static Map<JiraHeaderEnum, EAHeaderEnum> JiraEAHeaderMap = new HashMap<JiraHeaderEnum, EAHeaderEnum>() {{
@@ -38,6 +39,7 @@ public enum JiraHeaderEnum {
         put(JiraHeaderEnum.QAFinishDate, EAHeaderEnum.DueDate); // DueDate
         put(JiraHeaderEnum.EAGUID, EAHeaderEnum.GUID);
         put(JiraHeaderEnum.Label, null);
+        put(JiraHeaderEnum.Importance, null);
         put(JiraHeaderEnum.Description, EAHeaderEnum.Notes);
     }};
 
@@ -47,6 +49,7 @@ public enum JiraHeaderEnum {
         put(JiraHeaderEnum.QA, "guoguilin"); // guoguilin
         put(JiraHeaderEnum.RequirementType, "产品化"); // 产品化
         put(JiraHeaderEnum.Label, "PMO-EA导入（禁止私动）");
+        put(JiraHeaderEnum.Importance, "100");
         put(JiraHeaderEnum.ProductDate, DateUtils.format(new Date(), Jira_Date_Format)); // now
         put(JiraHeaderEnum.RequirementDate, DateUtils.format(new Date(), Jira_Date_Format)); // now
     }};
