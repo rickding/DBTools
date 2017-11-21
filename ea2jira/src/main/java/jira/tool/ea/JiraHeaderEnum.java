@@ -41,12 +41,14 @@ public enum JiraHeaderEnum {
         put(JiraHeaderEnum.Description, EAHeaderEnum.Notes);
     }};
 
+    public static String Jira_Date_Format = "yyyy/MM/dd";
+
     public static Map<JiraHeaderEnum, String> JiraHeaderValueMap = new HashMap<JiraHeaderEnum, String>() {{
         put(JiraHeaderEnum.QA, "guoguilin"); // guoguilin
         put(JiraHeaderEnum.RequirementType, "产品化"); // 产品化
         put(JiraHeaderEnum.Label, "PMO-EA导入（禁止私动）");
-        put(JiraHeaderEnum.ProductDate, DateUtils.format(new Date(), "yyyy-MM-dd")); // now
-        put(JiraHeaderEnum.RequirementDate, DateUtils.format(new Date(), "yyyy-MM-dd")); // now
+        put(JiraHeaderEnum.ProductDate, DateUtils.format(new Date(), Jira_Date_Format)); // now
+        put(JiraHeaderEnum.RequirementDate, DateUtils.format(new Date(), Jira_Date_Format)); // now
     }};
 
     public static JiraHeaderEnum[] getSortedHeaders() {

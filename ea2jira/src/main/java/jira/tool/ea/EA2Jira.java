@@ -121,7 +121,7 @@ public class EA2Jira {
                             }
 
                             // Format date
-                            value = DateUtils.format(date, "yyyy-MM-dd");
+                            value = DateUtils.format(date, JiraHeaderEnum.Jira_Date_Format);
                             return value;
                         }
                     } catch (Exception e) {
