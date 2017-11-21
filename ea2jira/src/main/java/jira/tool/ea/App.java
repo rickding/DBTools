@@ -14,6 +14,7 @@ import java.util.*;
  * Hello world!
  */
 public class App {
+    public static String File_Prefix = "jira-transfer";
     public static String File_Ext = ".csv";
     public static String File_Name = ".xlsx";
     public static String Folder_name = "";
@@ -43,7 +44,7 @@ public class App {
         // Process files
         for (String filePath : filePaths) {
             File file = new File(filePath);
-            File[] files = FileUtils.findFiles(filePath, File_Ext, File_Name);
+            File[] files = FileUtils.findFiles(filePath, File_Prefix, File_Ext, File_Name);
             if (!file.exists() || files == null || files.length <= 0) {
                 continue;
             }

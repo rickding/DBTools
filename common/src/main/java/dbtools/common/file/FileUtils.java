@@ -37,7 +37,11 @@ public class FileUtils {
         return outputFileName;
     }
 
-    public static File[] findFiles(String filePath, final String fileExt, final String ignoreFileName) {
+    public static File[] findFiles(String filePath, String fileExt, String ignoreFilePostFix) {
+        return findFiles(filePath, null, fileExt, ignoreFilePostFix);
+    }
+
+    public static File[] findFiles(String filePath, final String fileNamePrefix, final String fileExt, final String ignoreFileName) {
         if (StrUtils.isEmpty(filePath)) {
             return null;
         }
@@ -58,8 +62,16 @@ public class FileUtils {
                     if (StrUtils.isEmpty(name)) {
                         return false;
                     }
+
                     String str = name.toLowerCase();
-                    return str.endsWith(fileExt) && !str.endsWith(ignoreFileName);
+                    if (!StrUtils.isEmpty(fileNamePrefix) && !str.startsWith(fileNamePrefix.toLowerCase())) {
+                        return false;
+                    }
+
+                    if (!StrUtils.isEmpty(fileExt) && !str.endsWith(fileExt)) {
+                        return false;
+                    }
+                    return StrUtils.isEmpty(ignoreFileName) || !str.endsWith(ignoreFileName.toLowerCase());
                 }
             });
         }
