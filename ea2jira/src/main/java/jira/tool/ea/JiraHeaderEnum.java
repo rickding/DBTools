@@ -1,5 +1,8 @@
 package jira.tool.ea;
 
+import dbtools.common.utils.DateUtils;
+
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,11 +32,22 @@ public enum JiraHeaderEnum {
         put(JiraHeaderEnum.Creator, EAHeaderEnum.Author);
         put(JiraHeaderEnum.Estimation, EAHeaderEnum.Estimation);
         put(JiraHeaderEnum.DueDate, EAHeaderEnum.DueDate);
-        put(JiraHeaderEnum.QA, null);
+        put(JiraHeaderEnum.QA, null); // guoguilin
         put(JiraHeaderEnum.Project, EAHeaderEnum.ParentKey);
-        put(JiraHeaderEnum.RequirementType, null);
-        put(JiraHeaderEnum.ProductDate, null);
+        put(JiraHeaderEnum.RequirementType, null); // 产品化
+        put(JiraHeaderEnum.ProductDate, null); // now
+        put(JiraHeaderEnum.RequirementDate, null); // now
+        put(JiraHeaderEnum.QAStartDate, EAHeaderEnum.DueDate); // DueDate - 2
+        put(JiraHeaderEnum.QAFinishDate, EAHeaderEnum.DueDate); // DueDate
+        put(JiraHeaderEnum.EAGUID, EAHeaderEnum.GUID);
         put(JiraHeaderEnum.Description, EAHeaderEnum.Notes);
+    }};
+
+    public static Map<JiraHeaderEnum, String> JiraHeaderValueMap = new HashMap<JiraHeaderEnum, String>() {{
+        put(JiraHeaderEnum.QA, "guoguilin"); // guoguilin
+        put(JiraHeaderEnum.RequirementType, "产品化"); // 产品化
+        put(JiraHeaderEnum.ProductDate, DateUtils.format(new Date(), "yyyy-MM-dd")); // now
+        put(JiraHeaderEnum.RequirementDate, DateUtils.format(new Date(), "yyyy-MM-dd")); // now
     }};
 
     private String code;

@@ -1,17 +1,17 @@
 package jira.tool.ea;
 
 import dbtools.common.file.ExcelUtil;
+import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class EA2Jira {
+    private static Date today = DateUtils.parse(DateUtils.format(new Date(), "yyyy-MM-dd"), "yyyy-MM-dd");
+
     private static Map<String, String> findPackages(XSSFSheet sheet, int rowStart, int rowEnd) {
         if (sheet == null || rowStart < 0 || rowStart > rowEnd) {
             return null;
@@ -38,6 +38,104 @@ public class EA2Jira {
         }
 
         return packageMap;
+    }
+
+    private static String processValue(JiraHeaderEnum jiraHeaderEnum, String value) {
+        if (jiraHeaderEnum == null || StrUtils.isEmpty(jiraHeaderEnum.getCode())) {
+            return value;
+        }
+
+        String jiraHeader = jiraHeaderEnum.getCode();
+
+        // Find the user name
+        for (JiraHeaderEnum tmp : new JiraHeaderEnum[] {JiraHeaderEnum.Developer, JiraHeaderEnum.Owner, JiraHeaderEnum.PM, JiraHeaderEnum.Creator}) {
+            if (jiraHeader.equalsIgnoreCase(tmp.getCode())) {
+                JiraUserEnum user = JiraUserEnum.findUser(value);
+                if (user == null) {
+                    System.out.printf("Error when find user: %s", value);
+                } else {
+                    return user.getName();
+                }
+            }
+        }
+
+        // Estimation
+        if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Estimation.getCode())) {
+            int base = 8 * 3600; // default as a day
+            double v = 1.0; // default as one
+            if (!StrUtils.isEmpty(value)) {
+                try {
+                    if (value.endsWith("h")) {
+                        v = Double.valueOf(value.substring(0, value.length() - 1));
+                        base = 3600;
+                    } else if (value.endsWith("d")) {
+                        v = Double.valueOf(value.substring(0, value.length() - 1));
+                        base = 8 * 3600;
+                    } else {
+                        v = Double.valueOf(value);
+                    }
+                } catch (Exception e) {
+                    System.out.printf("Error when process value: %s, %s\n", jiraHeader, value);
+                }
+                return String.format("%d", (int)(v * base));
+            }
+        }
+
+        // DueDate
+        for (JiraHeaderEnum tmp : new JiraHeaderEnum[] {JiraHeaderEnum.DueDate, JiraHeaderEnum.QAStartDate, JiraHeaderEnum.QAFinishDate}) {
+            if (jiraHeader.equalsIgnoreCase(tmp.getCode())) {
+                String[] formats = new String[] {
+                        "yyyyMMdd", "yyyy.MM.dd", "yyyy-MM-dd", "yyyy/MM/dd",
+                        "yyMMdd", "yy.MM.dd", "yy-MM-dd", "yy/MM/dd",
+                        "MMdd", "MM.dd", "MM-dd", "MM/dd"
+                };
+                for (String format : formats) {
+                    try {
+                        Date date = DateUtils.parse(value, format, false);
+                        if (date != null) {
+                            // Adjust the year if it's not set
+                            if (format.length() < 8) {
+                                String strDate = DateUtils.format(date, "MM-dd");
+                                int year = Integer.valueOf(DateUtils.format(today, "yyyy"));
+                                int month = Integer.valueOf(DateUtils.format(today, "MM"));
+                                if (month >= 12 && strDate.compareTo(DateUtils.format(today, "MM-dd")) < 0) {
+                                    year++;
+                                }
+                                date = DateUtils.parse(String.format("%4d-%s", year, strDate), "yyyy-MM-dd");
+                            }
+
+                            // QA start 2 days earlier
+                            if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.QAStartDate.getCode())) {
+                                int days = DateUtils.diffDays(date, today);
+                                if (days > 3) {
+                                    days = 2;
+                                } else if (days > 1) {
+                                    days = 1;
+                                } else {
+                                    days = 0;
+                                }
+
+                                if (days > 0) {
+                                    date = DateUtils.adjustDate(date, -days);
+                                }
+                            }
+
+                            // Format date
+                            value = DateUtils.format(date, "yyyy-MM-dd");
+                            return value;
+                        }
+                    } catch (Exception e) {
+                    }
+                }
+            }
+        }
+
+        // The specified values
+        if (JiraHeaderEnum.JiraHeaderValueMap.containsKey(jiraHeaderEnum)) {
+            return jiraHeaderEnum.JiraHeaderValueMap.get(jiraHeaderEnum);
+        }
+
+        return value;
     }
 
     public static void process(XSSFSheet sheet, XSSFWorkbook wb) {
@@ -69,22 +167,39 @@ public class EA2Jira {
                 }
 
                 // Fill jira data
+                String team = "Jira";
                 String[] values = new String[headerMap.size()];
                 int i = 0;
 
                 for (Map.Entry<JiraHeaderEnum, EAHeaderEnum> map : headerMap.entrySet()) {
-                    JiraHeaderEnum jiraHeader = map.getKey();
+                    JiraHeaderEnum jiraHeaderEnum = map.getKey();
+                    if (jiraHeaderEnum == null || StrUtils.isEmpty(jiraHeaderEnum.getCode())) {
+                        continue;
+                    }
 
-                    // Map the package as project
-                    String value = row.getCell(map.getValue().getIndex()).getStringCellValue();
-                    if (jiraHeader.getCode().equalsIgnoreCase(JiraHeaderEnum.Project.getCode())) {
+                    EAHeaderEnum eaHeader = map.getValue();
+                    String value = eaHeader == null ? null : row.getCell(eaHeader.getIndex()).getStringCellValue();
+                    value = processValue(jiraHeaderEnum, value);
+
+                    // Special values
+                    String jiraHeader = jiraHeaderEnum.getCode();
+                    if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Project.getCode())) {
+                        // Map the package as project
                         value = packageMap.get(value);
+                    } else if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Developer.getCode())) {
+                        // Team of the developer
+                        JiraUserEnum user = JiraUserEnum.findUser(value);
+                        if (user == null) {
+                            System.out.printf("Error when find user: %s", value);
+                        } else {
+                            team = user.getTeam();
+                        }
                     }
 
                     values[i++] = value;
                 }
 
-                String team = "Jira";
+                // Group as team
                 List<String[]> stroies = jiraValues.get(team);
                 if (stroies == null) {
                     stroies = new ArrayList<String[]>();
