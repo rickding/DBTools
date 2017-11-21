@@ -18,6 +18,8 @@ public class App {
     public static String File_Name = ".xlsx";
     public static String Folder_name = "";
 
+    public static String Sheet_EA = "ea";
+
     public static void main(String[] args) {
         System.out.println("Specify the file or folder to update:");
         System.out.println("folder or file: one or multiple ones, to specify the one(s) to update.");
@@ -54,7 +56,7 @@ public class App {
                 }
 
                 // Read file
-                XSSFSheet sheet = wb.createSheet(f.getName());
+                XSSFSheet sheet = ExcelUtil.getOrCreateSheet(wb, Sheet_EA);
                 ExcelUtil.fillSheetFromCsv(sheet, f.getPath());
 
                 // Process

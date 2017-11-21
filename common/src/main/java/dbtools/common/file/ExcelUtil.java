@@ -78,6 +78,31 @@ public class ExcelUtil {
         return new int[]{rowStart, rowEnd, colStart, colEnd};
     }
 
+    public static String[] getRowValues(XSSFSheet sheet, int row) {
+        if (sheet == null || row < 0) {
+            return null;
+        }
+
+        Row r = sheet.createRow(row);
+        if (r == null) {
+            return null;
+        }
+
+        int colStart = r.getFirstCellNum();
+        int colEnd = r.getLastCellNum();
+        if (colStart < 0 || colStart > colEnd) {
+            return null;
+        }
+
+        String[] values = new String[colEnd - colStart + 1];
+        for (int j = colStart; j < colEnd; j++) {
+            Cell cell = r.createCell(j);
+            values[j - colStart] = cell == null ? null : cell.getStringCellValue();
+        }
+
+        return values;
+    }
+
     /**
      * Fill cells with value
      * @param sheet
@@ -112,8 +137,12 @@ public class ExcelUtil {
             return null;
         }
 
-        Cell left = null, right = null;
         Row r = sheet.createRow(row);
+        if (r == null) {
+            return null;
+        }
+
+        Cell left = null, right = null;
         for (int j = 0; j < values.length; j++) {
             Cell cell = r.createCell(j);
             cell.setCellValue(values[j]);

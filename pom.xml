@@ -15,7 +15,7 @@
         <module>sql-updater</module>
         <module>csv-updater</module>
         <module>jira-report</module>
-        <module>jira2ea</module>
+        <module>ea2jira</module>
     </modules>
 
 </project>
