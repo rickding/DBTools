@@ -17,13 +17,21 @@ public enum JiraUserEnum {
 
     Zengfenghua("BI", "zengfenghua", new String[]{"曾风华"}),
     Kangyufeng("Trade", "kangyufeng", new String[]{"康玉峰"}),
+
+    Chenkaiqiang("Guide", "chenkaiqiang", new String[]{"陈开强"}),
+    Xiongwenqiang("Guide", "xiongwenqiang", new String[]{"熊文强"}),
     Zhaowei("Guide", "zhaowei", new String[]{"赵伟"}),
+    Hezhifeng("Guide", "hezhifeng", new String[]{"贺智峰"}),
+    Rongjianlong("Guide", "rongjianlong", new String[]{"戎剑龙"}),
+
     Gexingyuan("CWX", "gexingyuan", new String[]{"葛兴元"}),
     Jiangwenqi("SPX", "jiangwenqi", new String[]{"江文奇"});
 
     private static JiraUserEnum[] userArray = new JiraUserEnum[] {
             Luting, Caohong, Wangzhen, Zhangqie, Zhangtan, Qixiaosen,
-            Zengfenghua, Kangyufeng, Zhaowei, Gexingyuan, Jiangwenqi,
+            Zengfenghua, Kangyufeng,
+            Chenkaiqiang, Xiongwenqiang, Zhaowei, Hezhifeng, Rongjianlong,
+            Gexingyuan, Jiangwenqi,
     };
 
     public static JiraUserEnum findUser(String name) {

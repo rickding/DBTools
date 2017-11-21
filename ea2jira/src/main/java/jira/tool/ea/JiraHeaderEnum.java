@@ -2,27 +2,25 @@ package jira.tool.ea;
 
 import dbtools.common.utils.DateUtils;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public enum JiraHeaderEnum {
-    Title("主题"),
-    Developer("经办人"), // Alias
-    Owner("开发负责人"), // Alias
-    PM("产品负责人"), // Author
-    Creator("报告人"), // Author or the creator
-    Estimation("预估时间"), // Estimation
-    DueDate("到期日"), // DueDate
-    QA("测试负责人"), // guoguilin
-    Project("所属项目"), // Package (Parent key)
-    RequirementType("需求类型"), // 产品化
-    ProductDate("产品设计完成时间"), // Now
-    RequirementDate("需求提出时间"), // Now
-    QAStartDate("计划送测日期"), // DueDate - 2
-    QAFinishDate("测试完成日期"), // DueDate
-    EAGUID("EA-GUID"), // GUID
-    Description("描述"); // Notes
+    Project(1, "所属项目"), // Package (Parent key)
+    RequirementType(2, "需求类型"), // 产品化
+    Title(3, "主题"),
+    Creator(4, "报告人"), // Author or the creator
+    PM(5, "产品负责人"), // Author
+    Owner(6, "开发负责人"), // Alias
+    Developer(7, "经办人"), // Alias
+    Estimation(8, "预估时间"), // Estimation
+    DueDate(9, "到期日"), // DueDate
+    QA(10, "测试负责人"), // guoguilin
+    ProductDate(11, "产品设计完成时间"), // Now
+    RequirementDate(12, "需求提出时间"), // Now
+    QAStartDate(13, "计划送测日期"), // DueDate - 2
+    QAFinishDate(14, "测试完成日期"), // DueDate
+    EAGUID(15, "EA-GUID"), // GUID
+    Description(17, "描述"); // Notes
 
     public static Map<JiraHeaderEnum, EAHeaderEnum> JiraEAHeaderMap = new HashMap<JiraHeaderEnum, EAHeaderEnum>() {{
         put(JiraHeaderEnum.Title, EAHeaderEnum.Name);
@@ -50,9 +48,24 @@ public enum JiraHeaderEnum {
         put(JiraHeaderEnum.RequirementDate, DateUtils.format(new Date(), "yyyy-MM-dd")); // now
     }};
 
+    public static JiraHeaderEnum[] getSortedHeaders() {
+        Set<JiraHeaderEnum> headerSet = JiraEAHeaderMap.keySet();
+        JiraHeaderEnum[] headers = new JiraHeaderEnum[headerSet.size()];
+        headerSet.toArray(headers);
+
+        Arrays.sort(headers, new Comparator<JiraHeaderEnum>() {
+            public int compare(JiraHeaderEnum o1, JiraHeaderEnum o2) {
+                return o1.index - o2.index;
+            }
+        });
+        return headers;
+    }
+
+    private int index;
     private String code;
 
-    JiraHeaderEnum(String code) {
+    JiraHeaderEnum(int index, String code) {
+        this.index = index;
         this.code = code;
     }
 

@@ -52,7 +52,7 @@ public class EA2Jira {
             if (jiraHeader.equalsIgnoreCase(tmp.getCode())) {
                 JiraUserEnum user = JiraUserEnum.findUser(value);
                 if (user == null) {
-                    System.out.printf("Error when find user: %s", value);
+                    System.out.printf("Error when find user: %s\n", value);
                 } else {
                     return user.getName();
                 }
@@ -153,6 +153,7 @@ public class EA2Jira {
         // Find package firstly
         Map<String, String> packageMap = findPackages(sheet, rowStart, rowEnd);
         Map<JiraHeaderEnum, EAHeaderEnum> headerMap = JiraHeaderEnum.JiraEAHeaderMap;
+        JiraHeaderEnum[] jiraHeaders = JiraHeaderEnum.getSortedHeaders();
 
         // Data
         Map<String, List<String[]>> jiraValues = new HashMap<String, List<String[]>>();
@@ -166,18 +167,17 @@ public class EA2Jira {
                     continue;
                 }
 
-                // Fill jira data
+                // Fill jira dataMap.Entry<JiraHeaderEnum, EAHeaderEnum> map : headerMap.entrySet()
                 String team = "Jira";
                 String[] values = new String[headerMap.size()];
                 int i = 0;
 
-                for (Map.Entry<JiraHeaderEnum, EAHeaderEnum> map : headerMap.entrySet()) {
-                    JiraHeaderEnum jiraHeaderEnum = map.getKey();
+                for (JiraHeaderEnum jiraHeaderEnum : jiraHeaders) {
                     if (jiraHeaderEnum == null || StrUtils.isEmpty(jiraHeaderEnum.getCode())) {
                         continue;
                     }
 
-                    EAHeaderEnum eaHeader = map.getValue();
+                    EAHeaderEnum eaHeader = headerMap.get(jiraHeaderEnum);
                     String value = eaHeader == null ? null : row.getCell(eaHeader.getIndex()).getStringCellValue();
                     value = processValue(jiraHeaderEnum, value);
 
@@ -190,7 +190,7 @@ public class EA2Jira {
                         // Team of the developer
                         JiraUserEnum user = JiraUserEnum.findUser(value);
                         if (user == null) {
-                            System.out.printf("Error when find user: %s", value);
+                            System.out.printf("Error when find user: %s\n", value);
                         } else {
                             team = user.getTeam();
                         }
@@ -211,8 +211,8 @@ public class EA2Jira {
 
         String[] headers = new String[headerMap.size()];
         int i = 0;
-        for (Map.Entry<JiraHeaderEnum, EAHeaderEnum> map : headerMap.entrySet()) {
-            headers[i++] = map.getKey().getCode();
+        for (JiraHeaderEnum jiraHeader : jiraHeaders) {
+            headers[i++] = jiraHeader.getCode();
         }
 
         // Write to excel
