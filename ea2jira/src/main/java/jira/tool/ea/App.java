@@ -40,6 +40,7 @@ public class App {
         }
 
         List<String> projects = new ArrayList<String>();
+        String strToday = DateUtils.format(new Date(), "MMdd");
 
         // Process files
         for (String filePath : filePaths) {
@@ -51,6 +52,14 @@ public class App {
 
             // Update and save
             for (File f : files) {
+                // Check the date in file name
+                String fileName = f.getName();
+                int extIndex = fileName.indexOf(File_Ext);
+                String strDate = fileName.substring(extIndex - 4, extIndex);
+                if (strDate.compareTo(strToday) != 0) {
+                    continue;
+                }
+
                 XSSFWorkbook wb = new XSSFWorkbook();
                 if (wb == null) {
                     continue;
