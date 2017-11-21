@@ -48,7 +48,7 @@ public class EA2Jira {
         String jiraHeader = jiraHeaderEnum.getCode();
 
         // Find the user name
-        for (JiraHeaderEnum tmp : new JiraHeaderEnum[] {JiraHeaderEnum.Developer, JiraHeaderEnum.Owner, JiraHeaderEnum.PM, JiraHeaderEnum.Creator}) {
+        for (JiraHeaderEnum tmp : new JiraHeaderEnum[] {JiraHeaderEnum.Developer, JiraHeaderEnum.Owner, JiraHeaderEnum.PM}) {
             if (jiraHeader.equalsIgnoreCase(tmp.getCode())) {
                 JiraUserEnum user = JiraUserEnum.findUser(value);
                 if (user == null) {

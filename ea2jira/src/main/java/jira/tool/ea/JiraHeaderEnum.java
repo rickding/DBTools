@@ -5,29 +5,28 @@ import dbtools.common.utils.DateUtils;
 import java.util.*;
 
 public enum JiraHeaderEnum {
-    Project(1, "所属项目"), // Package (Parent key)
-    RequirementType(2, "需求类型"), // 产品化
-    Title(3, "主题"),
-    Creator(4, "报告人"), // Author or the creator
+    Title(1, "主题"),
+    Project(2, "所属项目"), // Package (Parent key)
+    RequirementType(3, "需求类型"), // 产品化
+    Description(4, "描述"), // Notes
     PM(5, "产品负责人"), // Author
     Owner(6, "开发负责人"), // Alias
-    Developer(7, "经办人"), // Alias
-    Estimation(8, "预估时间"), // Estimation
-    DueDate(9, "到期日"), // DueDate
-    QA(10, "测试负责人"), // guoguilin
-    ProductDate(11, "产品设计完成时间"), // Now
-    RequirementDate(12, "需求提出时间"), // Now
-    QAStartDate(13, "计划送测日期"), // DueDate - 2
-    QAFinishDate(14, "测试完成日期"), // DueDate
-    EAGUID(15, "EA-GUID"), // GUID
-    Description(17, "描述"); // Notes
+    QA(7, "测试负责人"), // guoguilin
+    Developer(8, "经办人"), // Alias
+    Estimation(9, "预估时间"), // Estimation
+    RequirementDate(10, "需求提出时间"), // Now
+    ProductDate(11, "产品设计完成日期"), // Now
+    QAStartDate(12, "计划送测日期"), // DueDate - 2
+    QAFinishDate(13, "测试完成日期"), // DueDate
+    DueDate(14, "到期日"), // DueDate
+    Label(15, "标签"),
+    EAGUID(16, "EA-GUID"); // GUID
 
     public static Map<JiraHeaderEnum, EAHeaderEnum> JiraEAHeaderMap = new HashMap<JiraHeaderEnum, EAHeaderEnum>() {{
         put(JiraHeaderEnum.Title, EAHeaderEnum.Name);
         put(JiraHeaderEnum.Developer, EAHeaderEnum.Owner);
         put(JiraHeaderEnum.Owner, EAHeaderEnum.Owner);
         put(JiraHeaderEnum.PM, EAHeaderEnum.Author);
-        put(JiraHeaderEnum.Creator, EAHeaderEnum.Author);
         put(JiraHeaderEnum.Estimation, EAHeaderEnum.Estimation);
         put(JiraHeaderEnum.DueDate, EAHeaderEnum.DueDate);
         put(JiraHeaderEnum.QA, null); // guoguilin
@@ -38,12 +37,14 @@ public enum JiraHeaderEnum {
         put(JiraHeaderEnum.QAStartDate, EAHeaderEnum.DueDate); // DueDate - 2
         put(JiraHeaderEnum.QAFinishDate, EAHeaderEnum.DueDate); // DueDate
         put(JiraHeaderEnum.EAGUID, EAHeaderEnum.GUID);
+        put(JiraHeaderEnum.Label, null);
         put(JiraHeaderEnum.Description, EAHeaderEnum.Notes);
     }};
 
     public static Map<JiraHeaderEnum, String> JiraHeaderValueMap = new HashMap<JiraHeaderEnum, String>() {{
         put(JiraHeaderEnum.QA, "guoguilin"); // guoguilin
         put(JiraHeaderEnum.RequirementType, "产品化"); // 产品化
+        put(JiraHeaderEnum.Label, "PMO-EA导入（禁止私动）");
         put(JiraHeaderEnum.ProductDate, DateUtils.format(new Date(), "yyyy-MM-dd")); // now
         put(JiraHeaderEnum.RequirementDate, DateUtils.format(new Date(), "yyyy-MM-dd")); // now
     }};
