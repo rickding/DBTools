@@ -87,7 +87,7 @@ public class App {
                     if (!ArrayUtils.isEmpty(sqlArray)) {
                         outputFileName = FileUtils.getOutputFileName(file, f, File_Ext, Sql_File_Name, Folder_name);
                         FileWriter writer = new FileWriter(outputFileName);
-                        
+
                         if (writer.open()) {
                             writer.writeLines(sqlArray);
                         }

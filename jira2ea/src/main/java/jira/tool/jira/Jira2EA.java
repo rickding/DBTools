@@ -175,6 +175,8 @@ public class Jira2EA {
         }
 
         List<String> sqlList = new ArrayList<String>(updateJiraGuidMap.size());
+        sqlList.add("set @valueId = (select IFNULL(max(id), 0) from jiradb.customfieldvalue);");
+
         for (Map.Entry<String, String> jiraGuid : updateJiraGuidMap.entrySet()) {
             String issueId = issueKeyIdMap.get(jiraGuid.getValue());
             if (StrUtils.isEmpty(issueId) || StrUtils.isEmpty(jiraGuid.getKey())) {
@@ -182,7 +184,8 @@ public class Jira2EA {
             }
 
             sqlList.add(String.format(
-                    "insert into jiradb.customfieldvalue(issue, CUSTOMFIELD, stringvalue) values(%s, (%s), '%s');",
+                    "insert into jiradb.customfieldvalue(id, issue, CUSTOMFIELD, stringvalue) values(%s, %s, (%s), '%s');",
+                    "@valueId := @valueId + 1",
                     issueId,
                     "select id from jiradb.customfield where cfname = 'EA-GUID'",
                     jiraGuid.getKey()
