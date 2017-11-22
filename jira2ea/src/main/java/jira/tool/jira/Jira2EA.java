@@ -18,6 +18,9 @@ public class Jira2EA {
     private static List<String> EA_Type_Mapped = new ArrayList<String>() {{
         add("Requirement");
     }};
+    private static List<String> EA_Type_Package = new ArrayList<String>() {{
+        add("Package");
+    }};
 
     private static List<String> EA_Type_Saved = new ArrayList<String>() {{
         add("Package");
@@ -73,16 +76,16 @@ public class Jira2EA {
         return records;
     }
 
-    public static boolean updateStoryToElement(List<String[]> elements, Map<String, String> guidStoryMap) {
+    public static List<String[]> updateStoryToElement(List<String[]> elements, Map<String, String> guidStoryMap) {
         if (elements == null || elements.size() <= 1 || guidStoryMap == null || guidStoryMap.size() <= 0) {
-            return false;
+            return null;
         }
 
         // Check headers firstly
         int i = 0;
-        String[] headers = elements.get(i++);
+        final String[] headers = elements.get(i++);
         if (ArrayUtils.isEmpty(headers)) {
-            return false;
+            return null;
         }
 
         int guidIndex = getHeaderIndex(EA_Header_GUID, headers);
@@ -92,9 +95,15 @@ public class Jira2EA {
 
         if (guidIndex < 0 || keyIndex < 0 || typeIndex < 0) {
             System.out.printf("Can't find the headers: %s\n", headers.toString());
-            return false;
+            return null;
         }
 
+        // data
+        List<String[]> newElements = new ArrayList<String[]>(){{
+            add(headers);
+        }};
+
+        boolean newMpped = false;
         for (; i < elements.size(); i++) {
             String[] values = elements.get(i);
             if (ArrayUtils.isEmpty(values) || guidIndex >= values.length || keyIndex >= values.length || typeIndex >= values.length) {
@@ -102,7 +111,14 @@ public class Jira2EA {
             }
 
             String type = values[typeIndex];
-            if (StrUtils.isEmpty(type) || !EA_Type_Mapped.contains(type)) {
+            if (StrUtils.isEmpty(type)) {
+                continue;
+            }
+            if (EA_Type_Package.contains(type)) {
+                newElements.add(values);
+                continue;
+            }
+            if (!EA_Type_Mapped.contains(type)) {
                 continue;
             }
 
@@ -123,6 +139,8 @@ public class Jira2EA {
             } else if (!hasStory && hasNewStory) {
                 // New story
                 values[keyIndex] = newStory;
+                newElements.add(values);
+                newMpped = true;
             } else if (hasStory && !hasNewStory) {
                 // Old story but no new story
                 System.out.printf("GUID connects with one story, but no GUID from Jira story: %s, %s, %s\n", guid, story, name);
@@ -130,7 +148,11 @@ public class Jira2EA {
                 System.out.printf("GUID connects with multiple stories: %s, %s, %s, %s\n", guid, story, newStory, name);
             }
         }
-        return true;
+
+        if (!newMpped) {
+            newElements.clear();
+        }
+        return newElements;
     }
 
     private static int getHeaderIndex(String header, String[] headerArray) {

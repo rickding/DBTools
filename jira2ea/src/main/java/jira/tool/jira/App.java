@@ -67,7 +67,8 @@ public class App {
                 }
 
                 // Process
-                if (Jira2EA.updateStoryToElement(elements, guidStoryMap)) {
+                elements = Jira2EA.updateStoryToElement(elements, guidStoryMap);
+                if (elements != null) {
                     elements = Jira2EA.getSavedValues(elements);
 
                     // Save file
