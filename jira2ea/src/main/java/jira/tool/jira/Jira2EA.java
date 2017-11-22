@@ -27,7 +27,7 @@ public class Jira2EA {
         add("Requirement");
     }};
 
-    private static String[] EA_Value_Saved = new String[] {"GUID", "Type", "Stereotype", "Name", "CSV_KEY", "CSV_PARENT_KEY"};
+    private static String[] EA_Value_Saved = new String[] {"GUID", "Type", "Stereotype", "CSV_KEY", "CSV_PARENT_KEY"};
 
     public static List<String[]> getSavedValues(List<String[]> elements) {
         if (elements == null || elements.size() <= 0 || EA_Value_Saved.length <= 0) {
@@ -35,7 +35,7 @@ public class Jira2EA {
         }
 
         // Check headers firstly
-        String[] headers = elements.get(0);
+        final String[] headers = elements.get(0);
         if (ArrayUtils.isEmpty(headers)) {
             return null;
         }
@@ -59,7 +59,10 @@ public class Jira2EA {
         }
 
         // Data
-        List<String[]> records = new ArrayList<String[]>(elements.size());
+        List<String[]> records = new ArrayList<String[]>(elements.size()){{
+            add(EA_Value_Saved);
+        }};
+
         for (String[] element : elements) {
             String type = element[typeIndex];
             if (StrUtils.isEmpty(type) || !EA_Type_Saved.contains(type)) {
