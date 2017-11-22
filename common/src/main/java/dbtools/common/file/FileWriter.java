@@ -1,5 +1,6 @@
 package dbtools.common.file;
 
+import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.StrUtils;
 
 import java.io.BufferedWriter;
@@ -57,6 +58,21 @@ public class FileWriter {
             writer = null;
         }
         System.out.printf("FileWriter close successfully: %s\n", filePath);
+    }
+
+    public void writeLines(String[] strs) {
+        if (!isOpen()) {
+            System.out.println("Please call open() firstly.");
+            return;
+        }
+
+        if (ArrayUtils.isEmpty(strs)) {
+            return;
+        }
+
+        for (String str : strs) {
+            writeLine(str);
+        }
     }
 
     public void writeLine(String str) {

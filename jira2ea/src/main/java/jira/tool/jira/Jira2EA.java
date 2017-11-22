@@ -9,6 +9,7 @@ import java.util.*;
 public class Jira2EA {
     private static String Jira_Header_GUID = "Custom field (EA-GUID)";
     private static String Jira_Header_Key = "Issue key";
+    private static String Jira_Issue_Id = "Issue id";
 
     private static String EA_Header_GUID = "GUID";
     private static String EA_Header_Key = "Stereotype";
@@ -79,7 +80,7 @@ public class Jira2EA {
         return records;
     }
 
-    public static List<String[]> updateStoryToElement(List<String[]> elements, Map<String, String> guidStoryMap) {
+    public static List<String[]> updateStoryToElement(List<String[]> elements, Map<String, String> guidStoryMap, Map<String, String> noGUIDFromJiraMap) {
         if (elements == null || elements.size() <= 1 || guidStoryMap == null || guidStoryMap.size() <= 0) {
             return null;
         }
@@ -105,6 +106,10 @@ public class Jira2EA {
         List<String[]> newElements = new ArrayList<String[]>(){{
             add(headers);
         }};
+
+        if (noGUIDFromJiraMap != null) {
+            noGUIDFromJiraMap.clear();
+        }
 
         boolean newMpped = false;
         for (; i < elements.size(); i++) {
@@ -147,6 +152,12 @@ public class Jira2EA {
             } else if (hasStory && !hasNewStory) {
                 // Old story but no new story
                 System.out.printf("GUID connects with one story, but no GUID from Jira story: %s, %s, %s\n", guid, story, name);
+                if (noGUIDFromJiraMap != null) {
+                    if (noGUIDFromJiraMap.containsValue(story)) {
+                        System.out.printf("GUIDs connect with same story: %s, %s, %s\n", guid, story, name);
+                    }
+                    noGUIDFromJiraMap.put(guid, story);
+                }
             } else if (hasStory && hasNewStory && !story.equalsIgnoreCase(newStory)) {
                 System.out.printf("GUID connects with multiple stories: %s, %s, %s, %s\n", guid, story, newStory, name);
             }
@@ -156,6 +167,31 @@ public class Jira2EA {
             newElements.clear();
         }
         return newElements;
+    }
+
+    public static String[] generateUpdateJiraGUIDSSQL(Map<String, String> updateJiraGuidMap, Map<String, String> issueKeyIdMap) {
+        if (updateJiraGuidMap == null || updateJiraGuidMap.size() <= 0 || issueKeyIdMap == null || issueKeyIdMap.size() <= 0) {
+            return null;
+        }
+
+        List<String> sqlList = new ArrayList<String>(updateJiraGuidMap.size());
+        for (Map.Entry<String, String> jiraGuid : updateJiraGuidMap.entrySet()) {
+            String issueId = issueKeyIdMap.get(jiraGuid.getValue());
+            if (StrUtils.isEmpty(issueId) || StrUtils.isEmpty(jiraGuid.getKey())) {
+                continue;
+            }
+
+            sqlList.add(String.format(
+                    "insert into jiradb.customfieldvalue(issue, CUSTOMFIELD, stringvalue) values(%s, (%s), '%s');",
+                    issueId,
+                    "select id from jiradb.customfield where cfname = 'EA-GUID'",
+                    jiraGuid.getKey()
+            ));
+        }
+
+        String[] values = new String[sqlList.size()];
+        sqlList.toArray(values);
+        return values;
     }
 
     private static int getHeaderIndex(String header, String[] headerArray) {
@@ -183,7 +219,7 @@ public class Jira2EA {
         return -1;
     }
 
-    public static Map<String, String> getJiraMap(String csvFile) {
+    public static Map<String, String> getGUIDStoryMap(String csvFile, Map<String, String> issueKeyIdMap) {
         List<String[]> storyList = CsvUtil.readFile(csvFile);
         if (storyList == null || storyList.size() <= 1) {
             return null;
@@ -199,7 +235,9 @@ public class Jira2EA {
         List<String> headerList = Arrays.asList(headers);
         int guidIndex = headerList.indexOf(Jira_Header_GUID);
         int keyIndex = headerList.indexOf(Jira_Header_Key);
-        if (guidIndex < 0 || keyIndex < 0) {
+        int idIndex = headerList.indexOf(Jira_Issue_Id);
+
+        if (guidIndex < 0 || keyIndex < 0 || idIndex < 0) {
             System.out.printf("Can't find the headers: %s\n", headerList.toString());
             return null;
         }
@@ -208,13 +246,19 @@ public class Jira2EA {
         Map<String, String> guidStoryMap = new HashMap<String, String>();
         for (; i < storyList.size(); i++) {
             String[] values = storyList.get(i);
-            if (ArrayUtils.isEmpty(values) || guidIndex >= values.length || keyIndex >= values.length) {
+            if (ArrayUtils.isEmpty(values) || guidIndex >= values.length || keyIndex >= values.length || idIndex >= values.length) {
                 continue;
             }
 
-            String guid = values[guidIndex];
             String story = values[keyIndex];
-            if (StrUtils.isEmpty(guid) || StrUtils.isEmpty(story)) {
+            String id = values[idIndex];
+            if (StrUtils.isEmpty(story) || StrUtils.isEmpty(id)) {
+                continue;
+            }
+            issueKeyIdMap.put(story, id);
+
+            String guid = values[guidIndex];
+            if (StrUtils.isEmpty(guid)) {
                 continue;
             }
 

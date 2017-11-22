@@ -2,6 +2,8 @@ package jira.tool.jira;
 
 import dbtools.common.file.CsvUtil;
 import dbtools.common.file.FileUtils;
+import dbtools.common.file.FileWriter;
+import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
 
@@ -13,6 +15,7 @@ import java.util.*;
  */
 public class App {
     private static String Jira_File = "EA-PMO-all (上海欧电云信息科技有限公司).csv";
+    private static String Sql_File_Name = ".sql";
 
     private static String File_Prefix = "jira-transfer";
     private static String File_Ext = ".csv";
@@ -39,10 +42,12 @@ public class App {
 
         // Get the guid story key map firstly
         Map<String, String> guidStoryMap = null;
+        Map<String, String> issueKeyIdMap = new HashMap<String, String>();
+
         for (String filePath : filePaths) {
             File file = new File(filePath);
             if (file.isDirectory()) {
-                guidStoryMap = Jira2EA.getJiraMap(String.format("%s\\%s", filePath, Jira_File));
+                guidStoryMap = Jira2EA.getGUIDStoryMap(String.format("%s\\%s", filePath, Jira_File), issueKeyIdMap);
                 if (guidStoryMap != null) {
                     break;
                 }
@@ -67,7 +72,8 @@ public class App {
                 }
 
                 // Process
-                elements = Jira2EA.updateStoryToElement(elements, guidStoryMap);
+                Map<String, String> noGuidFromJiraMap = new HashMap<String, String>();
+                elements = Jira2EA.updateStoryToElement(elements, guidStoryMap, noGuidFromJiraMap);
                 if (elements != null) {
                     elements = Jira2EA.getSavedValues(elements);
 
@@ -75,6 +81,18 @@ public class App {
                     String outputFileName = FileUtils.getOutputFileName(file, f, File_Ext, File_Name, Folder_name);
                     CsvUtil.saveToFile(elements, outputFileName);
                     projects.add(f.getPath());
+
+                    // Generate sql
+                    String[] sqlArray = Jira2EA.generateUpdateJiraGUIDSSQL(noGuidFromJiraMap, issueKeyIdMap);
+                    if (!ArrayUtils.isEmpty(sqlArray)) {
+                        outputFileName = FileUtils.getOutputFileName(file, f, File_Ext, Sql_File_Name, Folder_name);
+                        FileWriter writer = new FileWriter(outputFileName);
+                        
+                        if (writer.open()) {
+                            writer.writeLines(sqlArray);
+                        }
+                        writer.close();
+                    }
                 } else {
                     System.out.printf("Fail to process file: %s\n", f.getPath());
                 }
