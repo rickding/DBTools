@@ -1,4 +1,4 @@
-package dbtools.common;
+package jira.tool.jira;
 
 import org.junit.Test;
 
@@ -8,6 +8,5 @@ import org.junit.Test;
 public class AppTest {
     @Test
     public void testApp() {
-        App.main(null);
     }
 }

@@ -5,6 +5,6 @@ package dbtools.common;
  */
 public class App {
     public static void main(String[] args) {
-        System.out.println("Hello db-tools.common!");
+        System.out.println("Hello common!");
     }
 }
