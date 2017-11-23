@@ -3,9 +3,9 @@ package jira.tool.jira;
 import dbtools.common.file.CsvUtil;
 import dbtools.common.file.FileUtils;
 import dbtools.common.file.FileWriter;
-import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
+import jira.tool.ea.JiraProjectEnum;
 
 import java.io.File;
 import java.util.*;
@@ -65,7 +65,26 @@ public class App {
 
             // Update and save
             for (File f : files) {
+                String fileName = f.getName();
+
+                // Read date in the file name
+                int extIndex = fileName.indexOf(File_Ext);
+                if (extIndex < 4) {
+                    continue;
+                }
+
+                // TODO: Skip the old files
+                String strDate = fileName.substring(extIndex - 4, extIndex);
+                if (strDate.compareTo("1123") < 0) {
+                    continue;
+                }
+
                 // Find project
+                JiraProjectEnum project = JiraProjectEnum.findProject(f.getName());
+                if (project == null) {
+                    System.out.printf("Can't find project definition: %s\n", fileName);
+                    continue;
+                }
 
                 // Read file
                 List<String[]> elements = CsvUtil.readFile(f.getPath());
@@ -77,6 +96,7 @@ public class App {
                 Map<String, String> noGuidFromJiraMap = new HashMap<String, String>();
                 elements = Jira2EA.updateStoryToElement(elements, guidStoryMap, noGuidFromJiraMap);
                 if (elements != null) {
+                    // Only the needed values
                     elements = Jira2EA.getSavedValues(elements);
 
                     // Save file
@@ -86,7 +106,7 @@ public class App {
 
                     // Generate sql
                     String[] sqlArray = Jira2EA.generateUpdateJiraGUIDSSQL(noGuidFromJiraMap, issueKeyIdMap);
-                    if (!ArrayUtils.isEmpty(sqlArray)) {
+                    if (sqlArray != null && sqlArray.length > 1) {
                         outputFileName = FileUtils.getOutputFileName(file, f, File_Ext, Sql_File_Name, Folder_name);
                         FileWriter writer = new FileWriter(outputFileName);
 
@@ -107,7 +127,6 @@ public class App {
                 DateUtils.format(time_start, "hh:mm:ss"),
                 DateUtils.format(new Date(), "hh:mm:ss")
         );
-
         System.out.println("\nThe processed files:");
         for (String project : projects) {
             System.out.println(project);

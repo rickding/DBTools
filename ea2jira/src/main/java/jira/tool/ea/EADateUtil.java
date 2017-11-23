@@ -16,17 +16,21 @@ public class EADateUtil {
         return DateUtils.parse(strDate.trim(), EA_Date_Format);
     }
 
-    public static boolean needsToBeProcessed(String strDate) {
-        if (StrUtils.isEmpty(strDate)) {
-            return false;
+    public static String format(String strDate) {
+        Date date = parse(strDate);
+        if (date == null) {
+            System.out.printf("Error when parse date: %s", strDate);
+            return null;
         }
+        return DateUtils.format(date, "yyyyMMdd");
+    }
 
-        Date date = parse(strDate.trim());
+    public static boolean needsToBeProcessed(String strDate) {
+        Date date = parse(strDate);
         if (date == null) {
             System.out.printf("Error when parse date: %s", strDate);
             return false;
         }
-
         return strToday.equalsIgnoreCase(DateUtils.format(date, "yyyyMMdd"));
     }
 }
