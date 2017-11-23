@@ -15,12 +15,13 @@ import java.util.*;
  * Hello world!
  */
 public class App {
-    public static String File_Prefix = "";
-    public static String File_Ext = ".csv";
-    public static String File_Name = "jira-transfer-%s.xlsx";
-    public static String Folder_name = "";
+    private static String File_Prefix = "";
+    private static String File_Ext = ".csv";
+    private static String File_Name = "jira-transfer-%s.xlsx";
+    private static String Folder_name = "";
 
-    public static String Sheet_EA = "ea";
+    private static String Sheet_EA = "ea-%s";
+    private static String strToday = DateUtils.format(new Date(), "MMdd");
 
     public static void main(String[] args) {
         System.out.println("Specify the file or folder to update:");
@@ -40,10 +41,8 @@ public class App {
             }
         }
 
-        List<String> projects = new ArrayList<String>();
-        String strToday = DateUtils.format(new Date(), "MMdd");
-
         // Process files
+        List<String> projects = new ArrayList<String>();
         for (String filePath : filePaths) {
             File file = new File(filePath);
             File[] files = FileUtils.findFiles(filePath, File_Prefix, File_Ext, File_Name);
@@ -51,7 +50,6 @@ public class App {
                 continue;
             }
 
-            // Update and save
             XSSFWorkbook wb = new XSSFWorkbook();
             if (wb == null) {
                 continue;
@@ -83,7 +81,7 @@ public class App {
 
                 // Read file and fill to excel
                 List<String[]> records = CsvUtil.readFile(f.getPath());
-                ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, Sheet_EA), records);
+                ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, String.format(Sheet_EA, f.getName())), records);
 
                 // Process
                 EA2Jira.process(project, records, teamStoryListMap);
@@ -100,7 +98,7 @@ public class App {
                     headers[i++] = jiraHeader.getCode();
                 }
 
-                // Write to excel
+                // Write data to excel
                 for (Map.Entry<String, List<String[]>> teamStories : teamStoryListMap.entrySet()) {
                     List<String[]> stories = teamStories.getValue();
                     stories.add(0, headers);

@@ -1,11 +1,13 @@
 package jira.tool.ea;
 
-import dbtools.common.file.ExcelUtil;
 import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class EA2Jira {
     private static Date today = DateUtils.parse(DateUtils.format(new Date(), "yyyy-MM-dd"), "yyyy-MM-dd");
@@ -143,7 +145,7 @@ public class EA2Jira {
             }
 
             // Fill jira dataMap
-            String team = "Jira";
+            String team = "Can't find Jira User";
             String[] values = new String[jiraHeaders.length];
             int headerIndex = 0;
 
