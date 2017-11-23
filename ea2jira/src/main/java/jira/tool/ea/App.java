@@ -20,6 +20,7 @@ public class App {
     private static String File_Name = "jira-transfer-%s-create-story.xlsx";
     private static String Folder_name = "";
 
+    private static String Jira_File = "EA-PMO-all (上海欧电云信息科技有限公司).csv";
     private static String Sheet_EA = "ea-%s";
     private static String strToday = DateUtils.format(new Date(), "MMdd");
 
@@ -37,6 +38,18 @@ public class App {
             for (String arg : args) {
                 if (!StrUtils.isEmpty(arg)) {
                     filePaths.add(arg);
+                }
+            }
+        }
+
+        // Get the guid story key map firstly
+        Map<String, String> guidStoryMap = null;
+        for (String filePath : filePaths) {
+            File file = new File(filePath);
+            if (file.isDirectory()) {
+                guidStoryMap = EA2Jira.getGUIDStoryMap(String.format("%s\\%s", filePath, Jira_File), null);
+                if (guidStoryMap != null && guidStoryMap.size() > 0) {
+                    break;
                 }
             }
         }
@@ -84,7 +97,7 @@ public class App {
                 ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, String.format(Sheet_EA, f.getName())), records);
 
                 // Process
-                EA2Jira.process(project, records, teamStoryListMap);
+                EA2Jira.process(project, records, teamStoryListMap, guidStoryMap);
                 projects.add(f.getPath());
             }
 

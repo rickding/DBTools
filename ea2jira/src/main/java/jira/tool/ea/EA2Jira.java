@@ -1,17 +1,19 @@
 package jira.tool.ea;
 
+import dbtools.common.file.CsvUtil;
 import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class EA2Jira {
     public static String Jira_Date_Format = "yyyy/MM/dd";
     private static Date today = DateUtils.parse(DateUtils.format(new Date(), "yyyy-MM-dd"), "yyyy-MM-dd");
+
+    private static String Jira_Header_GUID = "Custom field (EA-GUID)";
+    private static String Jira_Header_Key = "Issue key";
+    private static String Jira_Issue_Id = "Issue id";
 
     private static String processValue(JiraHeaderEnum jiraHeaderEnum, String value) {
         if (jiraHeaderEnum == null || StrUtils.isEmpty(jiraHeaderEnum.getCode())) {
@@ -118,7 +120,7 @@ public class EA2Jira {
      * @param teamStoryListMap
      * @return
      */
-    public static void process(JiraProjectEnum project, List<String[]> elementList, Map<String, List<String[]>> teamStoryListMap) {
+    public static void process(JiraProjectEnum project, List<String[]> elementList, Map<String, List<String[]>> teamStoryListMap, Map<String, String> guidStoryMap) {
         if (project == null || elementList == null || elementList.size() <= 0) {
             return;
         }
@@ -160,10 +162,12 @@ public class EA2Jira {
             // Fill jira dataMap
             String team = "Can't find Jira User";
             String[] values = new String[jiraHeaders.length];
+            String guid = null;
             int headerIndex = 0;
 
             for (JiraHeaderEnum jiraHeaderEnum : jiraHeaders) {
                 if (jiraHeaderEnum == null || StrUtils.isEmpty(jiraHeaderEnum.getCode())) {
+                    headerIndex++;
                     continue;
                 }
 
@@ -184,9 +188,22 @@ public class EA2Jira {
                     } else {
                         team = user.getTeam();
                     }
+                } else if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.EAGUID.getCode())) {
+                    guid = value;
                 }
 
                 values[headerIndex++] = value;
+            }
+
+            if (StrUtils.isEmpty(guid)) {
+                System.out.printf("Error with empty GUID: %s\n", Arrays.asList(values));
+                continue;
+            }
+
+            // Check if GUID exists in story
+            if (guidStoryMap != null && guidStoryMap.containsKey(guid)) {
+                System.out.printf("GUID already connects with one story: %s, %s\n", guid, guidStoryMap.get(guid));
+                continue;
             }
 
             // Group as team
@@ -197,5 +214,61 @@ public class EA2Jira {
             }
             stories.add(values);
         }
+    }
+
+    public static Map<String, String> getGUIDStoryMap(String csvFile, Map<String, String> storyKeyIdMap) {
+        List<String[]> storyList = CsvUtil.readFile(csvFile);
+        if (storyList == null || storyList.size() <= 1) {
+            return null;
+        }
+
+        // Check headers firstly
+        int i = 0;
+        String[] headers = storyList.get(i++);
+        if (ArrayUtils.isEmpty(headers)) {
+            return null;
+        }
+
+        List<String> headerList = Arrays.asList(headers);
+        int guidIndex = headerList.indexOf(Jira_Header_GUID);
+        int keyIndex = headerList.indexOf(Jira_Header_Key);
+        int idIndex = headerList.indexOf(Jira_Issue_Id);
+
+        if (guidIndex < 0 || keyIndex < 0 || idIndex < 0) {
+            System.out.printf("Can't find the headers: %s\n", headerList.toString());
+            return null;
+        }
+
+        // Walk through the data
+        Map<String, String> guidStoryMap = new HashMap<String, String>();
+        for (; i < storyList.size(); i++) {
+            String[] values = storyList.get(i);
+            if (ArrayUtils.isEmpty(values) || guidIndex >= values.length || keyIndex >= values.length || idIndex >= values.length) {
+                continue;
+            }
+
+            String story = values[keyIndex];
+            String id = values[idIndex];
+            if (StrUtils.isEmpty(story) || StrUtils.isEmpty(id)) {
+                continue;
+            }
+
+            if (storyKeyIdMap != null) {
+                storyKeyIdMap.put(story, id);
+            }
+
+            String guid = values[guidIndex];
+            if (StrUtils.isEmpty(guid)) {
+                continue;
+            }
+
+            if (guidStoryMap.containsKey(guid)) {
+                System.out.printf("GUID connects with multiple stories: %s, %s, %s\n", guid, guidStoryMap.get(guid), story);
+            } else {
+                guidStoryMap.put(guid, story);
+            }
+        }
+
+        return guidStoryMap;
     }
 }
