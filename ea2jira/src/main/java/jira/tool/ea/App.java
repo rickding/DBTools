@@ -1,5 +1,6 @@
 package jira.tool.ea;
 
+import dbtools.common.file.CsvUtil;
 import dbtools.common.file.ExcelUtil;
 import dbtools.common.file.FileUtils;
 import dbtools.common.utils.DateUtils;
@@ -67,17 +68,25 @@ public class App {
                     continue;
                 }
 
+                // Find project
+                JiraProjectEnum project = JiraProjectEnum.findProject(fileName);
+                if (project == null) {
+                    System.out.printf("Can't find project definition: %s\n", fileName);
+                    continue;
+                }
+
+                // Create excel
                 XSSFWorkbook wb = new XSSFWorkbook();
                 if (wb == null) {
                     continue;
                 }
 
-                // Read file
-                XSSFSheet sheet = ExcelUtil.getOrCreateSheet(wb, Sheet_EA);
-                ExcelUtil.fillSheetFromCsv(sheet, f.getPath());
+                // Read file and fill to excel
+                List<String[]> records = CsvUtil.readFile(f.getPath());
+                ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, Sheet_EA), records);
 
                 // Process
-                EA2Jira.process(sheet, wb);
+                EA2Jira.process(null, wb);
 
                 // Save file
                 String outputFileName = FileUtils.getOutputFileName(file, f, File_Ext, File_Name, Folder_name);

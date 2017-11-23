@@ -1,6 +1,7 @@
 package dbtools.common.file;
 
 import com.csvreader.CsvReader;
+import com.csvreader.CsvWriter;
 import dbtools.common.utils.StrUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -11,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.List;
 
 public class ExcelUtil {
     /**
@@ -126,6 +128,17 @@ public class ExcelUtil {
         }
     }
 
+    public static void fillSheet(XSSFSheet sheet, List<String[]> recordList) {
+        if (recordList == null || recordList.size() <= 0 || sheet == null) {
+            return;
+        }
+
+        int row = 0;
+        for (String[] record : recordList) {
+            fillRow(sheet, row++, record);
+        }
+    }
+
     /**
      * @param sheet
      * @param row
@@ -162,7 +175,7 @@ public class ExcelUtil {
      * @param sheet   name of a excel file that will store the transformed file
      * @param csvFile name of a csv file that will be transformed
      */
-    public final static Cell[] fillSheetFromCsv(XSSFSheet sheet, String csvFile) {
+    public final static Cell[] fillSheetFromCsv(XSSFSheet sheet, String csvFile, List<String[]> records) {
         if (sheet == null || StrUtils.isEmpty(csvFile)) {
             return null;
         }
@@ -186,6 +199,10 @@ public class ExcelUtil {
             // Read and add new headers
             reader.readHeaders();
             String[] headers = reader.getHeaders();
+            if (records != null) {
+                records.clear();
+                records.add(headers);
+            }
 
             // Save the headers
             int row = 0;
@@ -195,8 +212,11 @@ public class ExcelUtil {
             // Save the data
             while (reader.readRecord()) {
                 // New row
-                Row r = sheet.createRow(row++);
+                if (records != null) {
+                    records.add(reader.getValues());
+                }
 
+                Row r = sheet.createRow(row++);
                 int col = 0;
                 for (String header : headers) {
                     Cell cell = r.createCell(col++);
