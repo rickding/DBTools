@@ -93,15 +93,6 @@ public class Jira2EA {
                 continue;
             }
 
-            String type = element[EAHeaderEnum.Type.getIndex()];
-            if (StrUtils.isEmpty(type)) {
-                continue;
-            }
-            if (EA_Type_Package.contains(type)) {
-                newElements.add(element);
-                continue;
-            }
-
             // Only process implemented requirement as story
             if (!EATypeEnum.isMappedToStory(element[EAHeaderEnum.Type.getIndex()])
                     || !EAStatusEnum.isMappedToStory(element[EAHeaderEnum.Status.getIndex()])) {
