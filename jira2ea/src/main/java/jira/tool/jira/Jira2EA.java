@@ -176,7 +176,9 @@ public class Jira2EA {
 
         List<String> sqlList = new ArrayList<String>(updateJiraGuidMap.size());
         sqlList.add("set @valueId = (select IFNULL(max(id), 0) from jiradb.customfieldvalue where id < 10424);");
+        String customFieldId = "select id from jiradb.customfield where cfname = 'EA-GUID'";
 
+        List<String> issueIds = new ArrayList<String>();
         for (Map.Entry<String, String> jiraGuid : updateJiraGuidMap.entrySet()) {
             String issueId = issueKeyIdMap.get(jiraGuid.getValue());
             if (StrUtils.isEmpty(issueId) || StrUtils.isEmpty(jiraGuid.getKey())) {
@@ -187,8 +189,24 @@ public class Jira2EA {
                     "insert into jiradb.customfieldvalue(id, issue, CUSTOMFIELD, stringvalue) values(%s, %s, (%s), '%s');",
                     "@valueId := @valueId + 1",
                     issueId,
-                    "select id from jiradb.customfield where cfname = 'EA-GUID'",
+                    customFieldId,
                     jiraGuid.getKey()
+            ));
+
+            issueIds.add(issueId);
+        }
+
+        if (issueIds != null && issueIds.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (String issueId : issueIds) {
+                sb.append(",");
+                sb.append(issueId);
+            }
+
+            sqlList.add(0, String.format(
+                    "delete from jiradb.customfieldvalue where issue in (%s) and CUSTOMFIELD in (%s);",
+                    sb.toString().substring(1),
+                    customFieldId
             ));
         }
 

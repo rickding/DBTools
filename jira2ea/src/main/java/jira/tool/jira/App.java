@@ -17,7 +17,7 @@ public class App {
     private static String Jira_File = "EA-PMO-all (上海欧电云信息科技有限公司).csv";
     private static String Sql_File_Name = ".sql";
 
-    private static String File_Prefix = "jira-transfer";
+    private static String File_Prefix = "";
     private static String File_Ext = ".csv";
     private static String File_Name = "_story_id.csv";
     private static String Folder_name = "";
@@ -48,14 +48,14 @@ public class App {
             File file = new File(filePath);
             if (file.isDirectory()) {
                 guidStoryMap = Jira2EA.getGUIDStoryMap(String.format("%s\\%s", filePath, Jira_File), issueKeyIdMap);
-                if (guidStoryMap != null) {
+                if (guidStoryMap != null && guidStoryMap.size() > 0) {
                     break;
                 }
             }
         }
 
-        List<String> projects = new ArrayList<String>();
         // Process files
+        List<String> projects = new ArrayList<String>();
         for (String filePath : filePaths) {
             File file = new File(filePath);
             File[] files = FileUtils.findFiles(filePath, File_Prefix, File_Ext, File_Name);
@@ -65,6 +65,8 @@ public class App {
 
             // Update and save
             for (File f : files) {
+                // Find project
+
                 // Read file
                 List<String[]> elements = CsvUtil.readFile(f.getPath());
                 if (elements == null || elements.size() <= 1) {
