@@ -17,7 +17,7 @@ import java.util.*;
 public class App {
     public static String File_Prefix = "";
     public static String File_Ext = ".csv";
-    public static String File_Name = ".xlsx";
+    public static String File_Name = "jira-transfer-%s.xlsx";
     public static String Folder_name = "";
 
     public static String Sheet_EA = "ea";
@@ -52,6 +52,12 @@ public class App {
             }
 
             // Update and save
+            XSSFWorkbook wb = new XSSFWorkbook();
+            if (wb == null) {
+                continue;
+            }
+
+            Map<String, List<String[]>> teamStoryListMap = new HashMap<String, List<String[]>>();
             for (File f : files) {
                 // Check the date in file name
                 String fileName = f.getName();
@@ -75,24 +81,35 @@ public class App {
                     continue;
                 }
 
-                // Create excel
-                XSSFWorkbook wb = new XSSFWorkbook();
-                if (wb == null) {
-                    continue;
-                }
-
                 // Read file and fill to excel
                 List<String[]> records = CsvUtil.readFile(f.getPath());
                 ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, Sheet_EA), records);
 
                 // Process
-                EA2Jira.process(null, wb);
+                EA2Jira.process(project, records, teamStoryListMap);
+                projects.add(f.getPath());
+            }
+
+            // Fill stories to wb
+            if (teamStoryListMap != null && teamStoryListMap.size() > 0) {
+                // Get the headers
+                JiraHeaderEnum[] jiraHeaders = JiraHeaderEnum.getSortedHeaders();
+                String[] headers = new String[jiraHeaders.length];
+                int i = 0;
+                for (JiraHeaderEnum jiraHeader : jiraHeaders) {
+                    headers[i++] = jiraHeader.getCode();
+                }
+
+                // Write to excel
+                for (Map.Entry<String, List<String[]>> teamStories : teamStoryListMap.entrySet()) {
+                    List<String[]> stories = teamStories.getValue();
+                    stories.add(0, headers);
+                    ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, teamStories.getKey()), stories);
+                }
 
                 // Save file
-                String outputFileName = FileUtils.getOutputFileName(file, f, File_Ext, File_Name, Folder_name);
+                String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(File_Name, strToday), Folder_name);
                 ExcelUtil.saveToFile(wb, outputFileName);
-
-                projects.add(f.getPath());
             }
         }
 

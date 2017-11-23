@@ -6,19 +6,18 @@ import dbtools.common.utils.StrUtils;
  * Created by user on 2017/9/23.
  */
 public enum EATypeEnum {
-    Package("Package"),
     Requirement("Requirement");
 
-    private static EATypeEnum[] processedTypes = new EATypeEnum[]{
-            EATypeEnum.Package, EATypeEnum.Requirement
+    private static EATypeEnum[] mappedToStoryList = new EATypeEnum[]{
+            EATypeEnum.Requirement
     };
 
-    public static boolean isProcessedType(String type) {
+    public static boolean isMappedToStory(String type) {
         if (StrUtils.isEmpty(type)) {
             return false;
         }
 
-        for (EATypeEnum processType : processedTypes) {
+        for (EATypeEnum processType : mappedToStoryList) {
             if (processType.getCode().equalsIgnoreCase(type)) {
                 return true;
             }

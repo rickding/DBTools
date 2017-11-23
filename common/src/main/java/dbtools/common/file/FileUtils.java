@@ -6,24 +6,31 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 public class FileUtils {
-    public static String getOutputFileName(File parent, File file, String fileExt, String fileName, String folderName) {
+    public static String getOutputFileName(File parent, File file, String fileExt, String newFileName, String newFolderName) {
         if (file == null || parent == null) {
+            return null;
+        }
+        return getOutputFileName(parent, file.getName(), fileExt, newFileName, newFolderName);
+    }
+
+    public static String getOutputFileName(File parent, String fileName, String fileExt, String newFileName, String newFolderName) {
+        if (parent == null) {
             return null;
         }
 
         String outputFileName = null;
         if (parent.isDirectory()) {
             // Prepare the folder firstly
-            String outputFolderName = String.format("%s%s", parent.getPath(), folderName);
+            String outputFolderName = String.format("%s%s", parent.getPath(), newFolderName);
             File folder = new File(outputFolderName);
             if (!folder.exists()) {
                 folder.mkdir();
             }
 
             // Output file name
-            outputFileName = String.format("%s\\%s", outputFolderName, file.getName());
+            outputFileName = String.format("%s\\%s", outputFolderName, fileName);
         } else {
-            outputFileName = file.getPath();
+            outputFileName = parent.getPath();
         }
 
         // Format the file name
@@ -31,7 +38,7 @@ public class FileUtils {
             if (outputFileName.toLowerCase().endsWith(fileExt)) {
                 outputFileName = outputFileName.substring(0, outputFileName.length() - fileExt.length());
             }
-            outputFileName = String.format("%s%s", outputFileName, fileName);
+            outputFileName = String.format("%s%s", outputFileName, newFileName);
         }
 
         return outputFileName;

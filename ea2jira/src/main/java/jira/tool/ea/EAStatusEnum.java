@@ -8,16 +8,16 @@ import dbtools.common.utils.StrUtils;
 public enum EAStatusEnum {
     Implemented("Implemented");
 
-    private static EAStatusEnum[] processedStatus = new EAStatusEnum[]{
+    private static EAStatusEnum[] mappedToStoryList = new EAStatusEnum[]{
             Implemented,
     };
 
-    public static boolean isProcessStatus(String status) {
+    public static boolean isMappedToStory(String status) {
         if (StrUtils.isEmpty(status)) {
             return false;
         }
 
-        for (EAStatusEnum processStatus : processedStatus) {
+        for (EAStatusEnum processStatus : mappedToStoryList) {
             if (processStatus.getCode().equalsIgnoreCase(status)) {
                 return true;
             }

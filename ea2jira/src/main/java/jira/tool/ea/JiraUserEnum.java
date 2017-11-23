@@ -23,7 +23,7 @@ public enum JiraUserEnum {
     Wangshanliang("Mgr", "wangshanliang", new String[]{"王善良"}),
     Wanganqing("Mgr", "wanganqing", new String[]{"王安庆"}),
 
-    Shengjinmiao("Yuyan", "shengjinmiao", new String[]{"盛金苗"}),
+    Shengjinmiao("YuYan", "shengjinmiao", new String[]{"盛金苗"}),
     Chenying("SupplierChain", "chenying", new String[]{"陈颖", "chenyin", "chneyin", "chenyiin"}),
 
     Wangdongfang("DDX", "wangdongfang", new String[]{"王东方"}),

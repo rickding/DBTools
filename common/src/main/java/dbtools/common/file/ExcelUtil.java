@@ -5,6 +5,7 @@ import com.csvreader.CsvWriter;
 import dbtools.common.utils.StrUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -137,6 +138,8 @@ public class ExcelUtil {
         for (String[] record : recordList) {
             fillRow(sheet, row++, record);
         }
+
+        filterAndLockSheet(sheet);
     }
 
     /**
@@ -170,75 +173,29 @@ public class ExcelUtil {
     }
 
     /**
-     * transform csv file into excel file
+     * Add the filter and lock
      *
-     * @param sheet   name of a excel file that will store the transformed file
-     * @param csvFile name of a csv file that will be transformed
+     * @param sheet
      */
-    public final static Cell[] fillSheetFromCsv(XSSFSheet sheet, String csvFile, List<String[]> records) {
-        if (sheet == null || StrUtils.isEmpty(csvFile)) {
-            return null;
+    public static void filterAndLockSheet(XSSFSheet sheet) {
+        if (sheet == null) {
+            return;
         }
 
-        CsvReader reader = null;
-        try {
-            reader = new CsvReader(csvFile, ',', Charset.forName("UTF-8"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            System.out.printf("Fail to open file: %s\n", csvFile);
+        int[] cellArea = ExcelUtil.getCellArea(sheet);
+        if (cellArea == null || cellArea.length < 4) {
+            return;
         }
 
-        if (reader == null) {
-            return null;
-        }
+        int rowStart = cellArea[0];
+        int rowEnd = cellArea[1];
+        int colStart = cellArea[2];
+        int colEnd = cellArea[3];
 
-        Cell topLeft = null;
-        Cell botRight = null;
+        // Add the filter
+        sheet.setAutoFilter(new CellRangeAddress(rowStart, rowEnd, colStart, colEnd));
 
-        try {
-            // Read and add new headers
-            reader.readHeaders();
-            String[] headers = reader.getHeaders();
-            if (records != null) {
-                records.clear();
-                records.add(headers);
-            }
-
-            // Save the headers
-            int row = 0;
-            Cell[] cells = fillRow(sheet, row++, headers);
-            topLeft = cells == null || cells.length < 1 ? null : cells[0];
-
-            // Save the data
-            while (reader.readRecord()) {
-                // New row
-                if (records != null) {
-                    records.add(reader.getValues());
-                }
-
-                Row r = sheet.createRow(row++);
-                int col = 0;
-                for (String header : headers) {
-                    Cell cell = r.createCell(col++);
-
-                    // Read and convert the value
-                    String v = reader.get(header);
-
-                    // Save value to cell directly
-                    cell.setCellValue(v);
-                    botRight = cell;
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.printf("Fail to read file: %s\n", csvFile);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.printf("Fail to process file: %s\n", csvFile);
-        } finally {
-            reader.close();
-        }
-
-        return new Cell[] {topLeft, botRight};
+        // Set the free panes, the first row
+        sheet.createFreezePane(0, 1, colStart, rowStart + 1);
     }
 }

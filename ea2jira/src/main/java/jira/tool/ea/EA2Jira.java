@@ -1,62 +1,14 @@
 package jira.tool.ea;
 
 import dbtools.common.file.ExcelUtil;
+import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.util.*;
 
 public class EA2Jira {
     private static Date today = DateUtils.parse(DateUtils.format(new Date(), "yyyy-MM-dd"), "yyyy-MM-dd");
-
-    private static Map<String, String> findPackages(XSSFSheet sheet, int rowStart, int rowEnd) {
-        if (sheet == null || rowStart < 0 || rowStart > rowEnd) {
-            return null;
-        }
-
-        Map<String, String> packageMap = new HashMap<String, String>();
-        int nameIndex = EAHeaderEnum.Name.getIndex();
-        int keyIndex = EAHeaderEnum.Key.getIndex();
-
-        while (rowStart <= rowEnd) {
-            Row row = sheet.getRow(rowStart++);
-            if (row != null) {
-                // Only process package as project
-                if (!EATypeEnum.Package.getCode().equalsIgnoreCase(row.getCell(EAHeaderEnum.Type.getIndex()).getStringCellValue())) {
-                    continue;
-                }
-
-                Cell nameCell = row.getCell(nameIndex);
-                Cell keyCell = row.getCell(keyIndex);
-                if (nameCell == null || keyCell == null) {
-                    System.out.printf("Error when get cell in findPackages: %d, %d, %d\n", nameIndex, keyIndex, rowStart);
-                    continue;
-                }
-
-                String name = null, key = null;
-                try {
-                    name = nameCell.getStringCellValue();
-                    key = keyCell.getStringCellValue();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.printf("Error when get cell values: %d, %d, %s, %s\n", nameIndex, keyIndex, name, key);
-                }
-
-                if (StrUtils.isEmpty(name) || StrUtils.isEmpty(key)) {
-                    System.out.printf("Error when empty package and key: %s, %s\n", name, key);
-                    continue;
-                }
-
-                packageMap.put(key, name);
-            }
-        }
-
-        return packageMap;
-    }
 
     private static String processValue(JiraHeaderEnum jiraHeaderEnum, String value) {
         if (jiraHeaderEnum == null || StrUtils.isEmpty(jiraHeaderEnum.getCode())) {
@@ -156,99 +108,79 @@ public class EA2Jira {
         return value;
     }
 
-    public static void process(XSSFSheet sheet, XSSFWorkbook wb) {
-        if (sheet == null || wb == null) {
+    /**
+     * Return the processed story list
+     * @param project
+     * @param elementList
+     * @param teamStoryListMap
+     * @return
+     */
+    public static void process(JiraProjectEnum project, List<String[]> elementList, Map<String, List<String[]>> teamStoryListMap) {
+        if (project == null || elementList == null || elementList.size() <= 0) {
             return;
         }
 
-        int rowStart = sheet.getFirstRowNum();
-        int rowEnd = sheet.getLastRowNum();
+        int rowStart = 0;
+        int rowEnd = elementList.size() - 1;
 
         // Headers
-        EAHeaderEnum.fillIndex(ExcelUtil.getRowValues(sheet, rowStart));
-        rowStart++;
+        EAHeaderEnum.fillIndex(elementList.get(rowStart++));
 
-        // Find package firstly
-        Map<String, String> packageMap = findPackages(sheet, rowStart, rowEnd);
+        // Prepare firstly
         Map<JiraHeaderEnum, EAHeaderEnum> headerMap = JiraHeaderEnum.JiraEAHeaderMap;
         JiraHeaderEnum[] jiraHeaders = JiraHeaderEnum.getSortedHeaders();
 
-        // Data
-        Map<String, List<String[]>> jiraValues = new HashMap<String, List<String[]>>();
-
+        // Data to stories
         while (rowStart <= rowEnd) {
-            Row row = sheet.getRow(rowStart++);
-            if (row != null) {
-                // Only process requirement as story
-                if (!EATypeEnum.Requirement.getCode().equalsIgnoreCase(row.getCell(EAHeaderEnum.Type.getIndex()).getStringCellValue())
-                        || !EAStatusEnum.isProcessStatus(row.getCell(EAHeaderEnum.Status.getIndex()).getStringCellValue())) {
-                    continue;
-                }
-
-                // Fill jira dataMap.Entry<JiraHeaderEnum, EAHeaderEnum> map : headerMap.entrySet()
-                String team = "Jira";
-                String[] values = new String[headerMap.size()];
-                int i = 0;
-
-                for (JiraHeaderEnum jiraHeaderEnum : jiraHeaders) {
-                    if (jiraHeaderEnum == null || StrUtils.isEmpty(jiraHeaderEnum.getCode())) {
-                        continue;
-                    }
-
-                    EAHeaderEnum eaHeader = headerMap.get(jiraHeaderEnum);
-                    String value = eaHeader == null ? null : row.getCell(eaHeader.getIndex()).getStringCellValue();
-                    value = processValue(jiraHeaderEnum, value);
-
-                    // Special values
-                    String jiraHeader = jiraHeaderEnum.getCode();
-                    if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Project.getCode())) {
-                        // Map the package as project
-                        value = packageMap.get(value);
-                    } else if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Developer.getCode())) {
-                        // Team of the developer
-                        JiraUserEnum user = JiraUserEnum.findUser(value);
-                        if (user == null) {
-                            System.out.printf("Error when find user: %s\n", value);
-                        } else {
-                            team = user.getTeam();
-                        }
-                    }
-
-                    values[i++] = value;
-                }
-
-                // Group as team
-                List<String[]> stroies = jiraValues.get(team);
-                if (stroies == null) {
-                    stroies = new ArrayList<String[]>();
-                    jiraValues.put(team, stroies);
-                }
-                stroies.add(values);
+            String[] element = elementList.get(rowStart++);
+            if (ArrayUtils.isEmpty(element)) {
+                continue;
             }
-        }
-
-        String[] headers = new String[headerMap.size()];
-        int i = 0;
-        for (JiraHeaderEnum jiraHeader : jiraHeaders) {
-            headers[i++] = jiraHeader.getCode();
-        }
-
-        // Write to excel
-        for (Map.Entry<String, List<String[]>> teamStories : jiraValues.entrySet()) {
-            sheet = ExcelUtil.getOrCreateSheet(wb, teamStories.getKey());
-            if (sheet == null) {
-                System.out.printf("Error when write team stories: %s\n", teamStories.getKey());
+            // Only process requirement as story
+            if (!EATypeEnum.isMappedToStory(element[EAHeaderEnum.Type.getIndex()])
+                    || !EAStatusEnum.isMappedToStory(element[EAHeaderEnum.Status.getIndex()])) {
                 continue;
             }
 
-            // headers
-            int row = 0;
-            ExcelUtil.fillRow(sheet, row++, headers);
+            // Fill jira dataMap
+            String team = "Jira";
+            String[] values = new String[jiraHeaders.length];
+            int headerIndex = 0;
 
-            // data
-            for (String[] story : teamStories.getValue()) {
-                ExcelUtil.fillRow(sheet, row++, story);
+            for (JiraHeaderEnum jiraHeaderEnum : jiraHeaders) {
+                if (jiraHeaderEnum == null || StrUtils.isEmpty(jiraHeaderEnum.getCode())) {
+                    continue;
+                }
+
+                EAHeaderEnum eaHeader = headerMap.get(jiraHeaderEnum);
+                String value = eaHeader == null ? null : element[eaHeader.getIndex()];
+                value = processValue(jiraHeaderEnum, value);
+
+                // Special values
+                String jiraHeader = jiraHeaderEnum.getCode();
+                if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Project.getCode())) {
+                    // The project maps with file name
+                    value = project.getName();
+                } else if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Developer.getCode())) {
+                    // Team of the developer
+                    JiraUserEnum user = JiraUserEnum.findUser(value);
+                    if (user == null) {
+                        System.out.printf("Error when find user: %s\n", value);
+                    } else {
+                        team = user.getTeam();
+                    }
+                }
+
+                values[headerIndex++] = value;
             }
+
+            // Group as team
+            List<String[]> stories = teamStoryListMap.get(team);
+            if (stories == null) {
+                stories = new ArrayList<String[]>();
+                teamStoryListMap.put(team, stories);
+            }
+            stories.add(values);
         }
     }
 }
