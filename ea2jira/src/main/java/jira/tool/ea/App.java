@@ -14,7 +14,7 @@ import java.util.*;
  * Hello world!
  */
 public class App {
-    public static String File_Prefix = "jira-transfer";
+    public static String File_Prefix = "";
     public static String File_Ext = ".csv";
     public static String File_Name = ".xlsx";
     public static String Folder_name = "";
@@ -28,7 +28,7 @@ public class App {
         Date time_start = new Date();
         Set<String> filePaths = new HashSet<String>() {{
 //            add(".\\");
-            add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹");
+            add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹\\jira_transfer");
         }};
 
         if (args != null) {
@@ -54,7 +54,14 @@ public class App {
             for (File f : files) {
                 // Check the date in file name
                 String fileName = f.getName();
+
+                // Read date in the file name
                 int extIndex = fileName.indexOf(File_Ext);
+                if (extIndex < 4) {
+                    continue;
+                }
+
+                // Skip the old files
                 String strDate = fileName.substring(extIndex - 4, extIndex);
                 if (strDate.compareTo(strToday) != 0) {
                     continue;

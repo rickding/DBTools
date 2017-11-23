@@ -3,6 +3,7 @@ package jira.tool.ea;
 import dbtools.common.file.ExcelUtil;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -18,6 +19,9 @@ public class EA2Jira {
         }
 
         Map<String, String> packageMap = new HashMap<String, String>();
+        int nameIndex = EAHeaderEnum.Name.getIndex();
+        int keyIndex = EAHeaderEnum.Key.getIndex();
+
         while (rowStart <= rowEnd) {
             Row row = sheet.getRow(rowStart++);
             if (row != null) {
@@ -26,11 +30,25 @@ public class EA2Jira {
                     continue;
                 }
 
-                String name = row.getCell(EAHeaderEnum.Name.getIndex()).getStringCellValue();
-                String key = row.getCell(EAHeaderEnum.Key.getIndex()).getStringCellValue();
+                Cell nameCell = row.getCell(nameIndex);
+                Cell keyCell = row.getCell(keyIndex);
+                if (nameCell == null || keyCell == null) {
+                    System.out.printf("Error when get cell in findPackages: %d, %d, %d\n", nameIndex, keyIndex, rowStart);
+                    continue;
+                }
+
+                String name = null, key = null;
+                try {
+                    name = nameCell.getStringCellValue();
+                    key = keyCell.getStringCellValue();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.printf("Error when get cell values: %d, %d, %s, %s\n", nameIndex, keyIndex, name, key);
+                }
 
                 if (StrUtils.isEmpty(name) || StrUtils.isEmpty(key)) {
                     System.out.printf("Error when empty package and key: %s, %s\n", name, key);
+                    continue;
                 }
 
                 packageMap.put(key, name);
@@ -48,7 +66,7 @@ public class EA2Jira {
         String jiraHeader = jiraHeaderEnum.getCode();
 
         // Find the user name
-        for (JiraHeaderEnum tmp : new JiraHeaderEnum[] {JiraHeaderEnum.Developer, JiraHeaderEnum.Owner, JiraHeaderEnum.PM}) {
+        for (JiraHeaderEnum tmp : new JiraHeaderEnum[]{JiraHeaderEnum.Developer, JiraHeaderEnum.Owner, JiraHeaderEnum.PM}) {
             if (jiraHeader.equalsIgnoreCase(tmp.getCode())) {
                 JiraUserEnum user = JiraUserEnum.findUser(value);
                 if (user == null) {
@@ -77,14 +95,14 @@ public class EA2Jira {
                 } catch (Exception e) {
                     System.out.printf("Error when process value: %s, %s\n", jiraHeader, value);
                 }
-                return String.format("%d", (int)(v * base));
+                return String.format("%d", (int) (v * base));
             }
         }
 
         // DueDate
-        for (JiraHeaderEnum tmp : new JiraHeaderEnum[] {JiraHeaderEnum.DueDate, JiraHeaderEnum.QAStartDate, JiraHeaderEnum.QAFinishDate}) {
+        for (JiraHeaderEnum tmp : new JiraHeaderEnum[]{JiraHeaderEnum.DueDate, JiraHeaderEnum.QAStartDate, JiraHeaderEnum.QAFinishDate}) {
             if (jiraHeader.equalsIgnoreCase(tmp.getCode())) {
-                String[] formats = new String[] {
+                String[] formats = new String[]{
                         "yyyyMMdd", "yyyy.MM.dd", "yyyy-MM-dd", "yyyy/MM/dd",
                         "yyMMdd", "yy.MM.dd", "yy-MM-dd", "yy/MM/dd",
                         "MMdd", "MM.dd", "MM-dd", "MM/dd"
