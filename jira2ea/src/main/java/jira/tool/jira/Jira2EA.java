@@ -165,8 +165,72 @@ public class Jira2EA {
 
         if (!newMapped) {
             newElements.clear();
+        } else {
+            // Add the parent elements
+            addParentElements(newElements, elements);
         }
         return newElements;
+    }
+
+    private static void addParentElements(List<String[]> childrenElements, List<String[]> parentElements) {
+        if (childrenElements == null || childrenElements.size() <= 1 || parentElements == null || parentElements.size() <= 1) {
+            return;
+        }
+
+        // Both elements list have headers at first line
+        int startIndex = 1;
+
+        // Find the parent key, map key to children elements
+        Set<String> parentKeySet = new HashSet<String>(childrenElements.size());
+        Set<String> keySet = new HashSet<String>(childrenElements.size());
+
+        for (int i = startIndex; i < childrenElements.size(); i++) {
+            String[] element = childrenElements.get(i);
+            String key = element[EAHeaderEnum.ParentKey.getIndex()];
+            if (!StrUtils.isEmpty(key)) {
+                parentKeySet.add(key);
+            }
+
+            key = element[EAHeaderEnum.Key.getIndex()];
+            if (!StrUtils.isEmpty(key)) {
+                keySet.add(key);
+            }
+        }
+
+        // Remove the existed parent elements
+        parentKeySet.removeAll(keySet);
+        if (parentKeySet.size() <= 0) {
+            return;
+        }
+
+        // Generate the map: key to parent elements
+        Map<String, String[]> mapParentKeyElements = new HashMap<String, String[]>(parentElements.size());
+        for (int i = startIndex; i < parentElements.size(); i++) {
+            String[] element = parentElements.get(i);
+            String key = element[EAHeaderEnum.Key.getIndex()];
+            if (!StrUtils.isEmpty(key)) {
+                mapParentKeyElements.put(key, element);
+            }
+        }
+
+        // Loop to find the parent elements
+        for (String key : parentKeySet) {
+            while (!keySet.contains(key)) {
+                if (!mapParentKeyElements.containsKey(key)) {
+                    System.out.printf("Error when find parent element: %s", key);
+                    break;
+                }
+
+                String[] parentElement = mapParentKeyElements.get(key);
+                childrenElements.add(startIndex, parentElement);
+                keySet.add(key);
+
+                key = parentElement[EAHeaderEnum.ParentKey.getIndex()];
+                if (StrUtils.isEmpty(key)) {
+                    break;
+                }
+            }
+        }
     }
 
     public static String[] generateUpdateJiraGUIDSSQL(Map<String, String> updateJiraGuidMap, Map<String, String> issueKeyIdMap) {
