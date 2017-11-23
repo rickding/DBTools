@@ -13,7 +13,7 @@ public class EADateUtil {
         if (StrUtils.isEmpty(strDate)) {
             return null;
         }
-        return DateUtils.parse(strDate, EA_Date_Format);
+        return DateUtils.parse(strDate.trim(), EA_Date_Format);
     }
 
     public static boolean needsToBeProcessed(String strDate) {
@@ -21,7 +21,7 @@ public class EADateUtil {
             return false;
         }
 
-        Date date = parse(strDate);
+        Date date = parse(strDate.trim());
         if (date == null) {
             System.out.printf("Error when parse date: %s", strDate);
             return false;

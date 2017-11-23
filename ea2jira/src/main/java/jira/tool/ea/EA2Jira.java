@@ -152,6 +152,11 @@ public class EA2Jira {
                 continue;
             }
 
+            // Check if it has jira issue key already
+            if (JiraIssueKeyUtil.isValid(element[EAHeaderEnum.JiraIssueKey.getIndex()])) {
+                continue;
+            }
+
             // Fill jira dataMap
             String team = "Can't find Jira User";
             String[] values = new String[jiraHeaders.length];
