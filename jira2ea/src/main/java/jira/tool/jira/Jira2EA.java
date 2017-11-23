@@ -83,10 +83,6 @@ public class Jira2EA {
             add(headers);
         }};
 
-        if (noGUIDFromJiraMap != null) {
-            noGUIDFromJiraMap.clear();
-        }
-
         boolean newMapped = false;
         List<String> noStoryFromEA = new ArrayList<String>();
         List<String> noGUIDFromJira = new ArrayList<String>();

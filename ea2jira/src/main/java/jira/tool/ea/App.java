@@ -17,7 +17,7 @@ import java.util.*;
 public class App {
     private static String File_Prefix = "";
     private static String File_Ext = ".csv";
-    private static String File_Name = "jira-transfer-%s.xlsx";
+    private static String File_Name = "jira-transfer-%s-create-story.xlsx";
     private static String Folder_name = "";
 
     private static String Sheet_EA = "ea-%s";

@@ -15,7 +15,8 @@ import java.util.*;
  */
 public class App {
     private static String Jira_File = "EA-PMO-all (上海欧电云信息科技有限公司).csv";
-    private static String Sql_File_Name = ".sql";
+    private static String Sql_File_Name = "jira-transfer-%s-update-guid.sql";
+    private static String strToday = DateUtils.format(new Date(), "MMdd");
 
     private static String File_Prefix = "";
     private static String File_Ext = ".csv";
@@ -64,6 +65,7 @@ public class App {
             }
 
             // Update and save
+            Map<String, String> noGuidFromJiraMap = new HashMap<String, String>();
             for (File f : files) {
                 String fileName = f.getName();
 
@@ -93,7 +95,6 @@ public class App {
                 }
 
                 // Process
-                Map<String, String> noGuidFromJiraMap = new HashMap<String, String>();
                 elements = Jira2EA.updateStoryToElement(elements, guidStoryMap, noGuidFromJiraMap);
                 if (elements != null) {
                     // Only the needed values
@@ -103,21 +104,21 @@ public class App {
                     String outputFileName = FileUtils.getOutputFileName(file, f, File_Ext, File_Name, Folder_name);
                     CsvUtil.saveToFile(elements, outputFileName);
                     projects.add(f.getPath());
-
-                    // Generate sql
-                    String[] sqlArray = Jira2EA.generateUpdateJiraGUIDSSQL(noGuidFromJiraMap, issueKeyIdMap);
-                    if (sqlArray != null && sqlArray.length > 1) {
-                        outputFileName = FileUtils.getOutputFileName(file, f, File_Ext, Sql_File_Name, Folder_name);
-                        FileWriter writer = new FileWriter(outputFileName);
-
-                        if (writer.open()) {
-                            writer.writeLines(sqlArray);
-                        }
-                        writer.close();
-                    }
                 } else {
                     System.out.printf("Fail to process file: %s\n", f.getPath());
                 }
+            }
+
+            // Generate sql
+            String[] sqlArray = Jira2EA.generateUpdateJiraGUIDSSQL(noGuidFromJiraMap, issueKeyIdMap);
+            if (sqlArray != null && sqlArray.length > 1) {
+                String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(Sql_File_Name, strToday), Folder_name);
+                FileWriter writer = new FileWriter(outputFileName);
+
+                if (writer.open()) {
+                    writer.writeLines(sqlArray);
+                }
+                writer.close();
             }
         }
 
