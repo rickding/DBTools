@@ -16,11 +16,17 @@ public enum EAHeaderEnum {
     JiraIssueKey("Stereotype", 7),
     Status("Status", 8),
     Notes("Notes", 9),
+
+    CreatedDate("Created Date", -1),
+    ModifiedDate("Modified Date", -1),
+
     Key("CSV_KEY", 10),
     ParentKey("CSV_PARENT_KEY", 11);
 
     private static EAHeaderEnum[] list = new EAHeaderEnum[]{
-            GUID, Type, Name, Author, Estimation, DueDate, Owner, JiraIssueKey, Status, Notes, Key, ParentKey,
+            GUID, Type, Name, Author, Estimation, DueDate, Owner, JiraIssueKey, Status, Notes,
+            CreatedDate, ModifiedDate,
+            Key, ParentKey,
     };
 
     // Fill the index
@@ -37,7 +43,12 @@ public enum EAHeaderEnum {
 
         // Find the index
         for (EAHeaderEnum header : list) {
-            header.setIndex(strHeaders.indexOf(header.getCode().toLowerCase()));
+            int index = strHeaders.indexOf(header.getCode().toLowerCase());
+            header.setIndex(index);
+
+            if (index < 0 || index >= strHeaders.size()) {
+                System.out.printf("Can't find header: %s, %s", header.getCode(), strHeaders.toString());
+            }
         }
     }
 

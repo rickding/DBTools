@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class EA2Jira {
+    public static String Jira_Date_Format = "yyyy/MM/dd";
     private static Date today = DateUtils.parse(DateUtils.format(new Date(), "yyyy-MM-dd"), "yyyy-MM-dd");
 
     private static String processValue(JiraHeaderEnum jiraHeaderEnum, String value) {
@@ -93,7 +94,7 @@ public class EA2Jira {
                             }
 
                             // Format date
-                            value = DateUtils.format(date, JiraHeaderEnum.Jira_Date_Format);
+                            value = DateUtils.format(date, Jira_Date_Format);
                             return value;
                         }
                     } catch (Exception e) {
@@ -138,9 +139,16 @@ public class EA2Jira {
             if (ArrayUtils.isEmpty(element)) {
                 continue;
             }
-            // Only process requirement as story
+
+            // Only process implemented requirement as story
             if (!EATypeEnum.isMappedToStory(element[EAHeaderEnum.Type.getIndex()])
                     || !EAStatusEnum.isMappedToStory(element[EAHeaderEnum.Status.getIndex()])) {
+                continue;
+            }
+
+            // Check the created and modified dates
+            if (!EADateUtil.needsToBeProcessed(element[EAHeaderEnum.CreatedDate.getIndex()])
+                    && !EADateUtil.needsToBeProcessed(element[EAHeaderEnum.ModifiedDate.getIndex()])) {
                 continue;
             }
 
