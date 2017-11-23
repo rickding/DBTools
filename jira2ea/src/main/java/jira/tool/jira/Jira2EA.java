@@ -175,7 +175,7 @@ public class Jira2EA {
         }
 
         List<String> sqlList = new ArrayList<String>(updateJiraGuidMap.size());
-        sqlList.add("set @valueId = (select IFNULL(max(id), 0) from jiradb.customfieldvalue);");
+        sqlList.add("set @valueId = (select IFNULL(max(id), 0) from jiradb.customfieldvalue where id < 10424);");
 
         for (Map.Entry<String, String> jiraGuid : updateJiraGuidMap.entrySet()) {
             String issueId = issueKeyIdMap.get(jiraGuid.getValue());
