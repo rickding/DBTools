@@ -7,6 +7,7 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.List;
 
 /**
  * Created by user on 2017/10/1.
@@ -58,6 +59,21 @@ public class FileWriter {
             writer = null;
         }
         System.out.printf("FileWriter close successfully: %s\n", filePath);
+    }
+
+    public void writeLines(List<String> strList) {
+        if (!isOpen()) {
+            System.out.println("Please call open() firstly.");
+            return;
+        }
+
+        if (strList == null || strList.size() <= 0) {
+            return;
+        }
+
+        for (String str : strList) {
+            writeLine(str);
+        }
     }
 
     public void writeLines(String[] strs) {

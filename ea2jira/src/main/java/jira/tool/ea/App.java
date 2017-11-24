@@ -3,6 +3,7 @@ package jira.tool.ea;
 import dbtools.common.file.CsvUtil;
 import dbtools.common.file.ExcelUtil;
 import dbtools.common.file.FileUtils;
+import dbtools.common.file.FileWriter;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -21,6 +22,7 @@ public class App {
     private static String Folder_name = "";
 
     private static String Jira_File = "EA-PMO-all (上海欧电云信息科技有限公司).csv";
+    private static String Lable_File_Name = "jira-transfer-%s-add-label.txt";
     private static String Sheet_EA = "ea-%s";
     private static String strToday = DateUtils.format(new Date(), "MMdd");
 
@@ -44,10 +46,12 @@ public class App {
 
         // Get the guid story key map firstly
         Map<String, String> guidStoryMap = null;
+        Set<String> pmoLabelKeySet = new HashSet<String>();
+
         for (String filePath : filePaths) {
             File file = new File(filePath);
             if (file.isDirectory()) {
-                guidStoryMap = EA2Jira.getGUIDStoryMap(String.format("%s\\%s", filePath, Jira_File), null);
+                guidStoryMap = EA2Jira.getGUIDStoryMap(String.format("%s\\%s", filePath, Jira_File), null, pmoLabelKeySet);
                 if (guidStoryMap != null && guidStoryMap.size() > 0) {
                     break;
                 }
@@ -69,6 +73,8 @@ public class App {
             }
 
             Map<String, List<String[]>> teamStoryListMap = new HashMap<String, List<String[]>>();
+            List<String> preCreatedStoryList = new ArrayList<String>();
+
             for (File f : files) {
                 // Check the date in file name
                 String fileName = f.getName();
@@ -97,8 +103,19 @@ public class App {
                 ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, String.format(Sheet_EA, f.getName())), records);
 
                 // Process
-                EA2Jira.process(project, records, teamStoryListMap, guidStoryMap);
+                EA2Jira.process(project, records, teamStoryListMap, guidStoryMap, preCreatedStoryList, pmoLabelKeySet);
                 projects.add(f.getPath());
+            }
+
+            // Save the existed story id for label
+            if (preCreatedStoryList != null && preCreatedStoryList.size() > 0) {
+                String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(Lable_File_Name, strToday), Folder_name);
+                FileWriter writer = new FileWriter(outputFileName);
+
+                if (writer.open()) {
+                    writer.writeLine(preCreatedStoryList.toString());
+                }
+                writer.close();
             }
 
             // Fill stories to wb
