@@ -51,7 +51,7 @@ public class App {
         for (String filePath : filePaths) {
             File file = new File(filePath);
             if (file.isDirectory()) {
-                guidStoryMap = EA2Jira.getGUIDStoryMap(String.format("%s\\%s", filePath, Jira_File), null, pmoLabelKeySet);
+                guidStoryMap = JiraStoryUtil.getGUIDStoryMap(String.format("%s\\%s", filePath, Jira_File), null, pmoLabelKeySet);
                 if (guidStoryMap != null && guidStoryMap.size() > 0) {
                     break;
                 }
