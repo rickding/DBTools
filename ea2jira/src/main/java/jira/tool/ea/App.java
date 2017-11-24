@@ -133,7 +133,7 @@ public class App {
                 for (Map.Entry<String, List<String[]>> teamStories : teamStoryListMap.entrySet()) {
                     List<String[]> stories = teamStories.getValue();
                     stories.add(0, headers);
-                    ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, teamStories.getKey()), stories);
+                    ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, String.format("%s-%d", teamStories.getKey(), stories.size() - 1)), stories);
                 }
 
                 // Save file
