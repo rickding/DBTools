@@ -63,6 +63,8 @@ public enum JiraUserEnum {
     Wangxiaolei("SPX", "wangxiaolei", new String[]{"王晓磊"}),
 
     Luoyong("SJX", "luoyong", new String[]{"罗勇"}),
+    Wudi("SJX", "wudi", new String[]{"吴迪"}),
+    Heshunhua("SJX", "heshunhua", new String[]{"何顺华"}),
     Chenshoujiang("SJX", "chenshoujiang", new String[]{"陈寿江"}),
     Zengqing("SJX", "zengqing", new String[]{"曾庆", "zenqing"});
 
@@ -76,7 +78,7 @@ public enum JiraUserEnum {
             Renqiuming, Kangyufeng, Fuyifan, Shiyulong,
             Huangkemin, Chenkaiqiang, Xiongwenqiang, Zhaowei, Hezhifeng, Rongjianlong,
             Gexingyuan, Jiangwenqi, Chencheng, Dengxiaojie, Wangxiaolei,
-            Luoyong, Chenshoujiang, Zengqing,
+            Luoyong, Wudi, Heshunhua, Chenshoujiang, Zengqing,
     };
 
     public static JiraUserEnum findUser(String name) {

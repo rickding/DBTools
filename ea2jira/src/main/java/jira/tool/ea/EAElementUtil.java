@@ -53,12 +53,17 @@ public class EAElementUtil {
 
         // headers at first line
         int startIndex = 1;
+        int keyIndex = EAHeaderEnum.Key.getIndex();
 
         // Generate the map: key to parent elements
         Map<String, String[]> keyElementMap = new HashMap<String, String[]>(elements.size());
         for (int i = startIndex; i < elements.size(); i++) {
             String[] element = elements.get(i);
-            String key = element[EAHeaderEnum.Key.getIndex()];
+            if (ArrayUtils.isEmpty(element) || keyIndex < 0 || keyIndex >= element.length) {
+                continue;
+            }
+
+            String key = element[keyIndex];
             if (!StrUtils.isEmpty(key)) {
                 keyElementMap.put(key, element);
             }

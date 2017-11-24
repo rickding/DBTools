@@ -61,7 +61,7 @@ public class FileWriter {
         System.out.printf("FileWriter close successfully: %s\n", filePath);
     }
 
-    public void writeLines(List<String> strList) {
+    public void writeLine(List<String> strList) {
         if (!isOpen()) {
             System.out.println("Please call open() firstly.");
             return;
@@ -73,6 +73,15 @@ public class FileWriter {
 
         for (String str : strList) {
             writeLine(str);
+        }
+    }
+
+    public void writeLines(List<String[]> strs) {
+        if (strs == null || strs.size() <= 0) {
+            return;
+        }
+        for (String[] str : strs) {
+            writeLines(str);
         }
     }
 

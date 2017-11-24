@@ -231,12 +231,12 @@ public class EA2Jira {
                     // Include parent path
                     String parentPath = EAElementUtil.getParentPath(element, keyElementMap);
                     if (!StrUtils.isEmpty(parentPath)) {
-                        value = StrUtils.isEmpty(value) ? parentPath : String.format("EA package: %s \n%s", parentPath, value);
+                        value = StrUtils.isEmpty(value) ? parentPath : String.format("EA package: %s \n\n%s", parentPath, value);
                     }
 
                     // Include project name
                     if(!StrUtils.isEmpty(projectName)) {
-                        value = StrUtils.isEmpty(value) ? projectName : String.format("EA file: %s \n%s", projectName, value);
+                        value = StrUtils.isEmpty(value) ? projectName : String.format("EA file: %s \n\n%s", projectName, value);
                     }
                 } else if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Title.getCode())) {
                     if (!StrUtils.isEmpty(value) && !StrUtils.isEmpty(value.trim())) {

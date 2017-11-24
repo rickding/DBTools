@@ -6,7 +6,6 @@ import dbtools.common.file.FileUtils;
 import dbtools.common.file.FileWriter;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
@@ -18,11 +17,12 @@ import java.util.*;
 public class App {
     private static String File_Prefix = "";
     private static String File_Ext = ".csv";
-    private static String File_Name = "jira-transfer-%s-create-story.xlsx";
+    private static String File_Name = "%s-create-story-%d.xlsx";
+    private static String Team_File_name = "%s-create-story-%s-%d.csv";
     private static String Folder_name = "";
 
     private static String Jira_File = "EA-PMO-all (上海欧电云信息科技有限公司).csv";
-    private static String Lable_File_Name = "jira-transfer-%s-add-label.txt";
+    private static String Label_File_Name = "%s-add-label-%d.txt";
     private static String Sheet_EA = "ea-%s";
     private static String strToday = DateUtils.format(new Date(), "MMdd");
 
@@ -109,7 +109,7 @@ public class App {
 
             // Save the existed story id for label
             if (preCreatedStoryList != null && preCreatedStoryList.size() > 0) {
-                String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(Lable_File_Name, strToday), Folder_name);
+                String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(Label_File_Name, strToday, preCreatedStoryList.size()), Folder_name);
                 FileWriter writer = new FileWriter(outputFileName);
 
                 if (writer.open()) {
@@ -130,14 +130,21 @@ public class App {
                 }
 
                 // Write data to excel
+                int count = 0;
                 for (Map.Entry<String, List<String[]>> teamStories : teamStoryListMap.entrySet()) {
                     List<String[]> stories = teamStories.getValue();
+                    count += stories.size();
+
                     stories.add(0, headers);
                     ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, String.format("%s-%d", teamStories.getKey(), stories.size() - 1)), stories);
+
+                    // Save separate csv files
+                    String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(Team_File_name, strToday, teamStories.getKey(), stories.size() - 1), Folder_name);
+                    CsvUtil.saveToFile(stories, outputFileName);
                 }
 
                 // Save file
-                String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(File_Name, strToday), Folder_name);
+                String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(File_Name, strToday, count), Folder_name);
                 ExcelUtil.saveToFile(wb, outputFileName);
             }
         }
