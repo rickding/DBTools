@@ -17,6 +17,68 @@ public class EA2Jira {
     private static String Jira_Header_Label = "标签";
     private static String PMO_Label = "PMO-EA导入（禁止私动）";
 
+    private static String processEstimation(String value) {
+        if (StrUtils.isEmpty(value) || StrUtils.isEmpty(value.trim())) {
+            return null;
+        }
+
+        value = value.trim().toLowerCase();
+        try {
+            int base = 0;
+            double v = 0.0;
+            if (value.endsWith("h")) {
+                v = Double.valueOf(value.substring(0, value.length() - 1));
+                base = 3600;
+            } else if (value.endsWith("d")) {
+                v = Double.valueOf(value.substring(0, value.length() - 1));
+                base = 8 * 3600;
+            } else if (value.endsWith("w")) {
+                v = Double.valueOf(value.substring(0, value.length() - 1));
+                base = 5 * 8 * 3600;
+            } else {
+                v = Double.valueOf(value);
+                base = 8 * 3600; // default as a day
+            }
+
+            int tmp = (int) (v * base);
+            return tmp <= 0 ? null : String.format("%d", tmp);
+        } catch (Exception e) {
+            System.out.printf("Error when process estimation: %s\n", value);
+        }
+        return null;
+    }
+
+    private static String processDueDate(String value) {
+        if (StrUtils.isEmpty(value) || StrUtils.isEmpty(value.trim())) {
+            return null;
+        }
+
+        value = value.trim();
+        for (String format : new String[]{
+                "yyyyMMdd", "yyyy.MM.dd", "yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MMdd",
+                "yyMMdd", "yy.MM.dd", "yy-MM-dd", "yy/MM/dd",
+                "MMdd", "MM.dd", "MM-dd", "MM/dd"
+        }) {
+            Date date = DateUtils.parse(value, format, false);
+            if (date != null) {
+                // Adjust the year if it's not set
+                if (format.length() < 6) {
+                    String strDate = DateUtils.format(date, "MM-dd");
+                    int year = Integer.valueOf(DateUtils.format(today, "yyyy"));
+                    int month = Integer.valueOf(DateUtils.format(today, "MM"));
+                    if (month >= 12 && strDate.compareTo(DateUtils.format(today, "MM-dd")) < 0) {
+                        year++;
+                    }
+                    date = DateUtils.parse(String.format("%4d-%s", year, strDate), "yyyy-MM-dd");
+                }
+
+                // Format date
+                return DateUtils.format(date, Jira_Date_Format);
+            }
+        }
+        return null;
+    }
+
     private static String processValue(JiraHeaderEnum jiraHeaderEnum, String value) {
         if (jiraHeaderEnum == null || StrUtils.isEmpty(jiraHeaderEnum.getCode())) {
             return value;
@@ -38,76 +100,33 @@ public class EA2Jira {
 
         // Estimation
         if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Estimation.getCode())) {
-            if (!StrUtils.isEmpty(value)) {
-                int base = 8 * 3600; // default as a day
-                double v = 1.0; // default as one
-                value = value.toLowerCase();
-                try {
-                    if (value.endsWith("h")) {
-                        v = Double.valueOf(value.substring(0, value.length() - 1));
-                        base = 3600;
-                    } else if (value.endsWith("d")) {
-                        v = Double.valueOf(value.substring(0, value.length() - 1));
-                        base = 8 * 3600;
-                    } else if (value.endsWith("w")) {
-                        v = Double.valueOf(value.substring(0, value.length() - 1));
-                        base = 5 * 8 * 3600;
-                    } else {
-                        v = Double.valueOf(value);
-                    }
-                } catch (Exception e) {
-                    System.out.printf("Error when process value: %s, %s\n", jiraHeader, value);
-                }
-                return String.format("%d", (int) (v * base));
-            }
+            return processEstimation(value);
         }
 
         // DueDate
         for (JiraHeaderEnum tmp : new JiraHeaderEnum[]{JiraHeaderEnum.DueDate, JiraHeaderEnum.QAStartDate, JiraHeaderEnum.QAFinishDate}) {
             if (jiraHeader.equalsIgnoreCase(tmp.getCode())) {
-                String[] formats = new String[]{
-                        "yyyyMMdd", "yyyy.MM.dd", "yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MMdd",
-                        "yyMMdd", "yy.MM.dd", "yy-MM-dd", "yy/MM/dd",
-                        "MMdd", "MM.dd", "MM-dd", "MM/dd"
-                };
-                for (String format : formats) {
-                    try {
-                        Date date = DateUtils.parse(value, format, false);
-                        if (date != null) {
-                            // Adjust the year if it's not set
-                            if (format.length() < 8) {
-                                String strDate = DateUtils.format(date, "MM-dd");
-                                int year = Integer.valueOf(DateUtils.format(today, "yyyy"));
-                                int month = Integer.valueOf(DateUtils.format(today, "MM"));
-                                if (month >= 12 && strDate.compareTo(DateUtils.format(today, "MM-dd")) < 0) {
-                                    year++;
-                                }
-                                date = DateUtils.parse(String.format("%4d-%s", year, strDate), "yyyy-MM-dd");
-                            }
+                value = processDueDate(value);
 
-                            // QA start 2 days earlier
-                            if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.QAStartDate.getCode())) {
-                                int days = DateUtils.diffDays(date, today);
-                                if (days > 3) {
-                                    days = 2;
-                                } else if (days > 1) {
-                                    days = 1;
-                                } else {
-                                    days = 0;
-                                }
+                // QA start 2 days earlier
+                if (!StrUtils.isEmpty(value) && jiraHeader.equalsIgnoreCase(JiraHeaderEnum.QAStartDate.getCode())) {
+                    Date date = DateUtils.parse(value, Jira_Date_Format);
+                    int days = DateUtils.diffDays(date, today);
+                    if (days > 3) {
+                        days = 2;
+                    } else if (days > 1) {
+                        days = 1;
+                    } else {
+                        days = 0;
+                    }
 
-                                if (days > 0) {
-                                    date = DateUtils.adjustDate(date, -days);
-                                }
-                            }
-
-                            // Format date
-                            value = DateUtils.format(date, Jira_Date_Format);
-                            return value;
-                        }
-                    } catch (Exception e) {
+                    if (days > 0) {
+                        date = DateUtils.adjustDate(date, -days);
+                        value = DateUtils.format(date, Jira_Date_Format);
                     }
                 }
+
+                return value;
             }
         }
 
@@ -121,6 +140,7 @@ public class EA2Jira {
 
     /**
      * Return the processed story list
+     *
      * @param project
      * @param elementList
      * @param teamStoryListMap
@@ -163,12 +183,18 @@ public class EA2Jira {
                 continue;
             }
 
+            // Check if the estimation and due-date are valid
+            if (StrUtils.isEmpty(processEstimation(element[EAHeaderEnum.Estimation.getIndex()]))
+                    || StrUtils.isEmpty(processDueDate(element[EAHeaderEnum.DueDate.getIndex()]))) {
+                continue;
+            }
+
             // Check if it has jira issue key already
             String issueKey = element[EAHeaderEnum.JiraIssueKey.getIndex()];
             if (JiraIssueKeyUtil.isValid(issueKey)) {
                 issueKey = issueKey.trim().toUpperCase();
-                // Return the pre-created story
-                if (preCreatedStoryList != null && (pmoLabelKeySet == null || !pmoLabelKeySet.contains(issueKey))) {
+                // Return the pre-created story if it has no pmo label
+                if (preCreatedStoryList != null && !preCreatedStoryList.contains(issueKey) && (pmoLabelKeySet == null || !pmoLabelKeySet.contains(issueKey))) {
                     preCreatedStoryList.add(issueKey);
                 }
                 continue;
@@ -272,7 +298,7 @@ public class EA2Jira {
 
             String story = values[keyIndex];
             String id = values[idIndex];
-            if (StrUtils.isEmpty(story) || StrUtils.isEmpty(id) || !JiraIssueKeyUtil.isValid(story) ) {
+            if (StrUtils.isEmpty(story) || StrUtils.isEmpty(id) || !JiraIssueKeyUtil.isValid(story)) {
                 continue;
             }
 

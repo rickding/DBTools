@@ -47,7 +47,7 @@ public enum EAHeaderEnum {
             header.setIndex(index);
 
             if (index < 0 || index >= strHeaders.size()) {
-                System.out.printf("Can't find header: %s, %s", header.getCode(), strHeaders.toString());
+                System.out.printf("Can't find header: %s, %s\n", header.getCode(), strHeaders.toString());
             }
         }
     }

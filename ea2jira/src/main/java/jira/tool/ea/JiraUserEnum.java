@@ -27,6 +27,7 @@ public enum JiraUserEnum {
 
     Wangshanliang("Mgr", "wangshanliang", new String[]{"王善良"}),
     Wanganqing("Mgr", "wanganqing", new String[]{"王安庆"}),
+    Caoshusheng("APP", "caoshusheng", new String[]{"曹树胜"}),
 
     Tanbin("AA", "tanbin", new String[]{"谭镔", "谭彬"}),
     Shengjinmiao("YUYAN", "shengjinmiao", new String[]{"盛金苗"}),
@@ -68,7 +69,7 @@ public enum JiraUserEnum {
     private static JiraUserEnum[] userArray = new JiraUserEnum[] {
             Luting, Caohong, Wangzhen, Zhangqie, Zhangtan, Qixiaosen, Wuxianfeng, Guipeng, Rentao, Liuxuanyuan,
             Mengwei, Xuechao, Wangxinyuan, Zhanpengfei, Wenchangxuan,
-            Wangshanliang, Wanganqing,
+            Wangshanliang, Wanganqing, Caoshusheng,
             Tanbin, Shengjinmiao, Chenying,
             Wangdongfang, Churongcheng, Chenliangtian,
             Zengfenghua, Yeyuqiang, Zhufeng, Liutong, Wangchen, Fanjinxiang,

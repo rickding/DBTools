@@ -113,6 +113,7 @@ public class App {
                 FileWriter writer = new FileWriter(outputFileName);
 
                 if (writer.open()) {
+                    writer.writeLine(String.format("Total: %d", preCreatedStoryList.size()));
                     writer.writeLine(preCreatedStoryList.toString());
                 }
                 writer.close();
