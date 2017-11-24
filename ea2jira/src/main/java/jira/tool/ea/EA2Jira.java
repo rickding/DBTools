@@ -36,9 +36,10 @@ public class EA2Jira {
 
         // Estimation
         if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Estimation.getCode())) {
-            int base = 8 * 3600; // default as a day
-            double v = 1.0; // default as one
             if (!StrUtils.isEmpty(value)) {
+                int base = 8 * 3600; // default as a day
+                double v = 1.0; // default as one
+                value = value.toLowerCase();
                 try {
                     if (value.endsWith("h")) {
                         v = Double.valueOf(value.substring(0, value.length() - 1));
@@ -46,6 +47,9 @@ public class EA2Jira {
                     } else if (value.endsWith("d")) {
                         v = Double.valueOf(value.substring(0, value.length() - 1));
                         base = 8 * 3600;
+                    } else if (value.endsWith("w")) {
+                        v = Double.valueOf(value.substring(0, value.length() - 1));
+                        base = 5 * 8 * 3600;
                     } else {
                         v = Double.valueOf(value);
                     }
@@ -60,7 +64,7 @@ public class EA2Jira {
         for (JiraHeaderEnum tmp : new JiraHeaderEnum[]{JiraHeaderEnum.DueDate, JiraHeaderEnum.QAStartDate, JiraHeaderEnum.QAFinishDate}) {
             if (jiraHeader.equalsIgnoreCase(tmp.getCode())) {
                 String[] formats = new String[]{
-                        "yyyyMMdd", "yyyy.MM.dd", "yyyy-MM-dd", "yyyy/MM/dd",
+                        "yyyyMMdd", "yyyy.MM.dd", "yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MMdd",
                         "yyMMdd", "yy.MM.dd", "yy-MM-dd", "yy/MM/dd",
                         "MMdd", "MM.dd", "MM-dd", "MM/dd"
                 };

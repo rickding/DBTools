@@ -14,7 +14,7 @@ public class JiraIssueKeyUtil {
             return false;
         }
 
-        issueKey = issueKey.trim();
+        issueKey = issueKey.trim().toUpperCase();
         Matcher matcher = pattern.matcher(issueKey);
         if (matcher.find()) {
             String tmp = matcher.group();

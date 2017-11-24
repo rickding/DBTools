@@ -14,6 +14,8 @@ public class JiraIssueKeyUtilTest {
             put("", false);
             put("ABC-332", true);
             put("DDX-5503", true);
+            put("fnx-553", true);
+            put("xjx_6639", false);
         }};
 
         for (Map.Entry<String, Boolean> io : mapIO.entrySet()) {

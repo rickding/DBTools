@@ -18,7 +18,12 @@ public enum JiraUserEnum {
     Guipeng("PD", "guipeng", new String[]{"桂鹏"}),
     Rentao("PD", "rentao", new String[]{"任韬"}),
     Liuxuanyuan("PD", "liuxuanyuan", new String[]{"柳宣渊"}),
+
     Mengwei("PD", "mengwei", new String[]{"孟威"}),
+    Xuechao("PD", "xuechao", new String[]{"薛超"}),
+    Wangxinyuan("PD", "wangxinyuan", new String[]{"王心苑"}),
+    Zhanpengfei("PD", "zhanpengfei", new String[]{"詹鹏飞"}),
+    Wenchangxuan("PD", "wenchangxuan", new String[]{"温昌烜"}),
 
     Wangshanliang("Mgr", "wangshanliang", new String[]{"王善良"}),
     Wanganqing("Mgr", "wanganqing", new String[]{"王安庆"}),
@@ -36,34 +41,40 @@ public enum JiraUserEnum {
     Zhufeng("BI", "zhufeng", new String[]{"朱锋", "朱峰"}),
     Liutong("BI", "liutong", new String[]{"刘通"}),
     Wangchen("BI", "wangchen", new String[]{"王宸"}),
+    Fanjinxiang("BI", "fangjinxiang", new String[]{"范金祥"}),
 
     Renqiuming("TRADE", "renqiuming", new String[]{"任秋明"}),
     Kangyufeng("TRADE", "kangyufeng", new String[]{"康玉峰"}),
-    Fuyifan("TRADE", "Fuyifan", new String[]{"傅艺帆"}),
+    Fuyifan("TRADE", "fuyifan", new String[]{"傅艺帆"}),
+    Shiyulong("TRADE", "shiyulong", new String[]{"石玉龙"}),
 
     Huangkemin("GUIDE", "huangkemin", new String[]{"黄克敏"}),
     Chenkaiqiang("GUIDE", "chenkaiqiang", new String[]{"陈开强"}),
     Xiongwenqiang("GUIDE", "xiongwenqiang", new String[]{"熊文强"}),
     Zhaowei("GUIDE", "zhaowei", new String[]{"赵伟"}),
-    Hezhifeng("GUIDE", "hezhifeng", new String[]{"贺智峰"}),
+    Hezhifeng("GUIDE", "hezhifeng", new String[]{"贺智峰", "鹤智峰"}),
     Rongjianlong("GUIDE", "rongjianlong", new String[]{"戎剑龙"}),
 
     Gexingyuan("CWX", "gexingyuan", new String[]{"葛兴元"}),
     Jiangwenqi("SPX", "jiangwenqi", new String[]{"江文奇"}),
+    Chencheng("SPX", "chencheng", new String[]{"陈诚"}),
+    Dengxiaojie("SPX", "dengxiaojie", new String[]{"邓晓杰"}),
+    Wangxiaolei("SPX", "wangxiaolei", new String[]{"王晓磊"}),
 
     Luoyong("SJX", "luoyong", new String[]{"罗勇"}),
     Chenshoujiang("SJX", "chenshoujiang", new String[]{"陈寿江"}),
     Zengqing("SJX", "zengqing", new String[]{"曾庆", "zenqing"});
 
     private static JiraUserEnum[] userArray = new JiraUserEnum[] {
-            Luting, Caohong, Wangzhen, Zhangqie, Zhangtan, Qixiaosen, Wuxianfeng, Guipeng, Rentao, Liuxuanyuan, Mengwei,
+            Luting, Caohong, Wangzhen, Zhangqie, Zhangtan, Qixiaosen, Wuxianfeng, Guipeng, Rentao, Liuxuanyuan,
+            Mengwei, Xuechao, Wangxinyuan, Zhanpengfei, Wenchangxuan,
             Wangshanliang, Wanganqing,
             Tanbin, Shengjinmiao, Chenying,
             Wangdongfang, Churongcheng, Chenliangtian,
-            Zengfenghua, Yeyuqiang, Zhufeng, Liutong, Wangchen,
-            Renqiuming, Kangyufeng, Fuyifan,
+            Zengfenghua, Yeyuqiang, Zhufeng, Liutong, Wangchen, Fanjinxiang,
+            Renqiuming, Kangyufeng, Fuyifan, Shiyulong,
             Huangkemin, Chenkaiqiang, Xiongwenqiang, Zhaowei, Hezhifeng, Rongjianlong,
-            Gexingyuan, Jiangwenqi,
+            Gexingyuan, Jiangwenqi, Chencheng, Dengxiaojie, Wangxiaolei,
             Luoyong, Chenshoujiang, Zengqing,
     };
 
