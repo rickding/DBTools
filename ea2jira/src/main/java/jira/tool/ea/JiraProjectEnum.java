@@ -12,7 +12,7 @@ public enum JiraProjectEnum {
     ShiTaiBo("A-史泰博", new String[]{"史泰博"}),
 
     YunDianPu("A-海航", new String[]{"云店铺"}),
-    TechDebt("D-技术优化", new String[]{"大数据", "交易线", "用户线", "技术-商品线", "one instance改造方案"});
+    TechDebt("D-技术优化", new String[]{"技术优化", "大数据", "交易线", "用户线", "技术-商品线", "one instance改造方案"});
 
     private static JiraProjectEnum[] projectArray = new JiraProjectEnum[]{
             DeSheng, HaiHang, JingKeLong, OuPu, PingAn, ShiTaiBo,

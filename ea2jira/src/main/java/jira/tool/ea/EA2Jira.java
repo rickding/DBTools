@@ -157,6 +157,8 @@ public class EA2Jira {
         // Prepare firstly
         Map<JiraHeaderEnum, EAHeaderEnum> headerMap = JiraHeaderEnum.JiraEAHeaderMap;
         JiraHeaderEnum[] jiraHeaders = JiraHeaderEnum.getSortedHeaders();
+        Map<String, String[]> keyElementMap = EAElementUtil.getKeyElementMap(elementList);
+        String projectName = ArrayUtils.isEmpty(project.getPrefixes()) ? null : project.getPrefixes()[0];
 
         // Data to stories
         while (rowStart <= rowEnd) {
@@ -225,6 +227,34 @@ public class EA2Jira {
                     }
                 } else if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.EAGUID.getCode())) {
                     guid = value;
+                } else if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Description.getCode())) {
+                    // Include parent path
+                    String parentPath = EAElementUtil.getParentPath(element, keyElementMap);
+                    if (!StrUtils.isEmpty(parentPath)) {
+                        value = StrUtils.isEmpty(value) ? parentPath : String.format("EA package: %s \n%s", parentPath, value);
+                    }
+
+                    // Include project name
+                    if(!StrUtils.isEmpty(projectName)) {
+                        value = StrUtils.isEmpty(value) ? projectName : String.format("EA file: %s \n%s", projectName, value);
+                    }
+                } else if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Title.getCode())) {
+                    if (!StrUtils.isEmpty(value) && !StrUtils.isEmpty(value.trim())) {
+                        int level = value.length();
+                        if (level < 10) {
+                            if (level > 5) {
+                                level = 1;
+                            } else if (level > 3) {
+                                level = 2;
+                            } else {
+                                level = 3;
+                            }
+                            String parentPath = EAElementUtil.getParentPath(element, keyElementMap, level, 15);
+                            if (!StrUtils.isEmpty(parentPath)) {
+                                value = StrUtils.isEmpty(value) ? parentPath : String.format("%s: %s", parentPath, value);
+                            }
+                        }
+                    }
                 }
 
                 values[headerIndex++] = value;
