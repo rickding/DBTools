@@ -46,7 +46,7 @@ public class EAElementUtil {
         return null;
     }
 
-    public static int countRequirements(List<String[]> elements) {
+    public static int countRequirements(List<String[]> elements, boolean checkStereotype) {
         if (elements == null || elements.size() <= 0) {
             return 0;
         }
@@ -60,6 +60,11 @@ public class EAElementUtil {
 
             String type = element[typeIndex];
             if (!StrUtils.isEmpty(type) && EATypeEnum.Requirement.getCode().equalsIgnoreCase(type)) {
+                // check stereotype
+                if (checkStereotype && StrUtils.isEmpty(element[EAHeaderEnum.JiraIssueKey.getIndex()])) {
+                    continue;
+                }
+
                 count++;
             }
         }

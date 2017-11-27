@@ -99,7 +99,7 @@ public class App {
                 elements = Jira2EA.updateStoryToElement(elements, guidStoryMap, noGuidFromJiraMap);
                 if (elements != null) {
                     // Only the needed values
-                    int storyCount = EAElementUtil.countRequirements(elements);
+                    int storyCount = EAElementUtil.countRequirements(elements, true);
                     if (storyCount > 0) {
                         elements = Jira2EA.getSavedValues(elements);
 

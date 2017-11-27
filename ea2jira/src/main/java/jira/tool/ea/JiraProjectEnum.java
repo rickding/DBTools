@@ -18,8 +18,9 @@ public enum JiraProjectEnum {
     BI("D-技术优化", new String[]{"大数据", "技术-大数据"}),
     DGX("D-技术优化", new String[]{"导购线", "技术-导购线"}),
     JYX("D-技术优化", new String[]{"交易线", "技术-交易线"}),
-    SJX("D-技术优化", new String[]{"商家线", "技术-商家线", "用户线", "技术-用户线"}),
+    SJX("D-技术优化", new String[]{"商家线", "技术-商家线"}),
     SPX("D-技术优化", new String[]{"商品线", "技术-商品线"}),
+    YHX("D-技术优化", new String[]{"用户线", "技术-用户线"}),
 
     TechDebt("D-技术优化", new String[]{
             "技术优化", "大数据", "导购线", "交易线", "商家线", "商品线", "用户线",
@@ -28,7 +29,7 @@ public enum JiraProjectEnum {
 
     private static JiraProjectEnum[] projectArray = new JiraProjectEnum[]{
             DeSheng, HaiHangERP, HaiHangOO, HaiHangB2B, JingKeLong, OuPu, PingAn, ShiTaiBo, LaiYiFen,
-            YunDianPu, BI, DGX, JYX, SJX, SPX,
+            YunDianPu, BI, DGX, JYX, SJX, SPX, YHX,
             TechDebt,
     };
 
