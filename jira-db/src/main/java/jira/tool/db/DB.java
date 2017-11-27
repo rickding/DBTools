@@ -12,12 +12,10 @@ public class DB {
     private static DB db = null;
 
     public static DB getDb() {
-        if (db != null) {
-            return db;
-        }
-
         synchronized ("create db") {
-            db = new DB();
+            if (db == null) {
+                db = new DB();
+            }
         }
         return db;
     }

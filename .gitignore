@@ -6,6 +6,7 @@ target/
 dependency-reduced-pom.xml
 workbook.xlsx
 db.properties
+mybatis-config.xml
 
 # Log file
 *.log
