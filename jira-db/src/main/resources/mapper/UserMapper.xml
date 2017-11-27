@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jira.tool.db.mapper.UserMapper">
+    <resultMap id="userMap" type="jira.tool.db.model.User">
+        <id column="ID" property="id"/>
+        <result column="c_id" property="code"/>
+        <result column="StaffName" property="name"/>
+        <result column="ProductLine" property="productLine"/>
+    </resultMap>
+
+    <select id="getUserList" resultMap="userMap">
+        SELECT * FROM jiradb.OStaffList where IsActive='是';
+    </select>
+</mapper>

@@ -17,6 +17,7 @@
         <module>jira-report</module>
         <module>ea2jira</module>
         <module>jira2ea</module>
+        <module>jira-db</module>
     </modules>
 
 </project>
