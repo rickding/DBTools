@@ -16,12 +16,12 @@ import java.util.*;
  */
 public class App {
     private static String Jira_File = "EA-PMO-all (上海欧电云信息科技有限公司).csv";
-    private static String Sql_File_Name = "jira-transfer-%s-update-guid-%d.sql";
+    private static String Sql_File_Name = "%s-update-guid-%d.sql";
     private static String strToday = DateUtils.format(new Date(), "MMdd");
 
     private static String File_Prefix = "";
     private static String File_Ext = ".csv";
-    private static String File_Name = "-story-key-%d.csv";
+    private static String File_Name = "%s-story-key-%s-%d.csv";
     private static String Folder_name = "";
 
     public static void main(String[] args) {
@@ -104,7 +104,7 @@ public class App {
                         elements = Jira2EA.getSavedValues(elements);
 
                         // Save file
-                        String outputFileName = FileUtils.getOutputFileName(file, f, File_Ext, String.format(File_Name, storyCount), Folder_name);
+                        String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(File_Name, strToday, project.getPrefixes()[0], storyCount), Folder_name);
                         CsvUtil.saveToFile(elements, outputFileName);
                         projects.add(f.getPath());
                     }
