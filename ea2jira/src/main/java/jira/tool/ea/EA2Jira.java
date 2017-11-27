@@ -228,16 +228,8 @@ public class EA2Jira {
                 } else if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.EAGUID.getCode())) {
                     guid = value;
                 } else if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Description.getCode())) {
-                    // Include parent path
                     String parentPath = EAElementUtil.getParentPath(element, keyElementMap);
-                    if (!StrUtils.isEmpty(parentPath)) {
-                        value = StrUtils.isEmpty(value) ? parentPath : String.format("EA package: %s \n\n%s", parentPath, value);
-                    }
-
-                    // Include project name
-                    if(!StrUtils.isEmpty(projectName)) {
-                        value = StrUtils.isEmpty(value) ? projectName : String.format("EA file: %s \n\n%s", projectName, value);
-                    }
+                    value = formatDescription(projectName, parentPath, value);
                 } else if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Title.getCode())) {
                     if (!StrUtils.isEmpty(value) && !StrUtils.isEmpty(value.trim())) {
                         int level = value.length();
@@ -279,5 +271,30 @@ public class EA2Jira {
             }
             stories.add(values);
         }
+    }
+
+    private static String formatDescription(String projectName, String parentPath, String desc) {
+        if (StrUtils.isEmpty(projectName) && StrUtils.isEmpty(parentPath)) {
+            return desc;
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        // EA file
+        if(!StrUtils.isEmpty(projectName)) {
+            sb.append(String.format("EA_file: %s \r\n\r\n", projectName));
+        }
+
+        // EA parent package
+        if (!StrUtils.isEmpty(parentPath)) {
+            sb.append(String.format("EA_package: %s \r\n\r\n", parentPath));
+        }
+
+        // Original note
+        if (!StrUtils.isEmpty(desc)) {
+            sb.append(desc);
+        }
+
+        return sb.toString();
     }
 }
