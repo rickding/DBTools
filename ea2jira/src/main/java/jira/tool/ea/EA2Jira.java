@@ -282,7 +282,7 @@ public class EA2Jira {
 
         // EA file
         if(!StrUtils.isEmpty(projectName)) {
-            sb.append(String.format("EA_file: %s \r\n\r\n", projectName));
+            sb.append(String.format("EA_file: %s.EAP \r\n\r\n", projectName));
         }
 
         // EA parent package

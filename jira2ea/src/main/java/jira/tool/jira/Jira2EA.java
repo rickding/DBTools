@@ -195,12 +195,15 @@ public class Jira2EA {
         }
 
         // Generate the map: key to parent elements
+        int keyIndex = EAHeaderEnum.Key.getIndex();
         Map<String, String[]> mapParentKeyElements = new HashMap<String, String[]>(parentElements.size());
         for (int i = startIndex; i < parentElements.size(); i++) {
             String[] element = parentElements.get(i);
-            String key = element[EAHeaderEnum.Key.getIndex()];
-            if (!StrUtils.isEmpty(key)) {
-                mapParentKeyElements.put(key, element);
+            if (!ArrayUtils.isEmpty(element) && keyIndex >= 0 && keyIndex < element.length) {
+                String key = element[keyIndex];
+                if (!StrUtils.isEmpty(key)) {
+                    mapParentKeyElements.put(key, element);
+                }
             }
         }
 

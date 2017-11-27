@@ -15,7 +15,7 @@ import java.util.*;
  */
 public class App {
     private static String Jira_File = "EA-PMO-all (上海欧电云信息科技有限公司).csv";
-    private static String Sql_File_Name = "jira-transfer-%s-update-guid.sql";
+    private static String Sql_File_Name = "jira-transfer-%s-update-guid-%d.sql";
     private static String strToday = DateUtils.format(new Date(), "MMdd");
 
     private static String File_Prefix = "";
@@ -30,7 +30,7 @@ public class App {
         Date time_start = new Date();
         Set<String> filePaths = new HashSet<String>() {{
 //            add(".\\");
-            add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹\\jira_transfer");
+            add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹\\jira_transfer\\1124");
         }};
 
         if (args != null) {
@@ -112,7 +112,7 @@ public class App {
             // Generate sql
             String[] sqlArray = Jira2EA.generateUpdateJiraGUIDSSQL(noGuidFromJiraMap, issueKeyIdMap);
             if (sqlArray != null && sqlArray.length > 1) {
-                String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(Sql_File_Name, strToday), Folder_name);
+                String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(Sql_File_Name, strToday, sqlArray.length - 2), Folder_name);
                 FileWriter writer = new FileWriter(outputFileName);
 
                 if (writer.open()) {
