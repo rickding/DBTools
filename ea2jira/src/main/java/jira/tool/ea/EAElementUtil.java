@@ -46,6 +46,27 @@ public class EAElementUtil {
         return null;
     }
 
+    public static int countRequirements(List<String[]> elements) {
+        if (elements == null || elements.size() <= 0) {
+            return 0;
+        }
+
+        int count = 0;
+        int typeIndex = EAHeaderEnum.Type.getIndex();
+        for (String[] element : elements) {
+            if (ArrayUtils.isEmpty(element) || typeIndex < 0 || typeIndex >= element.length) {
+                continue;
+            }
+
+            String type = element[typeIndex];
+            if (!StrUtils.isEmpty(type) && EATypeEnum.Requirement.getCode().equalsIgnoreCase(type)) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
     public static Map<String, String[]> getKeyElementMap(List<String[]> elements) {
         if (elements == null || elements.size() <= 0) {
             return null;

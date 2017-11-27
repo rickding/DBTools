@@ -5,6 +5,7 @@ import dbtools.common.file.FileUtils;
 import dbtools.common.file.FileWriter;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
+import jira.tool.ea.EAElementUtil;
 import jira.tool.ea.JiraProjectEnum;
 
 import java.io.File;
@@ -20,7 +21,7 @@ public class App {
 
     private static String File_Prefix = "";
     private static String File_Ext = ".csv";
-    private static String File_Name = "_story_id.csv";
+    private static String File_Name = "-story-key-%d.csv";
     private static String Folder_name = "";
 
     public static void main(String[] args) {
@@ -98,12 +99,15 @@ public class App {
                 elements = Jira2EA.updateStoryToElement(elements, guidStoryMap, noGuidFromJiraMap);
                 if (elements != null) {
                     // Only the needed values
-                    elements = Jira2EA.getSavedValues(elements);
+                    int storyCount = EAElementUtil.countRequirements(elements);
+                    if (storyCount > 0) {
+                        elements = Jira2EA.getSavedValues(elements);
 
-                    // Save file
-                    String outputFileName = FileUtils.getOutputFileName(file, f, File_Ext, File_Name, Folder_name);
-                    CsvUtil.saveToFile(elements, outputFileName);
-                    projects.add(f.getPath());
+                        // Save file
+                        String outputFileName = FileUtils.getOutputFileName(file, f, File_Ext, String.format(File_Name, storyCount), Folder_name);
+                        CsvUtil.saveToFile(elements, outputFileName);
+                        projects.add(f.getPath());
+                    }
                 } else {
                     System.out.printf("Fail to process file: %s\n", f.getPath());
                 }
