@@ -59,7 +59,7 @@ public enum JiraUserEnum {
 
     Gexingyuan("CWX", "gexingyuan", new String[]{"葛兴元"}),
     Jiangwenqi("SPX", "jiangwenqi", new String[]{"江文奇"}),
-    Chencheng("SPX", "chencheng", new String[]{"陈诚"}),
+    Chencheng("SPX", "chencheng", new String[]{"陈诚", "chencheng2"}),
     Dengxiaojie("SPX", "dengxiaojie", new String[]{"邓晓杰"}),
     Wangxiaolei("SPX", "wangxiaolei", new String[]{"王晓磊"}),
 
@@ -82,13 +82,19 @@ public enum JiraUserEnum {
             Luoyong, Wudi, Heshunhua, Chenshoujiang, Zengqing,
     };
 
+    public static JiraUser toUser(JiraUserEnum user) {
+        if (user == null) {
+            return null;
+        }
+        return new JiraUser(user.getTeam(), user.getName(), user.getAliases());
+    }
+
     public static JiraUserEnum findUser(String name) {
-        if (StrUtils.isEmpty(name)) {
+        if (StrUtils.isEmpty(name) || userArray == null || userArray.length <= 0) {
             return null;
         }
 
         name = name.trim();
-
         for (JiraUserEnum user : userArray) {
             if (user.getName().equalsIgnoreCase(name)) {
                 return user;

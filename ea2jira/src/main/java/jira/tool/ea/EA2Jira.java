@@ -83,7 +83,7 @@ public class EA2Jira {
         // Find the user name
         for (JiraHeaderEnum tmp : new JiraHeaderEnum[]{JiraHeaderEnum.Developer, JiraHeaderEnum.Owner, JiraHeaderEnum.PM}) {
             if (jiraHeader.equalsIgnoreCase(tmp.getCode())) {
-                JiraUserEnum user = JiraUserEnum.findUser(value);
+                JiraUser user = JiraUser.findUser(value);
                 if (user == null) {
                     System.out.printf("Error when find user: %s\n", value);
                 } else {
@@ -219,7 +219,7 @@ public class EA2Jira {
                     value = project.getName();
                 } else if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Developer.getCode())) {
                     // Team of the developer
-                    JiraUserEnum user = JiraUserEnum.findUser(value);
+                    JiraUser user = JiraUser.findUser(value);
                     if (user == null) {
                         System.out.printf("Error when find user: %s\n", value);
                     } else {

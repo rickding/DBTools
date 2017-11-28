@@ -9,8 +9,8 @@ public enum JiraProjectEnum {
     HaiHangOO("A-海航", new String[]{"海航O+O"}),
     HaiHangB2B("A-海航", new String[]{"海航B2B"}),
     JingKeLong("A-京客隆", new String[]{"京客隆"}),
-    OuPu("A-欧普照明", new String[]{"欧普"}),
-    PingAn("A-平安租赁", new String[]{"平安"}),
+    OuPu("A-欧普照明", new String[]{"欧普照明"}),
+    PingAn("A-平安租赁", new String[]{"平安租赁"}),
     ShiTaiBo("A-史泰博", new String[]{"史泰博"}),
     LaiYiFen("A-来伊份", new String[]{"来伊份"}),
 
