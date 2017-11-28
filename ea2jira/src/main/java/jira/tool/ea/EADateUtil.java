@@ -34,6 +34,6 @@ public class EADateUtil {
         }
 
         strDate = DateUtils.format(date, "yyyyMMdd");
-        return strToday.compareTo(strDate) <= 0 && Date_Skip.compareTo(strDate) >= 0;
+        return strToday.compareTo(strDate) >= 0 && Date_Skip.compareTo(strDate) <= 0;
     }
 }

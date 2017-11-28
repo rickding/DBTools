@@ -54,14 +54,19 @@ public enum JiraHeaderEnum {
 
     public static JiraHeaderEnum[] getSortedHeaders() {
         Set<JiraHeaderEnum> headerSet = JiraEAHeaderMap.keySet();
+
         JiraHeaderEnum[] headers = new JiraHeaderEnum[headerSet.size()];
         headerSet.toArray(headers);
-
         Arrays.sort(headers, new Comparator<JiraHeaderEnum>() {
             public int compare(JiraHeaderEnum o1, JiraHeaderEnum o2) {
                 return o1.index - o2.index;
             }
         });
+
+        int index = 0;
+        for (JiraHeaderEnum header : headers) {
+            header.index = index++;
+        }
         return headers;
     }
 
@@ -71,6 +76,10 @@ public enum JiraHeaderEnum {
     JiraHeaderEnum(int index, String code) {
         this.index = index;
         this.code = code;
+    }
+
+    public int getIndex() {
+        return index;
     }
 
     public String getCode() {

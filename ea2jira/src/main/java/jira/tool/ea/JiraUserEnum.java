@@ -29,7 +29,7 @@ public enum JiraUserEnum {
     Wanganqing("Mgr", "wanganqing", new String[]{"王安庆"}),
     Caoshusheng("APP", "caoshusheng", new String[]{"曹树胜"}),
 
-    Tanbin("AA", "tanbin", new String[]{"谭镔", "谭彬"}),
+    Tanbin("AA", "tanbin", new String[]{"谭镔", "谭彬", "谭斌"}),
     Shengjinmiao("YUYAN", "shengjinmiao", new String[]{"盛金苗"}),
     Chenying("WMS", "chenying", new String[]{"陈颖", "chenyin", "chneyin", "chenyiin"}),
 

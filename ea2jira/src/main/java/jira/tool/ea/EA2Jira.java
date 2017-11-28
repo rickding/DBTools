@@ -228,25 +228,12 @@ public class EA2Jira {
                 } else if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.EAGUID.getCode())) {
                     guid = value;
                 } else if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Description.getCode())) {
+                    // Format desc with ea file and package path
                     String parentPath = EAElementUtil.getParentPath(element, keyElementMap);
                     value = formatDescription(projectName, parentPath, value);
                 } else if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Title.getCode())) {
-                    if (!StrUtils.isEmpty(value) && !StrUtils.isEmpty(value.trim())) {
-                        int level = value.length();
-                        if (level < 10) {
-                            if (level > 5) {
-                                level = 1;
-                            } else if (level > 3) {
-                                level = 2;
-                            } else {
-                                level = 3;
-                            }
-                            String parentPath = EAElementUtil.getParentPath(element, keyElementMap, level, 15);
-                            if (!StrUtils.isEmpty(parentPath)) {
-                                value = StrUtils.isEmpty(value) ? parentPath : String.format("%s: %s", parentPath, value);
-                            }
-                        }
-                    }
+                    // Format title with package
+                    value = formatTitle(value, element, keyElementMap);
                 }
 
                 values[headerIndex++] = value;
@@ -269,8 +256,44 @@ public class EA2Jira {
                 stories = new ArrayList<String[]>();
                 teamStoryListMap.put(team, stories);
             }
+
+            // Add story
+            updateQA(values, team);
             stories.add(values);
         }
+    }
+
+    private static void updateQA(String[] values, String team) {
+        if (ArrayUtils.isEmpty(values) || StrUtils.isEmpty(team)) {
+            return;
+        }
+
+        JiraQAEnum qa = JiraQAEnum.findQA(team);
+        if (qa != null && JiraHeaderEnum.QA.getIndex() < values.length) {
+            values[JiraHeaderEnum.QA.getIndex()] = qa.getCode();
+        }
+    }
+
+    private static String formatTitle(String title, String[] element, Map<String, String[]> keyElementMap) {
+        if (StrUtils.isEmpty(title) || StrUtils.isEmpty(title.trim()) || ArrayUtils.isEmpty(element) || keyElementMap == null || keyElementMap.size() <= 0) {
+            return title;
+        }
+
+        int level = title.trim().length();
+        if (level < 10) {
+            if (level > 5) {
+                level = 1;
+            } else if (level > 3) {
+                level = 2;
+            } else {
+                level = 3;
+            }
+            String parentPath = EAElementUtil.getParentPath(element, keyElementMap, level, 15);
+            if (!StrUtils.isEmpty(parentPath)) {
+                title = StrUtils.isEmpty(title) ? parentPath : String.format("%s: %s", parentPath, title);
+            }
+        }
+        return title;
     }
 
     private static String formatDescription(String projectName, String parentPath, String desc) {
