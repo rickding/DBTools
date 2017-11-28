@@ -12,8 +12,6 @@ public class Jira2EA {
     private static String Jira_Header_Key = "Issue key";
     private static String Jira_Issue_Id = "Issue id";
 
-    private static String Date_Skip = "20171123";
-
     private static String[] EA_Value_Saved = new String[] {"GUID", "Type", "Stereotype", "CSV_KEY", "CSV_PARENT_KEY"};
     private static List<String> EA_Type_Saved = new ArrayList<String>() {{
         add("Package");
@@ -100,8 +98,8 @@ public class Jira2EA {
             }
 
             // TODO: Skip the old issues currently.
-            if (Date_Skip.compareTo(EADateUtil.format(element[EAHeaderEnum.CreatedDate.getIndex()])) > 0
-                    && Date_Skip.compareTo(EADateUtil.format(element[EAHeaderEnum.ModifiedDate.getIndex()])) > 0) {
+            if (EADateUtil.Date_Skip.compareTo(EADateUtil.format(element[EAHeaderEnum.CreatedDate.getIndex()])) > 0
+                    && EADateUtil.Date_Skip.compareTo(EADateUtil.format(element[EAHeaderEnum.ModifiedDate.getIndex()])) > 0) {
                 continue;
             }
 

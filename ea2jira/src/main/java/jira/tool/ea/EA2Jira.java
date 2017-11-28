@@ -282,12 +282,12 @@ public class EA2Jira {
 
         // EA file
         if(!StrUtils.isEmpty(projectName)) {
-            sb.append(String.format("EA_file: %s.EAP \r\n\r\n", projectName));
+            sb.append(String.format("EA文件: %s.EAP, \r\n\r\n", projectName));
         }
 
         // EA parent package
         if (!StrUtils.isEmpty(parentPath)) {
-            sb.append(String.format("EA_package: %s \r\n\r\n", parentPath));
+            sb.append(String.format("EA包路径: %s, \r\n\r\n", parentPath));
         }
 
         // Original note

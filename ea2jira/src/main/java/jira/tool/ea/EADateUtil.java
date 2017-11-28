@@ -8,6 +8,7 @@ import java.util.Date;
 public class EADateUtil {
     private static String EA_Date_Format = "dd-MMM-yyyy HH:mm:ss";
     private static String strToday = DateUtils.format(new Date(), "yyyyMMdd");
+    public static String Date_Skip = "20171123";
 
     public static Date parse(String strDate) {
         if (StrUtils.isEmpty(strDate)) {
@@ -31,6 +32,8 @@ public class EADateUtil {
             System.out.printf("Error when parse date: %s", strDate);
             return false;
         }
-        return strToday.equalsIgnoreCase(DateUtils.format(date, "yyyyMMdd"));
+
+        strDate = DateUtils.format(date, "yyyyMMdd");
+        return strToday.compareTo(strDate) <= 0 && Date_Skip.compareTo(strDate) >= 0;
     }
 }
