@@ -7,6 +7,7 @@ import jira.tool.report.processor.TeamProcessor;
 import org.apache.poi.ss.usermodel.DataConsolidateFunction;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFPivotTable;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.util.Arrays;
@@ -16,6 +17,7 @@ public class WeeklyReleasePlanReport extends ReleasePlanReport {
     public WeeklyReleasePlanReport() {
         mapSheetName.put("data", "计划交付");
         mapSheetName.put("graph", "客户统计");
+        mapSheetName.put("graph3", "团队统计");
         mapSheetName.put("data2", "人力库存");
         mapSheetName.put("graph2", "人天统计");
 
@@ -79,5 +81,29 @@ public class WeeklyReleasePlanReport extends ReleasePlanReport {
             String str = String.format("人均%d div %d div %d=%.4f", count, member, days, value);
             ExcelUtil.getOrCreateSheet((XSSFWorkbook) sheet.getWorkbook(), str);
         }
+    }
+
+    @Override
+    public XSSFSheet[] fillDataSheets(XSSFWorkbook wb) {
+        XSSFSheet[] sheets = super.fillDataSheets(wb);
+        if (wb == null || isTemplateUsed()) {
+            return sheets;
+        }
+
+        // Pivot table3
+        XSSFSheet dataSheet = wb.getSheet(mapSheetName.get("data"));
+        if (dataSheet != null) {
+            XSSFSheet graphSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("graph3"));
+            XSSFPivotTable pivotTable = createPivotTable(graphSheet, dataSheet, newHeaders.size() - 1);
+            if (pivotTable != null) {
+                // Decorate graph
+                pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.teamNameHeader));
+                pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, newHeaders.indexOf(HeaderProcessor.issueKeyHeader));
+                pivotTable.addReportFilter(newHeaders.indexOf(HeaderProcessor.dueDateHeader));
+            } else {
+                wb.removeSheetAt(wb.getSheetIndex(graphSheet));
+            }
+        }
+        return sheets;
     }
 }
