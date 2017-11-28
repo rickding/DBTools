@@ -55,6 +55,7 @@ public enum JiraUserEnum {
     Zhaowei("GUIDE", "zhaowei", new String[]{"赵伟"}),
     Hezhifeng("GUIDE", "hezhifeng", new String[]{"贺智峰", "鹤智峰"}),
     Rongjianlong("GUIDE", "rongjianlong", new String[]{"戎剑龙"}),
+    Lixiaofei("GUIDE", "lixiaofei", new String[]{"李晓菲"}),
 
     Gexingyuan("CWX", "gexingyuan", new String[]{"葛兴元"}),
     Jiangwenqi("SPX", "jiangwenqi", new String[]{"江文奇"}),
@@ -76,7 +77,7 @@ public enum JiraUserEnum {
             Wangdongfang, Churongcheng, Chenliangtian,
             Zengfenghua, Yeyuqiang, Zhufeng, Liutong, Wangchen, Fanjinxiang,
             Renqiuming, Kangyufeng, Fuyifan, Shiyulong,
-            Huangkemin, Chenkaiqiang, Xiongwenqiang, Zhaowei, Hezhifeng, Rongjianlong,
+            Huangkemin, Chenkaiqiang, Xiongwenqiang, Zhaowei, Hezhifeng, Rongjianlong, Lixiaofei,
             Gexingyuan, Jiangwenqi, Chencheng, Dengxiaojie, Wangxiaolei,
             Luoyong, Wudi, Heshunhua, Chenshoujiang, Zengqing,
     };

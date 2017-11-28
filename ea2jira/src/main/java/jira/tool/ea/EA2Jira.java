@@ -49,9 +49,9 @@ public class EA2Jira {
 
         value = value.trim();
         for (String format : new String[]{
-                "yyyyMMdd", "yyyy.MM.dd", "yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MMdd",
-                "yyMMdd", "yy.MM.dd", "yy-MM-dd", "yy/MM/dd",
-                "MMdd", "MM.dd", "MM-dd", "MM/dd"
+                "yyyyMMdd", "yyyy.MM.dd", "yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MMdd", "yyyy年MM月dd日", "yyyy年MM月dd号",
+                "yyMMdd", "yy.MM.dd", "yy-MM-dd", "yy/MM/dd", "yy/MMdd", "yy年MM月dd日", "yy年MM月dd号",
+                "MMdd", "MM.dd", "MM-dd", "MM/dd", "MM月dd日", "MM月dd号",
         }) {
             Date date = DateUtils.parse(value, format, false);
             if (date != null) {
