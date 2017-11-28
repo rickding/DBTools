@@ -21,4 +21,39 @@ public class EADateUtilTest {
             Assert.assertEquals(io.getValue(), DateUtils.format(ret, "yyyy-MM-dd"));
         }
     }
+
+    @Test
+    public void testProcessDueDate() {
+        Date today = DateUtils.parse("2017-12-15", "yyyy-MM-dd");
+        Map<String, String> mapIO = new HashMap<String, String>(){{
+            put("1-15", "2018/01/15");
+            put("12.28", "2017/12/28");
+            put("12月18日", "2017/12/18");
+            put("2017-12-15", "2017/12/15");
+            put("2018-1-3", "2018/01/03");
+            put("20171230", "2017/12/30");
+        }};
+
+        for (Map.Entry<String, String> io : mapIO.entrySet()) {
+            String ret = EADateUtil.processDueDate(io.getKey(), today);
+            Assert.assertEquals(io.getValue(), ret);
+        }
+    }
+
+    @Test
+    public void testProcessDueDate2() {
+        Date today = DateUtils.parse("2018-1-5", "yyyy-MM-dd");
+        Map<String, String> mapIO = new HashMap<String, String>(){{
+            put("1-15", "2018/01/15");
+            put("12.28", "2018/12/28");
+            put("12月18日", "2018/12/18");
+            put("2017-12-15", "2017/12/15");
+            put("2018-1-3", "2018/01/03");
+        }};
+
+        for (Map.Entry<String, String> io : mapIO.entrySet()) {
+            String ret = EADateUtil.processDueDate(io.getKey(), today);
+            Assert.assertEquals(io.getValue(), ret);
+        }
+    }
 }

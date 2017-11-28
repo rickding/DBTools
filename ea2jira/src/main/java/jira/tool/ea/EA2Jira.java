@@ -42,39 +42,6 @@ public class EA2Jira {
         return null;
     }
 
-    public static String processDueDate(String value, Date today) {
-        if (StrUtils.isEmpty(value) || StrUtils.isEmpty(value.trim())) {
-            return null;
-        }
-
-        value = value.trim();
-        for (String format : new String[]{
-                "yyyy.MM.dd", "yyyy-MM-dd", "yyyy/MM/dd", "yyyy年MM月dd日", "yyyy年MM月dd号",
-                "yy.MM.dd", "yy-MM-dd", "yy/MM/dd", "yy年MM月dd日", "yy年MM月dd号",
-                "MM.dd", "MM-dd", "MM/dd", "MM月dd日", "MM月dd号",
-                "yyyyMMdd", "yyMMdd", "yyyy/MMdd", "yy/MMdd", "MMdd",
-        }) {
-            Date date = DateUtils.parse(value, format, false);
-            if (date != null) {
-                // Adjust the year if it's not set
-                String strYear = DateUtils.format(date, "yyyy");
-                if ("2017".compareTo(strYear) > 0) {
-                    String strDate = DateUtils.format(date, "MM-dd");
-                    int year = Integer.valueOf(DateUtils.format(today, "yyyy"));
-                    int month = Integer.valueOf(DateUtils.format(today, "MM"));
-                    if (month >= 12 && strDate.compareTo(DateUtils.format(today, "MM-dd")) < 0) {
-                        year++;
-                    }
-                    date = DateUtils.parse(String.format("%4d-%s", year, strDate), "yyyy-MM-dd");
-                }
-
-                // Format date
-                return DateUtils.format(date, Jira_Date_Format);
-            }
-        }
-        return null;
-    }
-
     private static String processValue(JiraHeaderEnum jiraHeaderEnum, String value) {
         if (jiraHeaderEnum == null || StrUtils.isEmpty(jiraHeaderEnum.getCode())) {
             return value;
@@ -102,7 +69,7 @@ public class EA2Jira {
         // DueDate
         for (JiraHeaderEnum tmp : new JiraHeaderEnum[]{JiraHeaderEnum.DueDate, JiraHeaderEnum.QAStartDate, JiraHeaderEnum.QAFinishDate}) {
             if (jiraHeader.equalsIgnoreCase(tmp.getCode())) {
-                value = processDueDate(value, today);
+                value = EADateUtil.processDueDate(value, today);
 
                 // QA start 2 days earlier
                 if (!StrUtils.isEmpty(value) && jiraHeader.equalsIgnoreCase(JiraHeaderEnum.QAStartDate.getCode())) {
@@ -183,7 +150,7 @@ public class EA2Jira {
 
             // Check if the estimation and due-date are valid
             if (StrUtils.isEmpty(processEstimation(element[EAHeaderEnum.Estimation.getIndex()]))
-                    || StrUtils.isEmpty(processDueDate(element[EAHeaderEnum.DueDate.getIndex()], today))) {
+                    || StrUtils.isEmpty(EADateUtil.processDueDate(element[EAHeaderEnum.DueDate.getIndex()], today))) {
                 continue;
             }
 
