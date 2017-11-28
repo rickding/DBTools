@@ -42,21 +42,23 @@ public class EA2Jira {
         return null;
     }
 
-    private static String processDueDate(String value) {
+    public static String processDueDate(String value, Date today) {
         if (StrUtils.isEmpty(value) || StrUtils.isEmpty(value.trim())) {
             return null;
         }
 
         value = value.trim();
         for (String format : new String[]{
-                "yyyyMMdd", "yyyy.MM.dd", "yyyy-MM-dd", "yyyy/MM/dd", "yyyy/MMdd", "yyyy年MM月dd日", "yyyy年MM月dd号",
-                "yyMMdd", "yy.MM.dd", "yy-MM-dd", "yy/MM/dd", "yy/MMdd", "yy年MM月dd日", "yy年MM月dd号",
-                "MMdd", "MM.dd", "MM-dd", "MM/dd", "MM月dd日", "MM月dd号",
+                "yyyy.MM.dd", "yyyy-MM-dd", "yyyy/MM/dd", "yyyy年MM月dd日", "yyyy年MM月dd号",
+                "yy.MM.dd", "yy-MM-dd", "yy/MM/dd", "yy年MM月dd日", "yy年MM月dd号",
+                "MM.dd", "MM-dd", "MM/dd", "MM月dd日", "MM月dd号",
+                "yyyyMMdd", "yyMMdd", "yyyy/MMdd", "yy/MMdd", "MMdd",
         }) {
             Date date = DateUtils.parse(value, format, false);
             if (date != null) {
                 // Adjust the year if it's not set
-                if (format.length() < 6) {
+                String strYear = DateUtils.format(date, "yyyy");
+                if ("2017".compareTo(strYear) > 0) {
                     String strDate = DateUtils.format(date, "MM-dd");
                     int year = Integer.valueOf(DateUtils.format(today, "yyyy"));
                     int month = Integer.valueOf(DateUtils.format(today, "MM"));
@@ -100,7 +102,7 @@ public class EA2Jira {
         // DueDate
         for (JiraHeaderEnum tmp : new JiraHeaderEnum[]{JiraHeaderEnum.DueDate, JiraHeaderEnum.QAStartDate, JiraHeaderEnum.QAFinishDate}) {
             if (jiraHeader.equalsIgnoreCase(tmp.getCode())) {
-                value = processDueDate(value);
+                value = processDueDate(value, today);
 
                 // QA start 2 days earlier
                 if (!StrUtils.isEmpty(value) && jiraHeader.equalsIgnoreCase(JiraHeaderEnum.QAStartDate.getCode())) {
@@ -181,7 +183,7 @@ public class EA2Jira {
 
             // Check if the estimation and due-date are valid
             if (StrUtils.isEmpty(processEstimation(element[EAHeaderEnum.Estimation.getIndex()]))
-                    || StrUtils.isEmpty(processDueDate(element[EAHeaderEnum.DueDate.getIndex()]))) {
+                    || StrUtils.isEmpty(processDueDate(element[EAHeaderEnum.DueDate.getIndex()], today))) {
                 continue;
             }
 
