@@ -2,7 +2,7 @@ package jira.tool.ea;
 
 import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.StrUtils;
-import jira.tool.db.UserUtil;
+import jira.tool.db.JiraUtil;
 import jira.tool.db.model.User;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class JiraUser {
     private static JiraUser[] getUserArray() {
         // Get users from db
         if (userListFromDB == null) {
-            userListFromDB = UserUtil.getUserList();
+            userListFromDB = JiraUtil.getUserList();
         }
 
         // Combine the users

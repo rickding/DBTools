@@ -1,6 +1,5 @@
 package jira.tool.jira;
 
-import jira.tool.ea.EAHeaderEnum;
 import jira.tool.ea.EAStatusEnum;
 import org.junit.Assert;
 import org.junit.Test;
