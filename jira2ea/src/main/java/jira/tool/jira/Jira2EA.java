@@ -7,7 +7,7 @@ import jira.tool.ea.*;
 import java.util.*;
 
 public class Jira2EA {
-    private static String[] EA_Value_Saved = new String[] {"GUID", "Type", "Stereotype", "Status", "CSV_KEY", "CSV_PARENT_KEY"};
+    private static String[] EA_Value_Saved = new String[]{"GUID", "Type", "Stereotype", "Status", "CSV_KEY", "CSV_PARENT_KEY"};
     private static List<String> EA_Type_Saved = new ArrayList<String>() {{
         add("Package");
         add("Requirement");
@@ -36,7 +36,7 @@ public class Jira2EA {
         }
 
         // Data
-        List<String[]> records = new ArrayList<String[]>(elements.size()){{
+        List<String[]> records = new ArrayList<String[]>(elements.size()) {{
             add(EA_Value_Saved);
         }};
         for (String[] element : elements) {
@@ -55,8 +55,11 @@ public class Jira2EA {
         return records;
     }
 
-    public static List<String[]> updateStoryKeyToElement(List<String[]> elements, Map<String, String> guidStoryKeyMap, Map<String, String> noGUIDFromJiraMap) {
-        if (elements == null || elements.size() <= 1 || guidStoryKeyMap == null || guidStoryKeyMap.size() <= 0) {
+    public static List<String[]> updateStoryInfoIntoElement(
+            List<String[]> elements, Map<String, String> guidKeyMap, Map<String, String[]> keyStoryMap,
+            Map<String, String> noGUIDFromJiraMap
+    ) {
+        if (elements == null || elements.size() <= 1 || guidKeyMap == null || guidKeyMap.size() <= 0) {
             return null;
         }
 
@@ -69,9 +72,10 @@ public class Jira2EA {
         EAHeaderEnum.fillIndex(headers);
 
         // data
-        List<String[]> newElements = new ArrayList<String[]>();
-        List<String> noStoryFromEA = new ArrayList<String>();
-        List<String> noGUIDFromJira = new ArrayList<String>();
+        List<String[]> newElementList = new ArrayList<String[]>();
+        List<String> noStoryFromEAList = new ArrayList<String>();
+        List<String> noGUIDFromJiraList = new ArrayList<String>();
+        List<String> reopenStoryList = new ArrayList<String>();
 
         for (; elementIndex < elements.size(); elementIndex++) {
             String[] element = elements.get(elementIndex);
@@ -97,31 +101,19 @@ public class Jira2EA {
                 continue;
             }
 
-            // Check story key
-            String name = element[EAHeaderEnum.Name.getIndex()];
-            String story = element[EAHeaderEnum.JiraIssueKey.getIndex()];
-            String newStory = guidStoryKeyMap.get(guid);
-            boolean hasStory = JiraKeyUtil.isValid(story);
-            boolean hasNewStory = JiraKeyUtil.isValid(newStory);
+            // Update story key and status
+            boolean changed = false;
+            if (checkStoryKeyAndUpdateIntoElement(element, guidKeyMap, noStoryFromEAList, noGUIDFromJiraList, noGUIDFromJiraMap)) {
+                changed = true;
+            }
 
-            if (!hasStory && !hasNewStory) {
-                // Not connected
-                noStoryFromEA.add(String.format("GUID doesn't connect with story, while still no one from Jira: %s, %s\n", guid, name));
-            } else if (!hasStory && hasNewStory) {
-                // New story
-                element[EAHeaderEnum.JiraIssueKey.getIndex()] = newStory;
-                newElements.add(element);
-            } else if (hasStory && !hasNewStory) {
-                // Old story but no new story
-                noGUIDFromJira.add(String.format("GUID connects with one story, but no GUID from Jira story: %s, %s, %s\n", guid, story, name));
-                if (noGUIDFromJiraMap != null) {
-                    if (noGUIDFromJiraMap.containsValue(story)) {
-                        System.out.printf("GUIDs connect with same story: %s, %s, %s\n", guid, story, name);
-                    }
-                    noGUIDFromJiraMap.put(guid, story);
-                }
-            } else if (hasStory && hasNewStory && !story.equalsIgnoreCase(newStory)) {
-                System.out.printf("GUID connects with multiple stories: %s, %s, %s, %s\n", guid, story, newStory, name);
+            if (checkStoryStatusAndUpdateIntoElement(element, keyStoryMap, reopenStoryList)) {
+                changed = true;
+            }
+
+            // If changed, then return
+            if (changed) {
+                newElementList.add(element);
             }
         }
 
@@ -129,26 +121,119 @@ public class Jira2EA {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
         int infoIndex = 0;
-        for (String str : noGUIDFromJira) {
+        for (String str : noGUIDFromJiraList) {
             sb.append(String.format("%d, %s", infoIndex++, str));
         }
 
         sb.append("\n");
         infoIndex = 0;
-        for (String str : noStoryFromEA) {
+        for (String str : noStoryFromEAList) {
             sb.append(String.format("%d, %s", infoIndex++, str));
         }
         System.out.println(sb.toString());
 
-        if (newElements.size() > 0) {
-            newElements.add(0, headers);
+        if (newElementList.size() > 0) {
+            newElementList.add(0, headers);
 
             // Add the parent elements
-            addParentElements(newElements, elements);
+            addParentElements(newElementList, elements);
         }
-        return newElements;
+        return newElementList;
     }
 
+    private static boolean checkStoryStatusAndUpdateIntoElement( String[] element, Map<String, String[]> guidKeyMap, List<String> reopenStoryList) {
+        if (ArrayUtils.isEmpty(element) || guidKeyMap == null || guidKeyMap.size() <= 0) {
+            return false;
+        }
+
+        String key = element[EAHeaderEnum.JiraIssueKey.getIndex()];
+        if (StrUtils.isEmpty(key)) {
+            return false;
+        }
+
+        String[] story = guidKeyMap.get(key);
+        if (ArrayUtils.isEmpty(story)) {
+            return false;
+        }
+
+        // Only changed from Implemented to Approved
+        int statusIndex = EAHeaderEnum.Status.getIndex();
+        if (EAStatusEnum.isMappedToStory(element[statusIndex])
+                && JiraStatusEnum.isClosed(story[JiraHeaderEnum.Status.getIndex()])) {
+            EAStatusEnum status = JiraResultEnum.toEAStatus(story[JiraHeaderEnum.Result.getIndex()]);
+            if (status != null) {
+                element[statusIndex] = status.getCode();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if the story key changes. If so, update to element.
+     *
+     * @param element
+     * @param guidKeyMap
+     * @param noStoryFromEAList
+     * @param noGUIDFromJiraList
+     * @param noGUIDFromJiraMap
+     * @return
+     */
+    private static boolean checkStoryKeyAndUpdateIntoElement(
+            String[] element, Map<String, String> guidKeyMap,
+            List<String> noStoryFromEAList, List<String> noGUIDFromJiraList, Map<String, String> noGUIDFromJiraMap
+    ) {
+        if (ArrayUtils.isEmpty(element) || guidKeyMap == null || guidKeyMap.size() <= 0) {
+            return false;
+        }
+
+        String guid = element[EAHeaderEnum.GUID.getIndex()];
+        if (StrUtils.isEmpty(guid)) {
+            return false;
+        }
+
+        String story = element[EAHeaderEnum.JiraIssueKey.getIndex()];
+        String newStory = guidKeyMap.get(guid);
+        boolean hasStory = JiraKeyUtil.isValid(story);
+        boolean hasNewStory = JiraKeyUtil.isValid(newStory);
+
+        boolean changed = false;
+        String name = element[EAHeaderEnum.Name.getIndex()];
+        if (!hasStory && !hasNewStory) {
+            // Not connected
+            if (noStoryFromEAList != null) {
+                noStoryFromEAList.add(String.format("GUID doesn't connect with story, while still no one from Jira: %s, %s\n", guid, name));
+            }
+        } else if (!hasStory && hasNewStory) {
+            // New story
+            element[EAHeaderEnum.JiraIssueKey.getIndex()] = newStory;
+            changed = true;
+        } else if (hasStory && !hasNewStory) {
+            // Old story but no new story
+            if (noGUIDFromJiraList != null) {
+                noGUIDFromJiraList.add(String.format("GUID connects with one story, but no GUID from Jira story: %s, %s, %s\n", guid, story, name));
+            }
+
+            if (noGUIDFromJiraMap != null) {
+                if (noGUIDFromJiraMap.containsValue(story)) {
+                    System.out.printf("GUIDs connect with same story: %s, %s, %s\n", guid, story, name);
+                }
+                noGUIDFromJiraMap.put(guid, story);
+            }
+        } else if (hasStory && hasNewStory) {
+            if (!story.equalsIgnoreCase(newStory)) {
+                System.out.printf("GUID connects with multiple stories: %s, %s, %s, %s\n", guid, story, newStory, name);
+            }
+        }
+        return changed;
+    }
+
+    /**
+     * Add the parent elements into the list.
+     *
+     * @param childrenElements
+     * @param parentElements
+     */
     private static void addParentElements(List<String[]> childrenElements, List<String[]> parentElements) {
         if (childrenElements == null || childrenElements.size() <= 1 || parentElements == null || parentElements.size() <= 1) {
             return;
@@ -213,6 +298,13 @@ public class Jira2EA {
         }
     }
 
+    /**
+     * Generate the SQL
+     *
+     * @param updateGUIDKeyMap
+     * @param keyStoryMap
+     * @return
+     */
     public static String[] generateUpdateJiraGUIDSQL(Map<String, String> updateGUIDKeyMap, Map<String, String[]> keyStoryMap) {
         if (updateGUIDKeyMap == null || updateGUIDKeyMap.size() <= 0 || keyStoryMap == null || keyStoryMap.size() <= 0) {
             return null;

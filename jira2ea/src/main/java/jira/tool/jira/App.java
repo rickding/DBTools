@@ -86,7 +86,7 @@ public class App {
                 }
 
                 // Process
-                elements = Jira2EA.updateStoryKeyToElement(elements, guidKeyMap, noGuidFromJiraMap);
+                elements = Jira2EA.updateStoryInfoIntoElement(elements, guidKeyMap, keyStoryMap, noGuidFromJiraMap);
                 if (elements != null) {
                     // Only the needed values
                     int storyCount = EAElementUtil.countRequirements(elements, true);
