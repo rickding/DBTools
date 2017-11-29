@@ -11,13 +11,6 @@ public class JiraStoryUtil {
     private static String Jira_File = "EA-PMO-all (上海欧电云信息科技有限公司).csv";
     private static String PMO_Label = "PMO-EA导入（禁止私动）";
 
-    private static String Jira_Header_GUID = "Custom field (EA-GUID)";
-    private static String Jira_Header_Key = "Issue key";
-    private static String Jira_Header_Id = "Issue id";
-    private static String Jira_Header_Result = "解决结果";
-    private static String Jira_Header_Status = "状态";
-    private static String Jira_Header_Label = "标签";
-
     public static Map<String, String> getGUIDKeyMap(Set<String> filePaths, Map<String, String> keyStoryMap, Set<String> pmoLabelKeySet) {
         if (filePaths == null || filePaths.size() <= 0) {
             return null;
@@ -36,7 +29,7 @@ public class JiraStoryUtil {
         return null;
     }
 
-    public static Map<String, String> getGUIDKeyMap(List<String[]> storyList, Map<String, String> keyStoryMap, Set<String> pmoLabelKeySet) {
+    private static Map<String, String> getGUIDKeyMap(List<String[]> storyList, Map<String, String> keyStoryMap, Set<String> pmoLabelKeySet) {
         if (storyList == null || storyList.size() <= 1) {
             return null;
         }
@@ -48,22 +41,14 @@ public class JiraStoryUtil {
             return null;
         }
 
-        List<String> headerList = Arrays.asList(headers);
-        int keyIndex = headerList.indexOf(Jira_Header_Key);
-        int idIndex = headerList.indexOf(Jira_Header_Id);
-        int guidIndex = headerList.indexOf(Jira_Header_GUID);
+        List<Integer> labelIndexes = JiraHeaderEnum.fillIndex(headers);
+        int keyIndex = JiraHeaderEnum.Key.getIndex();
+        int idIndex = JiraHeaderEnum.ID.getIndex();
+        int guidIndex =JiraHeaderEnum.EAGUID.getIndex();
 
         if (keyIndex < 0 || idIndex < 0) {
-            System.out.printf("Can't find the headers: %s\n", headerList.toString());
+            System.out.printf("Invalid headers: %s\n", Arrays.asList(headers).toString());
             return null;
-        }
-
-        // Find the label index list
-        List<Integer> lableIndexes = new ArrayList<Integer>();
-        for (int headerIndex = 0; headerIndex < headerList.size(); headerIndex++) {
-            if (Jira_Header_Label.equalsIgnoreCase(headerList.get(headerIndex))) {
-                lableIndexes.add(headerIndex);
-            }
         }
 
         // Walk through the data
@@ -87,8 +72,8 @@ public class JiraStoryUtil {
             }
 
             // Map the labels
-            if (pmoLabelKeySet != null && lableIndexes != null && lableIndexes.size() > 0) {
-                for (int labelIndex : lableIndexes) {
+            if (pmoLabelKeySet != null && labelIndexes != null && labelIndexes.size() > 0) {
+                for (int labelIndex : labelIndexes) {
                     String label = values[labelIndex];
                     if (PMO_Label.equalsIgnoreCase(label)) {
                         pmoLabelKeySet.add(key);

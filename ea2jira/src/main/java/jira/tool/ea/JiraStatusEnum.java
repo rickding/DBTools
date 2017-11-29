@@ -1,4 +1,4 @@
-package jira.tool.jira;
+package jira.tool.ea;
 
 public enum JiraStatusEnum {
     Closed("关闭");
