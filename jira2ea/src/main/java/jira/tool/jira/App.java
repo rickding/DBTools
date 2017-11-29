@@ -49,7 +49,7 @@ public class App {
         for (String filePath : filePaths) {
             File file = new File(filePath);
             if (file.isDirectory()) {
-                guidStoryMap = Jira2EA.getGUIDStoryMap(String.format("%s\\%s", filePath, Jira_File), issueKeyIdMap);
+                guidStoryMap = Jira2EA.getGUIDKeyMap(String.format("%s\\%s", filePath, Jira_File), issueKeyIdMap);
                 if (guidStoryMap != null && guidStoryMap.size() > 0) {
                     break;
                 }
@@ -96,7 +96,7 @@ public class App {
                 }
 
                 // Process
-                elements = Jira2EA.updateStoryToElement(elements, guidStoryMap, noGuidFromJiraMap);
+                elements = Jira2EA.updateStoryKeyToElement(elements, guidStoryMap, noGuidFromJiraMap);
                 if (elements != null) {
                     // Only the needed values
                     int storyCount = EAElementUtil.countRequirements(elements, true);
