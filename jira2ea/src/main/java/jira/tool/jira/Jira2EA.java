@@ -2,19 +2,28 @@ package jira.tool.jira;
 
 import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.StrUtils;
-import jira.tool.ea.*;
+import jira.tool.ea.EADateUtil;
+import jira.tool.ea.EAHeaderEnum;
+import jira.tool.ea.EAStatusEnum;
+import jira.tool.ea.EATypeEnum;
+import jira.tool.ea.JiraHeaderEnum;
+import jira.tool.ea.JiraKeyUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Jira2EA {
-    private static String[] EA_Value_Saved = new String[]{"GUID", "Type", "Stereotype", "Status", "CSV_KEY", "CSV_PARENT_KEY"};
-    private static List<String> EA_Type_Saved = new ArrayList<String>() {{
-        add("Package");
-        add("Requirement");
-    }};
+    private static EAHeaderEnum[] savedValueList = new EAHeaderEnum[] {
+            EAHeaderEnum.GUID, EAHeaderEnum.Type, EAHeaderEnum.JiraIssueKey, EAHeaderEnum.Status,
+            EAHeaderEnum.Key, EAHeaderEnum.ParentKey,
+    };
 
     public static List<String[]> getSavedValues(List<String[]> elements) {
-        if (elements == null || elements.size() <= 0 || EA_Value_Saved.length <= 0) {
+        if (elements == null || elements.size() <= 0 || savedValueList.length <= 0) {
             return null;
         }
 
@@ -23,32 +32,21 @@ public class Jira2EA {
         if (ArrayUtils.isEmpty(headers)) {
             return null;
         }
+        EAHeaderEnum.fillIndex(headers);
 
-        // Header index
-        int[] headerIndexArr = new int[EA_Value_Saved.length];
-        for (int i = 0; i < headerIndexArr.length; i++) {
-            String header = EA_Value_Saved[i];
-            int index = getHeaderIndex(header, headers);
-            if (index < 0 || index >= headers.length) {
-                System.out.printf("Can't find header: %s, list: %s\n", header, headers.toString());
-            }
-            headerIndexArr[i] = index;
-        }
+        // Headers and data
+        List<String[]> records = new ArrayList<String[]>(elements.size());
+        int valueCount = savedValueList.length;
 
-        // Data
-        List<String[]> records = new ArrayList<String[]>(elements.size()) {{
-            add(EA_Value_Saved);
-        }};
         for (String[] element : elements) {
             String type = element[EAHeaderEnum.Type.getIndex()];
-            if (StrUtils.isEmpty(type) || !EA_Type_Saved.contains(type)) {
+            if (!EAHeaderEnum.Type.getCode().equalsIgnoreCase(type) && !EATypeEnum.isSavedType(type)) {
                 continue;
             }
 
-            int i = 0;
-            String[] values = new String[headerIndexArr.length];
-            for (int j : headerIndexArr) {
-                values[i++] = element[j];
+            String[] values = new String[valueCount];
+            for (int i = 0; i < valueCount; i++) {
+                values[i] = element[savedValueList[i].getIndex()];
             }
             records.add(values);
         }

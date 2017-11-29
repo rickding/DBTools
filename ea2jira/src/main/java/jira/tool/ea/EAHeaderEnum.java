@@ -24,7 +24,7 @@ public enum EAHeaderEnum {
     ParentKey("CSV_PARENT_KEY", 11);
 
     // The needed headers from csv file
-    private static EAHeaderEnum[] list = new EAHeaderEnum[]{
+    private static EAHeaderEnum[] headerList = new EAHeaderEnum[]{
             GUID, Type, Name, Author, Estimation, DueDate, Owner, JiraIssueKey, Status, Notes,
             CreatedDate, ModifiedDate,
             Key, ParentKey,
@@ -46,7 +46,7 @@ public enum EAHeaderEnum {
         }
 
         // Find the index
-        for (EAHeaderEnum header : list) {
+        for (EAHeaderEnum header : headerList) {
             int index = strHeaders.indexOf(header.getCode().toLowerCase());
             header.setIndex(index);
 
