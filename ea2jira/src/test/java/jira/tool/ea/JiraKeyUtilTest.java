@@ -6,7 +6,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JiraIssueKeyUtilTest {
+public class JiraKeyUtilTest {
     @Test
     public void testIsValid() {
         Map<String, Boolean> mapIO = new HashMap<String, Boolean>() {{
@@ -19,7 +19,7 @@ public class JiraIssueKeyUtilTest {
         }};
 
         for (Map.Entry<String, Boolean> io : mapIO.entrySet()) {
-            boolean ret = JiraIssueKeyUtil.isValid(io.getKey());
+            boolean ret = JiraKeyUtil.isValid(io.getKey());
             Assert.assertEquals(io.getValue(), ret);
         }
     }

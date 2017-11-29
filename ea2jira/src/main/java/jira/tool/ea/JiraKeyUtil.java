@@ -5,7 +5,7 @@ import dbtools.common.utils.StrUtils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class JiraIssueKeyUtil {
+public class JiraKeyUtil {
     private static Pattern pattern = Pattern.compile("[A-Z]+-[1-9][0-9]*");
     private static Pattern patternSplit = Pattern.compile("[A-Z]+-");
 

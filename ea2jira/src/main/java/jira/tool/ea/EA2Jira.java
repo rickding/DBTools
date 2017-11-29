@@ -1,6 +1,5 @@
 package jira.tool.ea;
 
-import dbtools.common.file.CsvUtil;
 import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
@@ -42,7 +41,7 @@ public class EA2Jira {
         return null;
     }
 
-    private static String processValue(JiraHeaderEnum jiraHeaderEnum, String value) {
+    private static String processValue(EA2JiraHeaderEnum jiraHeaderEnum, String value) {
         if (jiraHeaderEnum == null || StrUtils.isEmpty(jiraHeaderEnum.getCode())) {
             return value;
         }
@@ -50,7 +49,7 @@ public class EA2Jira {
         String jiraHeader = jiraHeaderEnum.getCode();
 
         // Find the user name
-        for (JiraHeaderEnum tmp : new JiraHeaderEnum[]{JiraHeaderEnum.Developer, JiraHeaderEnum.Owner, JiraHeaderEnum.PM}) {
+        for (EA2JiraHeaderEnum tmp : new EA2JiraHeaderEnum[]{EA2JiraHeaderEnum.Developer, EA2JiraHeaderEnum.Owner, EA2JiraHeaderEnum.PM}) {
             if (jiraHeader.equalsIgnoreCase(tmp.getCode())) {
                 JiraUser user = JiraUser.findUser(value);
                 if (user == null) {
@@ -62,17 +61,17 @@ public class EA2Jira {
         }
 
         // Estimation
-        if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Estimation.getCode())) {
+        if (jiraHeader.equalsIgnoreCase(EA2JiraHeaderEnum.Estimation.getCode())) {
             return processEstimation(value);
         }
 
         // DueDate
-        for (JiraHeaderEnum tmp : new JiraHeaderEnum[]{JiraHeaderEnum.DueDate, JiraHeaderEnum.QAStartDate, JiraHeaderEnum.QAFinishDate}) {
+        for (EA2JiraHeaderEnum tmp : new EA2JiraHeaderEnum[]{EA2JiraHeaderEnum.DueDate, EA2JiraHeaderEnum.QAStartDate, EA2JiraHeaderEnum.QAFinishDate}) {
             if (jiraHeader.equalsIgnoreCase(tmp.getCode())) {
                 value = EADateUtil.processDueDate(value, today);
 
                 // QA start 2 days earlier
-                if (!StrUtils.isEmpty(value) && jiraHeader.equalsIgnoreCase(JiraHeaderEnum.QAStartDate.getCode())) {
+                if (!StrUtils.isEmpty(value) && jiraHeader.equalsIgnoreCase(EA2JiraHeaderEnum.QAStartDate.getCode())) {
                     Date date = DateUtils.parse(value, Jira_Date_Format);
                     int days = DateUtils.diffDays(date, today);
                     if (days > 3) {
@@ -94,7 +93,7 @@ public class EA2Jira {
         }
 
         // The specified values
-        if (JiraHeaderEnum.JiraHeaderValueMap.containsKey(jiraHeaderEnum)) {
+        if (EA2JiraHeaderEnum.JiraHeaderValueMap.containsKey(jiraHeaderEnum)) {
             return jiraHeaderEnum.JiraHeaderValueMap.get(jiraHeaderEnum);
         }
 
@@ -124,8 +123,8 @@ public class EA2Jira {
         EAHeaderEnum.fillIndex(elementList.get(rowStart++));
 
         // Prepare firstly
-        Map<JiraHeaderEnum, EAHeaderEnum> headerMap = JiraHeaderEnum.JiraEAHeaderMap;
-        JiraHeaderEnum[] jiraHeaders = JiraHeaderEnum.getSortedHeaders();
+        Map<EA2JiraHeaderEnum, EAHeaderEnum> headerMap = EA2JiraHeaderEnum.JiraEAHeaderMap;
+        EA2JiraHeaderEnum[] jiraHeaders = EA2JiraHeaderEnum.getSavedHeaders();
         Map<String, String[]> keyElementMap = EAElementUtil.getKeyElementMap(elementList);
         String projectName = ArrayUtils.isEmpty(project.getPrefixes()) ? null : project.getPrefixes()[0];
 
@@ -156,7 +155,7 @@ public class EA2Jira {
 
             // Check if it has jira issue key already
             String issueKey = element[EAHeaderEnum.JiraIssueKey.getIndex()];
-            if (JiraIssueKeyUtil.isValid(issueKey)) {
+            if (JiraKeyUtil.isValid(issueKey)) {
                 issueKey = issueKey.trim().toUpperCase();
                 // Return the pre-created story if it has no pmo label
                 if (preCreatedStoryList != null && !preCreatedStoryList.contains(issueKey) && (pmoLabelKeySet == null || !pmoLabelKeySet.contains(issueKey))) {
@@ -171,7 +170,7 @@ public class EA2Jira {
             String guid = null;
             int headerIndex = 0;
 
-            for (JiraHeaderEnum jiraHeaderEnum : jiraHeaders) {
+            for (EA2JiraHeaderEnum jiraHeaderEnum : jiraHeaders) {
                 if (jiraHeaderEnum == null || StrUtils.isEmpty(jiraHeaderEnum.getCode())) {
                     headerIndex++;
                     continue;
@@ -183,10 +182,10 @@ public class EA2Jira {
 
                 // Special values
                 String jiraHeader = jiraHeaderEnum.getCode();
-                if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Project.getCode())) {
+                if (jiraHeader.equalsIgnoreCase(EA2JiraHeaderEnum.Project.getCode())) {
                     // The project maps with file name
                     value = project.getName();
-                } else if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Developer.getCode())) {
+                } else if (jiraHeader.equalsIgnoreCase(EA2JiraHeaderEnum.Developer.getCode())) {
                     // Team of the developer
                     JiraUser user = JiraUser.findUser(value);
                     if (user == null) {
@@ -194,13 +193,13 @@ public class EA2Jira {
                     } else {
                         team = user.getTeam();
                     }
-                } else if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.EAGUID.getCode())) {
+                } else if (jiraHeader.equalsIgnoreCase(EA2JiraHeaderEnum.EAGUID.getCode())) {
                     guid = value;
-                } else if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Description.getCode())) {
+                } else if (jiraHeader.equalsIgnoreCase(EA2JiraHeaderEnum.Description.getCode())) {
                     // Format desc with ea file and package path
                     String parentPath = EAElementUtil.getParentPath(element, keyElementMap);
                     value = formatDescription(projectName, parentPath, value);
-                } else if (jiraHeader.equalsIgnoreCase(JiraHeaderEnum.Title.getCode())) {
+                } else if (jiraHeader.equalsIgnoreCase(EA2JiraHeaderEnum.Title.getCode())) {
                     // Format title with package
                     value = formatTitle(value, element, keyElementMap);
                 }
@@ -238,8 +237,8 @@ public class EA2Jira {
         }
 
         JiraQAEnum qa = JiraQAEnum.findQA(team);
-        if (qa != null && JiraHeaderEnum.QA.getIndex() < values.length) {
-            values[JiraHeaderEnum.QA.getIndex()] = qa.getCode();
+        if (qa != null && EA2JiraHeaderEnum.QA.getIndex() < values.length) {
+            values[EA2JiraHeaderEnum.QA.getIndex()] = qa.getCode();
         }
     }
 

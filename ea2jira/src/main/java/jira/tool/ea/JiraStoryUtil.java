@@ -76,7 +76,7 @@ public class JiraStoryUtil {
 
             String key = values[keyIndex];
             String id = values[idIndex];
-            if (StrUtils.isEmpty(key) || StrUtils.isEmpty(id) || !JiraIssueKeyUtil.isValid(key)) {
+            if (StrUtils.isEmpty(key) || StrUtils.isEmpty(id) || !JiraKeyUtil.isValid(key)) {
                 continue;
             }
 

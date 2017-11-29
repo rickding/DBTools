@@ -111,10 +111,10 @@ public class App {
             // Fill stories to wb
             if (teamStoryListMap != null && teamStoryListMap.size() > 0) {
                 // Get the headers
-                JiraHeaderEnum[] jiraHeaders = JiraHeaderEnum.getSortedHeaders();
+                EA2JiraHeaderEnum[] jiraHeaders = EA2JiraHeaderEnum.getSavedHeaders();
                 String[] headers = new String[jiraHeaders.length];
                 int i = 0;
-                for (JiraHeaderEnum jiraHeader : jiraHeaders) {
+                for (EA2JiraHeaderEnum jiraHeader : jiraHeaders) {
                     headers[i++] = jiraHeader.getCode();
                 }
 

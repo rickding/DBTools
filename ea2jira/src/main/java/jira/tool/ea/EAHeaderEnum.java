@@ -23,13 +23,17 @@ public enum EAHeaderEnum {
     Key("CSV_KEY", 10),
     ParentKey("CSV_PARENT_KEY", 11);
 
+    // The needed headers from csv file
     private static EAHeaderEnum[] list = new EAHeaderEnum[]{
             GUID, Type, Name, Author, Estimation, DueDate, Owner, JiraIssueKey, Status, Notes,
             CreatedDate, ModifiedDate,
             Key, ParentKey,
     };
 
-    // Fill the index
+    /**
+     * Fill the index according to csv file headers
+     * @param headers
+     */
     public static void fillIndex(String[] headers) {
         if (ArrayUtils.isEmpty(headers)) {
             return;

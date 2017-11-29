@@ -101,8 +101,8 @@ public class Jira2EA {
             String name = element[EAHeaderEnum.Name.getIndex()];
             String story = element[EAHeaderEnum.JiraIssueKey.getIndex()];
             String newStory = guidStoryKeyMap.get(guid);
-            boolean hasStory = JiraIssueKeyUtil.isValid(story);
-            boolean hasNewStory = JiraIssueKeyUtil.isValid(newStory);
+            boolean hasStory = JiraKeyUtil.isValid(story);
+            boolean hasNewStory = JiraKeyUtil.isValid(newStory);
 
             if (!hasStory && !hasNewStory) {
                 // Not connected
