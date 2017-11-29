@@ -21,10 +21,9 @@ public class App {
     private static String Team_File_name = "%s-create-story-%s-%d.csv";
     private static String Folder_name = "";
 
-    private static String Jira_File = "EA-PMO-all (上海欧电云信息科技有限公司).csv";
+    private static String strToday = DateUtils.format(new Date(), "MMdd");
     private static String Label_File_Name = "%s-add-label-%d.txt";
     private static String Sheet_EA = "ea-%s";
-    private static String strToday = DateUtils.format(new Date(), "MMdd");
 
     public static void main(String[] args) {
         System.out.println("Specify the file or folder to update:");
@@ -45,18 +44,8 @@ public class App {
         }
 
         // Get the guid story key map firstly
-        Map<String, String> guidStoryMap = null;
         Set<String> pmoLabelKeySet = new HashSet<String>();
-
-        for (String filePath : filePaths) {
-            File file = new File(filePath);
-            if (file.isDirectory()) {
-                guidStoryMap = JiraStoryUtil.getGUIDStoryMap(String.format("%s\\%s", filePath, Jira_File), null, pmoLabelKeySet);
-                if (guidStoryMap != null && guidStoryMap.size() > 0) {
-                    break;
-                }
-            }
-        }
+        Map<String, String> guidStoryMap = JiraStoryUtil.getGUIDKeyMap(filePaths, null, pmoLabelKeySet);
 
         // Process files
         List<String> projects = new ArrayList<String>();

@@ -4,17 +4,39 @@ import dbtools.common.file.CsvUtil;
 import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.StrUtils;
 
+import java.io.File;
 import java.util.*;
 
 public class JiraStoryUtil {
-    private static String Jira_Header_GUID = "Custom field (EA-GUID)";
-    private static String Jira_Header_Key = "Issue key";
-    private static String Jira_Issue_Id = "Issue id";
-    private static String Jira_Header_Label = "标签";
+    private static String Jira_File = "EA-PMO-all (上海欧电云信息科技有限公司).csv";
     private static String PMO_Label = "PMO-EA导入（禁止私动）";
 
-    public static Map<String, String> getGUIDStoryMap(String csvFile, Map<String, String> storyKeyIdMap, Set<String> pmoLabelKeySet) {
-        List<String[]> storyList = CsvUtil.readFile(csvFile);
+    private static String Jira_Header_GUID = "Custom field (EA-GUID)";
+    private static String Jira_Header_Key = "Issue key";
+    private static String Jira_Header_Id = "Issue id";
+    private static String Jira_Header_Result = "解决结果";
+    private static String Jira_Header_Status = "状态";
+    private static String Jira_Header_Label = "标签";
+
+    public static Map<String, String> getGUIDKeyMap(Set<String> filePaths, Map<String, String> keyStoryMap, Set<String> pmoLabelKeySet) {
+        if (filePaths == null || filePaths.size() <= 0) {
+            return null;
+        }
+
+        for (String filePath : filePaths) {
+            File file = new File(filePath);
+            if (file.isDirectory()) {
+                List<String[]> storyList = CsvUtil.readFile(String.format("%s\\%s", filePath, Jira_File));
+                Map<String, String> guidKeyMap = getGUIDKeyMap(storyList, keyStoryMap, pmoLabelKeySet);
+                if (guidKeyMap != null && guidKeyMap.size() > 0) {
+                    return guidKeyMap;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Map<String, String> getGUIDKeyMap(List<String[]> storyList, Map<String, String> keyStoryMap, Set<String> pmoLabelKeySet) {
         if (storyList == null || storyList.size() <= 1) {
             return null;
         }
@@ -28,7 +50,7 @@ public class JiraStoryUtil {
 
         List<String> headerList = Arrays.asList(headers);
         int keyIndex = headerList.indexOf(Jira_Header_Key);
-        int idIndex = headerList.indexOf(Jira_Issue_Id);
+        int idIndex = headerList.indexOf(Jira_Header_Id);
         int guidIndex = headerList.indexOf(Jira_Header_GUID);
 
         if (keyIndex < 0 || idIndex < 0) {
@@ -52,16 +74,16 @@ public class JiraStoryUtil {
                 continue;
             }
 
-            String story = values[keyIndex];
+            String key = values[keyIndex];
             String id = values[idIndex];
-            if (StrUtils.isEmpty(story) || StrUtils.isEmpty(id) || !JiraIssueKeyUtil.isValid(story)) {
+            if (StrUtils.isEmpty(key) || StrUtils.isEmpty(id) || !JiraIssueKeyUtil.isValid(key)) {
                 continue;
             }
 
-            // Map key to id
-            story = story.toUpperCase();
-            if (storyKeyIdMap != null) {
-                storyKeyIdMap.put(story, id);
+            // Map key to story values
+            key = key.toUpperCase();
+            if (keyStoryMap != null) {
+                keyStoryMap.put(key, id);
             }
 
             // Map the labels
@@ -69,7 +91,7 @@ public class JiraStoryUtil {
                 for (int labelIndex : lableIndexes) {
                     String label = values[labelIndex];
                     if (PMO_Label.equalsIgnoreCase(label)) {
-                        pmoLabelKeySet.add(story);
+                        pmoLabelKeySet.add(key);
                         break;
                     }
                 }
@@ -80,9 +102,9 @@ public class JiraStoryUtil {
                 String guid = values[guidIndex];
                 if (!StrUtils.isEmpty(guid)) {
                     if (guidStoryMap.containsKey(guid)) {
-                        System.out.printf("GUID connects with multiple stories: %s, %s, %s\n", guid, guidStoryMap.get(guid), story);
+                        System.out.printf("GUID connects with multiple stories: %s, %s, %s\n", guid, guidStoryMap.get(guid), key);
                     } else {
-                        guidStoryMap.put(guid, story);
+                        guidStoryMap.put(guid, key);
                     }
                 }
             }

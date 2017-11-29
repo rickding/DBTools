@@ -23,6 +23,9 @@ public enum JiraHeaderEnum {
     Importance(17, "重要性"),
     EAGUID(16, "EA-GUID"); // GUID
 
+    /**
+     * Map the Jira header to EA header
+     */
     public static Map<JiraHeaderEnum, EAHeaderEnum> JiraEAHeaderMap = new HashMap<JiraHeaderEnum, EAHeaderEnum>() {{
         put(JiraHeaderEnum.Title, EAHeaderEnum.Name);
         put(JiraHeaderEnum.Developer, EAHeaderEnum.Owner);
@@ -43,6 +46,7 @@ public enum JiraHeaderEnum {
         put(JiraHeaderEnum.Description, EAHeaderEnum.Notes);
     }};
 
+    // Some special values which are not from ea
     public static Map<JiraHeaderEnum, String> JiraHeaderValueMap = new HashMap<JiraHeaderEnum, String>() {{
         put(JiraHeaderEnum.QA, "guoguilin"); // guoguilin
         put(JiraHeaderEnum.RequirementType, "产品化"); // 产品化
@@ -52,6 +56,10 @@ public enum JiraHeaderEnum {
         put(JiraHeaderEnum.RequirementDate, DateUtils.format(new Date(), EA2Jira.Jira_Date_Format)); // now
     }};
 
+    /**
+     * Return the saved headers, sorted by index
+     * @return
+     */
     public static JiraHeaderEnum[] getSortedHeaders() {
         Set<JiraHeaderEnum> headerSet = JiraEAHeaderMap.keySet();
 

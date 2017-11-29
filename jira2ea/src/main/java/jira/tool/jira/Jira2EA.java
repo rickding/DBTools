@@ -1,6 +1,5 @@
 package jira.tool.jira;
 
-import dbtools.common.file.CsvUtil;
 import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.StrUtils;
 import jira.tool.ea.*;
@@ -8,12 +7,6 @@ import jira.tool.ea.*;
 import java.util.*;
 
 public class Jira2EA {
-    private static String Jira_Header_GUID = "Custom field (EA-GUID)";
-    private static String Jira_Header_Key = "Issue key";
-    private static String Jira_Issue_Id = "Issue id";
-    private static String Jira_Result = "解决结果";
-    private static String Jira_Status = "状态";
-
     private static String[] EA_Value_Saved = new String[] {"GUID", "Type", "Stereotype", "Status", "CSV_KEY", "CSV_PARENT_KEY"};
     private static List<String> EA_Type_Saved = new ArrayList<String>() {{
         add("Package");
@@ -290,58 +283,5 @@ public class Jira2EA {
         }
 
         return -1;
-    }
-
-    public static Map<String, String> getGUIDKeyMap(String csvFile, Map<String, String> storyKeyIdMap) {
-        List<String[]> storyList = CsvUtil.readFile(csvFile);
-        if (storyList == null || storyList.size() <= 1) {
-            return null;
-        }
-
-        // Check headers firstly
-        int i = 0;
-        String[] headers = storyList.get(i++);
-        if (ArrayUtils.isEmpty(headers)) {
-            return null;
-        }
-
-        List<String> headerList = Arrays.asList(headers);
-        int guidIndex = headerList.indexOf(Jira_Header_GUID);
-        int keyIndex = headerList.indexOf(Jira_Header_Key);
-        int idIndex = headerList.indexOf(Jira_Issue_Id);
-
-        if (guidIndex < 0 || keyIndex < 0 || idIndex < 0) {
-            System.out.printf("Can't find the headers: %s\n", headerList.toString());
-            return null;
-        }
-
-        // Walk through the data
-        Map<String, String> guidKeyMap = new HashMap<String, String>();
-        for (; i < storyList.size(); i++) {
-            String[] values = storyList.get(i);
-            if (ArrayUtils.isEmpty(values) || guidIndex >= values.length || keyIndex >= values.length || idIndex >= values.length) {
-                continue;
-            }
-
-            String key = values[keyIndex];
-            String id = values[idIndex];
-            if (StrUtils.isEmpty(key) || StrUtils.isEmpty(id)) {
-                continue;
-            }
-            storyKeyIdMap.put(key, id);
-
-            String guid = values[guidIndex];
-            if (StrUtils.isEmpty(guid)) {
-                continue;
-            }
-
-            if (guidKeyMap.containsKey(guid)) {
-                System.out.printf("GUID connects with multiple stories: %s, %s, %s\n", guid, guidKeyMap.get(guid), key);
-            } else {
-                guidKeyMap.put(guid, key);
-            }
-        }
-
-        return guidKeyMap;
     }
 }

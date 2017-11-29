@@ -7,6 +7,7 @@ import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
 import jira.tool.ea.EAElementUtil;
 import jira.tool.ea.JiraProjectEnum;
+import jira.tool.ea.JiraStoryUtil;
 
 import java.io.File;
 import java.util.*;
@@ -15,9 +16,8 @@ import java.util.*;
  * Hello world!
  */
 public class App {
-    private static String Jira_File = "EA-PMO-all (上海欧电云信息科技有限公司).csv";
-    private static String Sql_File_Name = "%s-update-guid-%d.sql";
     private static String strToday = DateUtils.format(new Date(), "MMdd");
+    private static String Sql_File_Name = "%s-update-guid-%d.sql";
 
     private static String File_Prefix = "";
     private static String File_Ext = ".csv";
@@ -43,18 +43,8 @@ public class App {
         }
 
         // Get the guid story key map firstly
-        Map<String, String> guidStoryMap = null;
-        Map<String, String> issueKeyIdMap = new HashMap<String, String>();
-
-        for (String filePath : filePaths) {
-            File file = new File(filePath);
-            if (file.isDirectory()) {
-                guidStoryMap = Jira2EA.getGUIDKeyMap(String.format("%s\\%s", filePath, Jira_File), issueKeyIdMap);
-                if (guidStoryMap != null && guidStoryMap.size() > 0) {
-                    break;
-                }
-            }
-        }
+        Map<String, String> keyIdMap = new HashMap<String, String>();
+        Map<String, String> guidKeyMap = JiraStoryUtil.getGUIDKeyMap(filePaths, keyIdMap, null);
 
         // Process files
         List<String> projects = new ArrayList<String>();
@@ -96,7 +86,7 @@ public class App {
                 }
 
                 // Process
-                elements = Jira2EA.updateStoryKeyToElement(elements, guidStoryMap, noGuidFromJiraMap);
+                elements = Jira2EA.updateStoryKeyToElement(elements, guidKeyMap, noGuidFromJiraMap);
                 if (elements != null) {
                     // Only the needed values
                     int storyCount = EAElementUtil.countRequirements(elements, true);
@@ -114,7 +104,7 @@ public class App {
             }
 
             // Generate sql
-            String[] sqlArray = Jira2EA.generateUpdateJiraGUIDSQL(noGuidFromJiraMap, issueKeyIdMap);
+            String[] sqlArray = Jira2EA.generateUpdateJiraGUIDSQL(noGuidFromJiraMap, keyIdMap);
             if (sqlArray != null && sqlArray.length > 1) {
                 String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(Sql_File_Name, strToday, sqlArray.length - 2), Folder_name);
                 FileWriter writer = new FileWriter(outputFileName);
