@@ -213,20 +213,20 @@ public class Jira2EA {
         }
     }
 
-    public static String[] generateUpdateJiraGUIDSQL(Map<String, String> updateJiraGuidMap, Map<String, String> issueKeyIdMap) {
-        if (updateJiraGuidMap == null || updateJiraGuidMap.size() <= 0 || issueKeyIdMap == null || issueKeyIdMap.size() <= 0) {
+    public static String[] generateUpdateJiraGUIDSQL(Map<String, String> updateGUIDKeyMap, Map<String, String[]> keyStoryMap) {
+        if (updateGUIDKeyMap == null || updateGUIDKeyMap.size() <= 0 || keyStoryMap == null || keyStoryMap.size() <= 0) {
             return null;
         }
 
-        List<String> sqlList = new ArrayList<String>(updateJiraGuidMap.size());
+        List<String> sqlList = new ArrayList<String>(updateGUIDKeyMap.size());
         sqlList.add("set @valueId = (select IFNULL(max(id), 0) from jiradb.customfieldvalue where id < 10424);");
 
         String customFieldId = "select id from jiradb.customfield where cfname = 'EA-GUID'";
         List<String> issueIds = new ArrayList<String>();
-        for (Map.Entry<String, String> jiraGuid : updateJiraGuidMap.entrySet()) {
-            String issueId = issueKeyIdMap.get(jiraGuid.getValue());
-            if (StrUtils.isEmpty(issueId) || StrUtils.isEmpty(jiraGuid.getKey())) {
-                System.out.printf("Can't find story id for key: %s, %s\n", jiraGuid.getKey(), jiraGuid.getValue());
+        for (Map.Entry<String, String> guidKey : updateGUIDKeyMap.entrySet()) {
+            String issueId = keyStoryMap.get(guidKey.getValue())[JiraHeaderEnum.ID.getIndex()];
+            if (StrUtils.isEmpty(issueId) || StrUtils.isEmpty(guidKey.getKey())) {
+                System.out.printf("Can't find story id for key: %s, %s\n", guidKey.getKey(), guidKey.getValue());
                 continue;
             }
 
@@ -235,7 +235,7 @@ public class Jira2EA {
                     "@valueId := @valueId + 1",
                     issueId,
                     customFieldId,
-                    jiraGuid.getKey()
+                    guidKey.getKey()
             ));
 
             issueIds.add(issueId);

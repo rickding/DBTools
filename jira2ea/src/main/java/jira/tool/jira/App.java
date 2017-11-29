@@ -43,8 +43,8 @@ public class App {
         }
 
         // Get the guid story key map firstly
-        Map<String, String> keyIdMap = new HashMap<String, String>();
-        Map<String, String> guidKeyMap = JiraStoryUtil.getGUIDKeyMap(filePaths, keyIdMap, null);
+        Map<String, String[]> keyStoryMap = new HashMap<String, String[]>();
+        Map<String, String> guidKeyMap = JiraStoryUtil.getGUIDKeyMap(filePaths, keyStoryMap, null);
 
         // Process files
         List<String> projects = new ArrayList<String>();
@@ -104,7 +104,7 @@ public class App {
             }
 
             // Generate sql
-            String[] sqlArray = Jira2EA.generateUpdateJiraGUIDSQL(noGuidFromJiraMap, keyIdMap);
+            String[] sqlArray = Jira2EA.generateUpdateJiraGUIDSQL(noGuidFromJiraMap, keyStoryMap);
             if (sqlArray != null && sqlArray.length > 1) {
                 String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(Sql_File_Name, strToday, sqlArray.length - 2), Folder_name);
                 FileWriter writer = new FileWriter(outputFileName);

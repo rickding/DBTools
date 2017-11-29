@@ -5,13 +5,17 @@ import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.StrUtils;
 
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class JiraStoryUtil {
     private static String Jira_File = "EA-PMO-all (上海欧电云信息科技有限公司).csv";
     private static String PMO_Label = "PMO-EA导入（禁止私动）";
 
-    public static Map<String, String> getGUIDKeyMap(Set<String> filePaths, Map<String, String> keyStoryMap, Set<String> pmoLabelKeySet) {
+    public static Map<String, String> getGUIDKeyMap(Set<String> filePaths, Map<String, String[]> keyStoryMap, Set<String> pmoLabelKeySet) {
         if (filePaths == null || filePaths.size() <= 0) {
             return null;
         }
@@ -29,7 +33,7 @@ public class JiraStoryUtil {
         return null;
     }
 
-    private static Map<String, String> getGUIDKeyMap(List<String[]> storyList, Map<String, String> keyStoryMap, Set<String> pmoLabelKeySet) {
+    private static Map<String, String> getGUIDKeyMap(List<String[]> storyList, Map<String, String[]> keyStoryMap, Set<String> pmoLabelKeySet) {
         if (storyList == null || storyList.size() <= 1) {
             return null;
         }
@@ -68,7 +72,7 @@ public class JiraStoryUtil {
             // Map key to story values
             key = key.toUpperCase();
             if (keyStoryMap != null) {
-                keyStoryMap.put(key, id);
+                keyStoryMap.put(key, values);
             }
 
             // Map the labels
