@@ -22,6 +22,7 @@ public class JiraMapperTest {
         Assert.assertNotNull(mapper);
 
         List<User> ret = mapper.getUserList();
+        System.out.printf("Users: %d\r\n", ret == null ? 0 : ret.size());
         Assert.assertNotNull(ret);
     }
 
@@ -30,6 +31,7 @@ public class JiraMapperTest {
         Assert.assertNotNull(mapper);
 
         List<Story> ret = mapper.getStoryList();
+        System.out.printf("Stories: %d\n", ret == null ? 0 : ret.size());
         Assert.assertNotNull(ret);
     }
 }

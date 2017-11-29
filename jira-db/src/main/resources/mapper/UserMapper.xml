@@ -18,9 +18,13 @@
     </select>
 
     <select id="getStoryList" resultMap="storyMap">
-        select project.pname,jiraissue.*
-        from jiradb.jiraissue
-            left join issuetype on jiraissue.issuetype = issuetype.ID
-            left join project on jiraissue.project = project.id;
+        select issue.SUMMARY as '主题', concat(project.pkey, '-', issue.issuenum) as 'Issue key', issue.ID as 'Issue id',
+            issuetype.pname as 'Type', issuestatus.pname as '状态', resolution.pname as '解决结果', project.pname as project, project.pkey
+        from jiradb.jiraissue as issue
+            left join issuetype on issue.issuetype = issuetype.ID
+            left join issuestatus on issue.issuestatus = issuestatus.ID
+            left join resolution on issue.RESOLUTION = resolution.ID
+            left join project on issue.project = project.id
+        order by issue.id desc;
     </select>
 </mapper>
