@@ -6,6 +6,10 @@ import dbtools.common.utils.StrUtils;
  * Created by user on 2017/9/23.
  */
 public enum EAStatusEnum {
+    Approved("Approved"),
+    Mandatory("Mandatory"),
+    Proposed("Proposed"),
+    Validated("Validated"),
     Implemented("Implemented");
 
     private static EAStatusEnum[] mappedToStoryList = new EAStatusEnum[]{

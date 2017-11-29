@@ -11,14 +11,13 @@ public class Jira2EA {
     private static String Jira_Header_GUID = "Custom field (EA-GUID)";
     private static String Jira_Header_Key = "Issue key";
     private static String Jira_Issue_Id = "Issue id";
+    private static String Jira_Result = "解决结果";
+    private static String Jira_Status = "状态";
 
-    private static String[] EA_Value_Saved = new String[] {"GUID", "Type", "Stereotype", "CSV_KEY", "CSV_PARENT_KEY"};
+    private static String[] EA_Value_Saved = new String[] {"GUID", "Type", "Stereotype", "Status", "CSV_KEY", "CSV_PARENT_KEY"};
     private static List<String> EA_Type_Saved = new ArrayList<String>() {{
         add("Package");
         add("Requirement");
-    }};
-    private static List<String> EA_Type_Package = new ArrayList<String>() {{
-        add("Package");
     }};
 
     public static List<String[]> getSavedValues(List<String[]> elements) {
@@ -225,7 +224,7 @@ public class Jira2EA {
         }
     }
 
-    public static String[] generateUpdateJiraGUIDSSQL(Map<String, String> updateJiraGuidMap, Map<String, String> issueKeyIdMap) {
+    public static String[] generateUpdateJiraGUIDSQL(Map<String, String> updateJiraGuidMap, Map<String, String> issueKeyIdMap) {
         if (updateJiraGuidMap == null || updateJiraGuidMap.size() <= 0 || issueKeyIdMap == null || issueKeyIdMap.size() <= 0) {
             return null;
         }
@@ -321,32 +320,32 @@ public class Jira2EA {
         }
 
         // Walk through the data
-        Map<String, String> guidStoryMap = new HashMap<String, String>();
+        Map<String, String> guidKeyMap = new HashMap<String, String>();
         for (; i < storyList.size(); i++) {
             String[] values = storyList.get(i);
             if (ArrayUtils.isEmpty(values) || guidIndex >= values.length || keyIndex >= values.length || idIndex >= values.length) {
                 continue;
             }
 
-            String story = values[keyIndex];
+            String key = values[keyIndex];
             String id = values[idIndex];
-            if (StrUtils.isEmpty(story) || StrUtils.isEmpty(id)) {
+            if (StrUtils.isEmpty(key) || StrUtils.isEmpty(id)) {
                 continue;
             }
-            storyKeyIdMap.put(story, id);
+            storyKeyIdMap.put(key, id);
 
             String guid = values[guidIndex];
             if (StrUtils.isEmpty(guid)) {
                 continue;
             }
 
-            if (guidStoryMap.containsKey(guid)) {
-                System.out.printf("GUID connects with multiple stories: %s, %s, %s\n", guid, guidStoryMap.get(guid), story);
+            if (guidKeyMap.containsKey(guid)) {
+                System.out.printf("GUID connects with multiple stories: %s, %s, %s\n", guid, guidKeyMap.get(guid), key);
             } else {
-                guidStoryMap.put(guid, story);
+                guidKeyMap.put(guid, key);
             }
         }
 
-        return guidStoryMap;
+        return guidKeyMap;
     }
 }

@@ -114,7 +114,7 @@ public class App {
             }
 
             // Generate sql
-            String[] sqlArray = Jira2EA.generateUpdateJiraGUIDSSQL(noGuidFromJiraMap, issueKeyIdMap);
+            String[] sqlArray = Jira2EA.generateUpdateJiraGUIDSQL(noGuidFromJiraMap, issueKeyIdMap);
             if (sqlArray != null && sqlArray.length > 1) {
                 String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(Sql_File_Name, strToday, sqlArray.length - 2), Folder_name);
                 FileWriter writer = new FileWriter(outputFileName);
