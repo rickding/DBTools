@@ -2,6 +2,8 @@ package jira.tool.db.model;
 
 import org.apache.ibatis.type.Alias;
 
+import java.util.Date;
+
 @Alias("Story")
 public class Story {
     private long id;
@@ -14,6 +16,69 @@ public class Story {
     private String EAGUID;
     private String projectName;
     private String projectKey;
+    private String customer;
+    private Date dueDate;
+    private Date resultDate;
+    private Date startDate;
+    private long originalEstimation;
+    private long estimation;
+    private long timeSpent;
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public Date getResultDate() {
+        return resultDate;
+    }
+
+    public void setResultDate(Date resultDate) {
+        this.resultDate = resultDate;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public long getOriginalEstimation() {
+        return originalEstimation;
+    }
+
+    public void setOriginalEstimation(long originalEstimation) {
+        this.originalEstimation = originalEstimation;
+    }
+
+    public long getEstimation() {
+        return estimation;
+    }
+
+    public void setEstimation(long estimation) {
+        this.estimation = estimation;
+    }
+
+    public long getTimeSpent() {
+        return timeSpent;
+    }
+
+    public void setTimeSpent(long timeSpent) {
+        this.timeSpent = timeSpent;
+    }
+
+    public String getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(String customer) {
+        this.customer = customer;
+    }
 
     public long getId() {
         return id;
