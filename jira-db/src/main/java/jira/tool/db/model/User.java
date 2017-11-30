@@ -4,7 +4,7 @@ import org.apache.ibatis.type.Alias;
 
 @Alias("User")
 public class User {
-    private int id;
+    private long id;
     private String code;
     private String name;
     private String department;
@@ -16,7 +16,7 @@ public class User {
     private String devPhase;
     private String isHead;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

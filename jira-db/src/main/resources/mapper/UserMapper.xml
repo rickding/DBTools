@@ -11,20 +11,39 @@
     </resultMap>
 
     <resultMap id="storyMap" type="jira.tool.db.model.Story">
+        <id column="id" property="id"/>
+        <result column="issue_key" property="key"/>
     </resultMap>
 
     <select id="getUserList" resultMap="userMap">
-        SELECT * FROM jiradb.OStaffList where IsActive='是';
+        SELECT * FROM jiradb.OStaffList;
     </select>
 
     <select id="getStoryList" resultMap="storyMap">
-        select issue.SUMMARY as '主题', concat(project.pkey, '-', issue.issuenum) as 'Issue key', issue.ID as 'Issue id',
-            issuetype.pname as 'Type', issuestatus.pname as '状态', resolution.pname as '解决结果', project.pname as project, project.pkey
+        select distinct issue.ID as id, concat(project.pkey, '-', issue.issuenum) as issue_key, issue.SUMMARY as title,
+            issuetype.pname as type, issuestatus.pname as status, resolution.pname as result,
+            project.pname as project_name, project.pkey as project_key
         from jiradb.jiraissue as issue
             left join issuetype on issue.issuetype = issuetype.ID
             left join issuestatus on issue.issuestatus = issuestatus.ID
             left join resolution on issue.RESOLUTION = resolution.ID
             left join project on issue.project = project.id
+        where issue.id in (select distinct issue FROM jiradb.customfieldvalue where CUSTOMFIELD in (select id from jiradb.customfield where cfname = 'EA-GUID'))
+	        or issue.id in (select distinct issue FROM jiradb.label where label = 'PMO-EA导入（禁止私动）')
         order by issue.id desc;
+    </select>
+
+    <select id="getEAGUIDList" resultMap="storyMap">
+        SELECT distinct ISSUE as id, STRINGVALUE as EAGUID
+        FROM jiradb.customfieldvalue
+        where CUSTOMFIELD in (select distinct id from jiradb.customfield where cfname = 'EA-GUID')
+        order by id desc;
+    </select>
+
+    <select id="getPMOLabelList" resultMap="storyMap">
+        SELECT distinct issue as id, label
+        FROM jiradb.label
+        where label = 'PMO-EA导入（禁止私动）'
+        order by id desc;
     </select>
 </mapper>

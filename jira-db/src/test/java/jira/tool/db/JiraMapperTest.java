@@ -31,7 +31,25 @@ public class JiraMapperTest {
         Assert.assertNotNull(mapper);
 
         List<Story> ret = mapper.getStoryList();
-        System.out.printf("Stories: %d\n", ret == null ? 0 : ret.size());
+        System.out.printf("Stories: %d\r\n", ret == null ? 0 : ret.size());
+        Assert.assertNotNull(ret);
+    }
+
+    @Test
+    public void testGetEAGUIDList() {
+        Assert.assertNotNull(mapper);
+
+        List<Story> ret = mapper.getEAGUIDList();
+        System.out.printf("EAGUIDs: %d\r\n", ret == null ? 0 : ret.size());
+        Assert.assertNotNull(ret);
+    }
+
+    @Test
+    public void testGetPMOLabelList() {
+        Assert.assertNotNull(mapper);
+
+        List<Story> ret = mapper.getPMOLabelList();
+        System.out.printf("PMO Labels: %d\r\n", ret == null ? 0 : ret.size());
         Assert.assertNotNull(ret);
     }
 }

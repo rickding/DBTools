@@ -4,59 +4,94 @@ import org.apache.ibatis.type.Alias;
 
 @Alias("Story")
 public class Story {
-    private int id;
-    private String code;
-    private String name;
-    private String department;
-    private String team;
-    private String entryDate;
-    private String leaveDate;
-    private String isActive;
-    private String unserInvestigate;
-    private String devPhase;
-    private String isHead;
+    private long id;
+    private String key;
+    private String title;
+    private String type;
+    private String status;
+    private String result;
+    private String label;
+    private String EAGUID;
+    private String projectName;
+    private String projectKey;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public String getCode() {
-        return code;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getKey() {
+        return key;
     }
 
-    public String getDepartment() {
-        return department;
+    public void setKey(String key) {
+        this.key = key;
     }
 
-    public String getTeam() {
-        return team;
+    public String getTitle() {
+        return title;
     }
 
-    public String getEntryDate() {
-        return entryDate;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getLeaveDate() {
-        return leaveDate;
+    public String getType() {
+        return type;
     }
 
-    public String getIsActive() {
-        return isActive;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getUnserInvestigate() {
-        return unserInvestigate;
+    public String getStatus() {
+        return status;
     }
 
-    public String getDevPhase() {
-        return devPhase;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public String getIsHead() {
-        return isHead;
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getEAGUID() {
+        return EAGUID;
+    }
+
+    public void setEAGUID(String EAGUID) {
+        this.EAGUID = EAGUID;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public String getProjectKey() {
+        return projectKey;
+    }
+
+    public void setProjectKey(String projectKey) {
+        this.projectKey = projectKey;
     }
 }
