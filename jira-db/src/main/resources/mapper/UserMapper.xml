@@ -13,6 +13,8 @@
     <resultMap id="storyMap" type="jira.tool.db.model.Story">
         <id column="id" property="id"/>
         <result column="issue_key" property="key"/>
+        <result column="project_name" property="projectName"/>
+        <result column="project_key" property="projectKey"/>
     </resultMap>
 
     <select id="getUserList" resultMap="userMap">

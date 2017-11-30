@@ -3,6 +3,8 @@ package jira.tool.ea;
 import dbtools.common.file.CsvUtil;
 import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.StrUtils;
+import jira.tool.db.JiraUtil;
+import jira.tool.db.model.Story;
 
 import java.io.File;
 import java.util.Arrays;
@@ -20,15 +22,26 @@ public class JiraStoryUtil {
             return null;
         }
 
-        for (String filePath : filePaths) {
-            File file = new File(filePath);
-            if (file.isDirectory()) {
-                List<String[]> storyList = CsvUtil.readFile(String.format("%s\\%s", filePath, Jira_File));
-                Map<String, String> guidKeyMap = getGUIDKeyMap(storyList, keyStoryMap, pmoLabelKeySet);
-                if (guidKeyMap != null && guidKeyMap.size() > 0) {
-                    return guidKeyMap;
+        // Read story from db and convert
+        List<String[]> storyList = JiraHeaderEnum.formatStoryList(JiraUtil.getStoryList());
+
+        if (storyList == null || storyList.size() <= 0) {
+            // Read from csv file
+            for (String filePath : filePaths) {
+                File file = new File(filePath);
+                if (file.isDirectory()) {
+                    storyList = CsvUtil.readFile(String.format("%s\\%s", filePath, Jira_File));
+                    if (storyList != null && storyList.size() > 0) {
+                        break;
+                    }
                 }
             }
+        }
+
+        // Process
+        Map<String, String> guidKeyMap = getGUIDKeyMap(storyList, keyStoryMap, pmoLabelKeySet);
+        if (guidKeyMap != null && guidKeyMap.size() > 0) {
+            return guidKeyMap;
         }
         return null;
     }

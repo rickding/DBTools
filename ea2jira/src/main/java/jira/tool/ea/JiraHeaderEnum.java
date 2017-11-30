@@ -1,6 +1,7 @@
 package jira.tool.ea;
 
 import dbtools.common.utils.ArrayUtils;
+import jira.tool.db.model.Story;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,41 @@ public enum JiraHeaderEnum {
     private static JiraHeaderEnum[] list = new JiraHeaderEnum[]{
             Title, Key, ID, Status, Result, Label, EAGUID,
     };
+
+    public static List<String[]> formatStoryList(List<Story> list) {
+        if (list == null || list.size() <= 0) {
+            return null;
+        }
+
+        List<String[]> storyList = new ArrayList<String[]>() {{
+            add(getHeaders());
+        }};
+
+        for (Story story : list) {
+            storyList.add(formatStory(story));
+        }
+        return storyList;
+    }
+
+    private static String[] formatStory(Story story) {
+        if (story == null) {
+            return null;
+        }
+
+        return new String[] {
+                story.getTitle(), story.getKey(), String.valueOf(story.getId()),
+                story.getStatus(), story.getResult(),
+                story.getLabel(), story.getEAGUID()
+        };
+    }
+
+    private static String[] getHeaders() {
+        String[] headers = new String[list.length];
+        for (int i = 0; i < list.length; i++) {
+            headers[i] = list[i].code;
+        }
+        return headers;
+    }
 
     /**
      * Fill the index according to csv file headers. Return the label indexes.
