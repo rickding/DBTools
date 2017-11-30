@@ -4,7 +4,6 @@ import dbtools.common.file.CsvUtil;
 import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.StrUtils;
 import jira.tool.db.JiraUtil;
-import jira.tool.db.model.Story;
 
 import java.io.File;
 import java.util.Arrays;
@@ -23,7 +22,7 @@ public class JiraStoryUtil {
         }
 
         // Read story from db and convert
-        List<String[]> storyList = JiraHeaderEnum.formatStoryList(JiraUtil.getStoryList());
+        List<String[]> storyList = JiraHeaderEnum.formatStoryList(JiraUtil.getPMOStoryList());
 
         if (storyList == null || storyList.size() <= 0) {
             // Read from csv file

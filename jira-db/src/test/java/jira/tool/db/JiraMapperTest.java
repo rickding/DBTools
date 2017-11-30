@@ -27,11 +27,11 @@ public class JiraMapperTest {
     }
 
     @Test
-    public void testGetStoryList() {
+    public void testGetPMOStoryList() {
         Assert.assertNotNull(mapper);
 
-        List<Story> ret = mapper.getStoryList();
-        System.out.printf("Stories: %d\r\n", ret == null ? 0 : ret.size());
+        List<Story> ret = mapper.getPMOStoryList();
+        System.out.printf("PMO stories: %d\r\n", ret == null ? 0 : ret.size());
         Assert.assertNotNull(ret);
     }
 

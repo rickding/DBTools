@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface JiraMapper {
     List<User> getUserList();
-    List<Story> getStoryList();
+    List<Story> getPMOStoryList();
     List<Story> getEAGUIDList();
     List<Story> getPMOLabelList();
 }

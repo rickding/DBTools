@@ -20,14 +20,14 @@ public class JiraUtil {
         return userList;
     }
 
-    public static List<Story> getStoryList() {
+    public static List<Story> getPMOStoryList() {
         List<Story> storyList = null;
         List<Story> guidList = null;
         List<Story> labelList = null;
 
-        synchronized ("getStoryList") {
+        synchronized ("getPMOStoryList") {
             JiraMapper mapper = DB.getDb().getMapper(JiraMapper.class);
-            storyList = mapper.getStoryList();
+            storyList = mapper.getPMOStoryList();
             if (storyList != null && storyList.size() > 0) {
                 guidList = mapper.getEAGUIDList();
                 labelList = mapper.getPMOLabelList();

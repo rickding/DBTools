@@ -16,9 +16,9 @@ public class JiraUtilTest {
     }
 
     @Test
-    public void testGetStoryList() {
-        List<Story> ret = JiraUtil.getStoryList();
-        System.out.printf("Stories from JiraUtil: %d\r\n", ret == null ? 0 : ret.size());
+    public void testGetPMOStoryList() {
+        List<Story> ret = JiraUtil.getPMOStoryList();
+        System.out.printf("PMO stories from JiraUtil: %d\r\n", ret == null ? 0 : ret.size());
         Assert.assertNotNull(ret);
     }
 }

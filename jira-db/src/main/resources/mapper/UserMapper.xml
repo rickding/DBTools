@@ -17,11 +17,13 @@
         <result column="project_key" property="projectKey"/>
     </resultMap>
 
+    <!-- Return the user list -->
     <select id="getUserList" resultMap="userMap">
         SELECT * FROM jiradb.OStaffList;
     </select>
 
-    <select id="getStoryList" resultMap="storyMap">
+    <!-- Return the pmo story list, which have pmo label or have EA GUID -->
+    <select id="getPMOStoryList" resultMap="storyMap">
         select distinct issue.ID as id, concat(project.pkey, '-', issue.issuenum) as issue_key, issue.SUMMARY as title,
             issuetype.pname as type, issuestatus.pname as status, resolution.pname as result,
             project.pname as project_name, project.pkey as project_key
@@ -35,6 +37,7 @@
         order by issue.id desc;
     </select>
 
+    <!-- Return the issue id and EA GUID list -->
     <select id="getEAGUIDList" resultMap="storyMap">
         SELECT distinct ISSUE as id, STRINGVALUE as EAGUID
         FROM jiradb.customfieldvalue
@@ -42,6 +45,7 @@
         order by id desc;
     </select>
 
+    <!-- Return the issue id list of pmo label -->
     <select id="getPMOLabelList" resultMap="storyMap">
         SELECT distinct issue as id, label
         FROM jiradb.label
