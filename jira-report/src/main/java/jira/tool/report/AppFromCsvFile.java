@@ -10,8 +10,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -21,6 +23,32 @@ public class AppFromCsvFile {
     public static String File_Ext = ".csv";
     public static String File_Name = ".xlsx";
     public static String Folder_name = "";
+
+    public static Map<String, BaseReport> reportMap = new HashMap<String, BaseReport>() {{
+        put("到期日没有或超过4周", new DailyDueDateReport());
+        put("完成开发待提测", new DailyDevFinishReport());
+        put("未完成开发", new ReleasePlanReport());
+        put("4，周报，计划交付", new WeeklyReleasePlanReport());
+        put("5，周报，计划开始", new WeeklyStartPlanReport());
+        put("6，周报，人天交付运营能力", new WeeklyReleaseReport());
+    }};
+
+    /**
+     * Create report instance for special file
+     *
+     * @param fileName
+     * @return
+     */
+    public static BaseReport getReport(String fileName) {
+        if (!StrUtils.isEmpty(fileName)) {
+            for (Map.Entry<String, BaseReport> report : reportMap.entrySet()) {
+                if (fileName.startsWith(report.getKey())) {
+                    return report.getValue();
+                }
+            }
+        }
+        return new BaseReport();
+    }
 
     public static void main(String[] args) {
         System.out.println("Specify the file or folder to update:");
@@ -54,7 +82,7 @@ public class AppFromCsvFile {
 
             // Update and save
             for (File f : files) {
-                BaseReport report = BaseReport.getReport(f.getName());
+                BaseReport report = getReport(f.getName());
                 String templateName = report.getTemplateName();
 
                 XSSFWorkbook wb = null;

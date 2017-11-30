@@ -4,7 +4,13 @@ import dbtools.common.file.ExcelUtil;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
 import jira.tool.db.model.Story;
-import jira.tool.report.processor.*;
+import jira.tool.report.processor.EstimationProcessor;
+import jira.tool.report.processor.HeaderProcessor;
+import jira.tool.report.processor.ResolveDateProcessor;
+import jira.tool.report.processor.SprintDateProcessor;
+import jira.tool.report.processor.StartDateProcessor;
+import jira.tool.report.processor.TeamNameProcessor;
+import jira.tool.report.processor.ValueProcessor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataConsolidateFunction;
 import org.apache.poi.ss.util.AreaReference;
@@ -15,35 +21,14 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class BaseReport {
-    public static Map<String, BaseReport> reportMap = new HashMap<String, BaseReport>() {{
-        put("到期日没有或超过4周", new DailyDueDateReport());
-        put("完成开发待提测", new DailyDevFinishReport());
-        put("未完成开发", new ReleasePlanReport());
-        put("4，周报，计划交付", new WeeklyReleasePlanReport());
-        put("5，周报，计划开始", new WeeklyStartPlanReport());
-        put("6，周报，人天交付运营能力", new WeeklyReleaseReport());
-    }};
-
-    /**
-     * Create report instance for special file
-     *
-     * @param fileName
-     * @return
-     */
-    public static BaseReport getReport(String fileName) {
-        if (!StrUtils.isEmpty(fileName)) {
-            for (Map.Entry<String, BaseReport> report : reportMap.entrySet()) {
-                if (fileName.startsWith(report.getKey())) {
-                    return report.getValue();
-                }
-            }
-        }
-        return new BaseReport();
-    }
-
     // Configure the processors
     protected List<ValueProcessor> valueProcessors = new ArrayList<ValueProcessor>() {{
         add(new SprintDateProcessor());
@@ -68,7 +53,7 @@ public class BaseReport {
     }
 
     public String getFileName() {
-        return DateUtils.format(new Date(), "BaseReportMMdd.xlsx");
+        return String.format("BaseReport%s.xlsx", DateUtils.format(new Date(), "MMdd"));
     }
 
     // Read story list from db
@@ -88,7 +73,7 @@ public class BaseReport {
         }
 
         XSSFSheet dataSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("data"));
-        JiraUtilEx.fillSheetFromDB(dataSheet, getStoryList());
+        JiraUtilEx.fillSheetFromDB(dataSheet, getStoryList(), this);
 
         if (!isTemplateUsed()) {
             decorateDataSheet(dataSheet);

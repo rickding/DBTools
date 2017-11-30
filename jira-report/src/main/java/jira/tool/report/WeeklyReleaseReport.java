@@ -1,6 +1,7 @@
 package jira.tool.report;
 
 import dbtools.common.file.ExcelUtil;
+import dbtools.common.utils.DateUtils;
 import jira.tool.db.JiraUtil;
 import jira.tool.db.model.Story;
 import jira.tool.report.processor.HeaderProcessor;
@@ -11,6 +12,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class WeeklyReleaseReport extends ReleasePlanReport {
@@ -32,13 +34,13 @@ public class WeeklyReleaseReport extends ReleasePlanReport {
     }
 
     @Override
-    protected List<Story> getStoryList() {
-        return JiraUtil.getResolvedStoryList();
+    public String getFileName() {
+        return String.format("人天交付运行能力%s.xlsx", DateUtils.format(new Date(), "MMdd"));
     }
 
     @Override
-    public String getFileName() {
-        return super.getFileName();
+    protected List<Story> getStoryList() {
+        return JiraUtil.getResolvedStoryList();
     }
 
     /**
