@@ -1,7 +1,9 @@
 package jira.tool.report;
 
 import dbtools.common.file.ExcelUtil;
+import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
+import jira.tool.db.model.Story;
 import jira.tool.report.processor.*;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataConsolidateFunction;
@@ -12,6 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFPivotTable;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.IOException;
 import java.util.*;
 
 public class BaseReport {
@@ -50,18 +53,6 @@ public class BaseReport {
         add(new EstimationProcessor());
     }};
 
-    // Configure the headers
-    protected List<HeaderProcessor> newHeaders = new ArrayList<HeaderProcessor>() {{
-        add(HeaderProcessor.dueDateHeader);
-        add(HeaderProcessor.resolveDateHeader);
-        add(HeaderProcessor.startDateHeader);
-        add(HeaderProcessor.teamKeyHeader);
-        add(HeaderProcessor.teamNameHeader);
-        add(HeaderProcessor.issueKeyHeader);
-        add(HeaderProcessor.projectHeader);
-        add(HeaderProcessor.estimationHeader);
-    }};
-
     // Configure the sheet name
     protected Map<String, String> mapSheetName = new HashMap<String, String>() {{
         put("data", "data");
@@ -69,13 +60,49 @@ public class BaseReport {
     }};
 
     /**
+     * return the template file
+     * @return
+     */
+    public String getTemplateName() {
+        return null; // "template.xlsx";
+    }
+
+    public String getFileName() {
+        return DateUtils.format(new Date(), "BaseReportMMdd.xlsx");
+    }
+
+    // Read story list from db
+    protected List<Story> getStoryList() {
+        return null;
+    }
+
+    /**
      * Fill data sheets
      *
      * @return
      */
     public XSSFSheet[] fillDataSheets(XSSFWorkbook wb) {
-        // Subclass implements the additional data sheet
-        return null;
+        // Subclass will override to add the additional data sheet
+        if (wb == null) {
+            return null;
+        }
+
+        XSSFSheet dataSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("data"));
+        JiraUtilEx.fillSheetFromDB(dataSheet, getStoryList());
+
+        if (!isTemplateUsed()) {
+            decorateDataSheet(dataSheet);
+
+            // Pivot table
+            XSSFSheet graphSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("graph"));
+            XSSFPivotTable pivotTable = createPivotTable(graphSheet, dataSheet, HeaderProcessor.headerList.size() - 1);
+            if (pivotTable != null) {
+                decoratePivotTable(pivotTable);
+            } else {
+                wb.removeSheetAt(wb.getSheetIndex(graphSheet));
+            }
+        }
+        return new XSSFSheet[]{dataSheet};
     }
 
     /**
@@ -86,9 +113,8 @@ public class BaseReport {
             return null;
         }
 
-        XSSFSheet dataSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("data"));
-
         // Base data from csv file
+        XSSFSheet dataSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("data"));
         ExcelUtilEx.fillSheetFromCsv(dataSheet, csvFiles[0], this);
 
         if (!isTemplateUsed()) {
@@ -96,7 +122,7 @@ public class BaseReport {
 
             // Pivot table
             XSSFSheet graphSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("graph"));
-            XSSFPivotTable pivotTable = createPivotTable(graphSheet, dataSheet, newHeaders.size() - 1);
+            XSSFPivotTable pivotTable = createPivotTable(graphSheet, dataSheet, HeaderProcessor.headerList.size() - 1);
             if (pivotTable != null) {
                 decoratePivotTable(pivotTable);
             } else {
@@ -116,12 +142,21 @@ public class BaseReport {
         return mapSheetName.get(sheet);
     }
 
-    /**
-     * return the template file
-     * @return
-     */
-    public String getTemplateName() {
-        return null; // "template.xlsx";
+    public XSSFWorkbook getWorkbook(String filePath) {
+        String templateName = getTemplateName();
+        XSSFWorkbook wb = null;
+        if (StrUtils.isEmpty(templateName) || StrUtils.isEmpty(filePath)) {
+            wb = new XSSFWorkbook();
+        } else {
+            // Open the template
+            templateName = String.format("%s\\%s", filePath, templateName);
+            try {
+                wb = new XSSFWorkbook(templateName);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return wb;
     }
 
     public boolean isTemplateUsed() {
@@ -137,7 +172,7 @@ public class BaseReport {
     protected HeaderProcessor[] processHeaders(String[] headers) {
         // new ones
         List<HeaderProcessor> allHeaders = new ArrayList<HeaderProcessor>() {{
-            addAll(newHeaders);
+            addAll(HeaderProcessor.headerList);
         }};
 
         // Old ones
@@ -241,12 +276,12 @@ public class BaseReport {
 
         // configure the pivot table
         // row label
-        pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.projectHeader));
+        pivotTable.addRowLabel(HeaderProcessor.headerList.indexOf(HeaderProcessor.projectHeader));
         // col label
-        pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.teamNameHeader));
+        pivotTable.addRowLabel(HeaderProcessor.headerList.indexOf(HeaderProcessor.teamNameHeader));
         // sum up
-        pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, newHeaders.indexOf(HeaderProcessor.issueKeyHeader));
+        pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, HeaderProcessor.headerList.indexOf(HeaderProcessor.issueKeyHeader));
         // add filter
-        pivotTable.addReportFilter(newHeaders.indexOf(HeaderProcessor.dueDateHeader));
+        pivotTable.addReportFilter(HeaderProcessor.headerList.indexOf(HeaderProcessor.dueDateHeader));
     }
 }

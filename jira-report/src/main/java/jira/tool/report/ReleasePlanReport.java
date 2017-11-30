@@ -44,13 +44,13 @@ public class ReleasePlanReport extends BaseReport {
 
         // configure the pivot table
         // row label
-        pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.dueDateHeader));
+        pivotTable.addRowLabel(HeaderProcessor.headerList.indexOf(HeaderProcessor.dueDateHeader));
         // col label
-        pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.teamNameHeader));
+        pivotTable.addRowLabel(HeaderProcessor.headerList.indexOf(HeaderProcessor.teamNameHeader));
         // sum up
-        pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, newHeaders.indexOf(HeaderProcessor.issueKeyHeader));
+        pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, HeaderProcessor.headerList.indexOf(HeaderProcessor.issueKeyHeader));
         // add filter
-        pivotTable.addReportFilter(newHeaders.indexOf(HeaderProcessor.projectHeader));
+        pivotTable.addReportFilter(HeaderProcessor.headerList.indexOf(HeaderProcessor.projectHeader));
     }
 
     protected TeamProcessor[] calculateData(XSSFWorkbook wb) {
@@ -75,9 +75,9 @@ public class ReleasePlanReport extends BaseReport {
         int rowEnd = sheet.getLastRowNum();
         rowStart++; // Skip headers
 
-        int dateIndex = newHeaders.indexOf(dateProcessor);
-        int teamIndex = newHeaders.indexOf(HeaderProcessor.teamNameHeader);
-        int timeIndex = newHeaders.indexOf(HeaderProcessor.estimationHeader);
+        int dateIndex = HeaderProcessor.headerList.indexOf(dateProcessor);
+        int teamIndex = HeaderProcessor.headerList.indexOf(HeaderProcessor.teamNameHeader);
+        int timeIndex = HeaderProcessor.headerList.indexOf(HeaderProcessor.estimationHeader);
 
         while (rowStart <= rowEnd) {
             Row row = sheet.getRow(rowStart);
@@ -125,8 +125,9 @@ public class ReleasePlanReport extends BaseReport {
      */
     @Override
     public XSSFSheet[] fillDataSheets(XSSFWorkbook wb) {
-        if (wb == null) {
-            return null;
+        XSSFSheet[] sheets = super.fillDataSheets(wb);
+        if (wb == null || isTemplateUsed()) {
+            return sheets;
         }
 
         // Calculate the data

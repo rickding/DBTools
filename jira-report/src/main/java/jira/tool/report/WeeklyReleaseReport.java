@@ -1,6 +1,8 @@
 package jira.tool.report;
 
 import dbtools.common.file.ExcelUtil;
+import jira.tool.db.JiraUtil;
+import jira.tool.db.model.Story;
 import jira.tool.report.processor.HeaderProcessor;
 import jira.tool.report.processor.TeamProcessor;
 import org.apache.poi.ss.usermodel.DataConsolidateFunction;
@@ -29,6 +31,16 @@ public class WeeklyReleaseReport extends ReleasePlanReport {
         return null; // "人天交付运营能力-template.xlsx";
     }
 
+    @Override
+    protected List<Story> getStoryList() {
+        return JiraUtil.getResolvedStoryList();
+    }
+
+    @Override
+    public String getFileName() {
+        return super.getFileName();
+    }
+
     /**
      * configure the pivot table
      *
@@ -42,12 +54,12 @@ public class WeeklyReleaseReport extends ReleasePlanReport {
 
         // configure the pivot table
         // row label
-        pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.teamNameHeader));
-        pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.projectHeader));
+        pivotTable.addRowLabel(HeaderProcessor.headerList.indexOf(HeaderProcessor.teamNameHeader));
+        pivotTable.addRowLabel(HeaderProcessor.headerList.indexOf(HeaderProcessor.projectHeader));
         // sum up
-        pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, newHeaders.indexOf(HeaderProcessor.issueKeyHeader));
+        pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, HeaderProcessor.headerList.indexOf(HeaderProcessor.issueKeyHeader));
         // add filter
-        pivotTable.addReportFilter(newHeaders.indexOf(HeaderProcessor.resolveDateHeader));
+        pivotTable.addReportFilter(HeaderProcessor.headerList.indexOf(HeaderProcessor.resolveDateHeader));
 
         // Create graph 3
     }
@@ -77,13 +89,13 @@ public class WeeklyReleaseReport extends ReleasePlanReport {
         XSSFSheet dataSheet = wb.getSheet(mapSheetName.get("data"));
         if (dataSheet != null) {
             XSSFSheet graphSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("graph3"));
-            XSSFPivotTable pivotTable = createPivotTable(graphSheet, dataSheet, newHeaders.size() - 1);
+            XSSFPivotTable pivotTable = createPivotTable(graphSheet, dataSheet, HeaderProcessor.headerList.size() - 1);
             if (pivotTable != null) {
                 // Decorate graph
-                pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.teamNameHeader));
-                pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.resolveDateHeader));
-                pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, newHeaders.indexOf(HeaderProcessor.issueKeyHeader));
-                pivotTable.addReportFilter(newHeaders.indexOf(HeaderProcessor.projectHeader));
+                pivotTable.addRowLabel(HeaderProcessor.headerList.indexOf(HeaderProcessor.teamNameHeader));
+                pivotTable.addRowLabel(HeaderProcessor.headerList.indexOf(HeaderProcessor.resolveDateHeader));
+                pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, HeaderProcessor.headerList.indexOf(HeaderProcessor.issueKeyHeader));
+                pivotTable.addReportFilter(HeaderProcessor.headerList.indexOf(HeaderProcessor.projectHeader));
             } else {
                 wb.removeSheetAt(wb.getSheetIndex(graphSheet));
             }

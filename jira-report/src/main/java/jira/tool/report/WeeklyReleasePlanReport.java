@@ -42,9 +42,9 @@ public class WeeklyReleasePlanReport extends ReleasePlanReport {
 
         // configure the pivot table
         // row label
-        pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.projectHeader));
+        pivotTable.addRowLabel(HeaderProcessor.headerList.indexOf(HeaderProcessor.projectHeader));
         // sum up
-        pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, newHeaders.indexOf(HeaderProcessor.issueKeyHeader));
+        pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, HeaderProcessor.headerList.indexOf(HeaderProcessor.issueKeyHeader));
 
         // Set the graph sheet name with the value
         Sheet sheet = pivotTable.getDataSheet();
@@ -94,12 +94,12 @@ public class WeeklyReleasePlanReport extends ReleasePlanReport {
         XSSFSheet dataSheet = wb.getSheet(mapSheetName.get("data"));
         if (dataSheet != null) {
             XSSFSheet graphSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("graph3"));
-            XSSFPivotTable pivotTable = createPivotTable(graphSheet, dataSheet, newHeaders.size() - 1);
+            XSSFPivotTable pivotTable = createPivotTable(graphSheet, dataSheet, HeaderProcessor.headerList.size() - 1);
             if (pivotTable != null) {
                 // Decorate graph
-                pivotTable.addRowLabel(newHeaders.indexOf(HeaderProcessor.teamNameHeader));
-                pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, newHeaders.indexOf(HeaderProcessor.issueKeyHeader));
-                pivotTable.addReportFilter(newHeaders.indexOf(HeaderProcessor.dueDateHeader));
+                pivotTable.addRowLabel(HeaderProcessor.headerList.indexOf(HeaderProcessor.teamNameHeader));
+                pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, HeaderProcessor.headerList.indexOf(HeaderProcessor.issueKeyHeader));
+                pivotTable.addReportFilter(HeaderProcessor.headerList.indexOf(HeaderProcessor.dueDateHeader));
             } else {
                 wb.removeSheetAt(wb.getSheetIndex(graphSheet));
             }

@@ -15,6 +15,18 @@ public class HeaderProcessor {
     public static HeaderProcessor projectHeader = new HeaderProcessor("Project", "Custom field (所属项目)");
     public static HeaderProcessor estimationHeader = new HeaderProcessor("Estimation Man-day", "剩余时间");
 
+    // Configure the needed headers
+    public static List<HeaderProcessor> headerList = new ArrayList<HeaderProcessor>() {{
+        add(HeaderProcessor.dueDateHeader);
+        add(HeaderProcessor.resolveDateHeader);
+        add(HeaderProcessor.startDateHeader);
+        add(HeaderProcessor.teamKeyHeader);
+        add(HeaderProcessor.teamNameHeader);
+        add(HeaderProcessor.issueKeyHeader);
+        add(HeaderProcessor.projectHeader);
+        add(HeaderProcessor.estimationHeader);
+    }};
+
     private String name;
     private String value;
 
