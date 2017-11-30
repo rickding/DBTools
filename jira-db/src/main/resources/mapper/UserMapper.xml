@@ -20,13 +20,14 @@
         <result column="start_date" property="startDate"/>
         <result column="original_estimation" property="originalEstimation"/>
         <result column="time_spent" property="timeSpent"/>
+        <result column="customer_id" property="customerId"/>
     </resultMap>
 
     <!-- Return the resolved story list -->
     <select id="getResolvedStoryList" resultMap="storyMap">
         select distinct issue.ID as id, concat(project.pkey, '-', issue.issuenum) as issue_key, issue.SUMMARY as title,
         issue.DUEDATE as due_date, issue.RESOLUTIONDATE as result_date,
-        issue.TIMEORIGINALESTIMATE as original_estimation, issue.TIMEESTIMATE as esitmation, issue.TIMESPENT as time_spent,
+        issue.TIMEORIGINALESTIMATE as original_estimation, issue.TIMEESTIMATE as estimation, issue.TIMESPENT as time_spent,
         issuetype.pname as type, issuestatus.pname as status, resolution.pname as result,
         project.pname as project_name, project.pkey as project_key
         from jiradb.jiraissue as issue
@@ -52,7 +53,7 @@
 
     <!-- Return the customer list. The customer value needs to be updated with option value. -->
     <select id="getCustomerList" resultMap="storyMap">
-        SELECT distinct field_value.ISSUE as id, field_value.STRINGVALUE as customer
+        SELECT distinct field_value.ISSUE as id, cast(field_value.STRINGVALUE as signed) as customer_id
         FROM jiradb.customfieldvalue as field_value
         where field_value.CUSTOMFIELD in (select distinct id from jiradb.customfield where cfname = '所属项目')
         order by field_value.id desc;

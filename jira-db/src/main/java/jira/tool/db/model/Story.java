@@ -16,6 +16,7 @@ public class Story {
     private String EAGUID;
     private String projectName;
     private String projectKey;
+    private long customerId;
     private String customer;
     private Date dueDate;
     private Date resultDate;
@@ -70,6 +71,14 @@ public class Story {
 
     public void setTimeSpent(long timeSpent) {
         this.timeSpent = timeSpent;
+    }
+
+    public long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(long customerId) {
+        this.customerId = customerId;
     }
 
     public String getCustomer() {
