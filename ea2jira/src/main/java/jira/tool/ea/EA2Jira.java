@@ -124,6 +124,11 @@ public class EA2Jira {
                 continue;
             }
 
+            // Check if the author exists
+            if (StrUtils.isEmpty(element[EAHeaderEnum.Author.getIndex()]) || StrUtils.isEmpty(element[EAHeaderEnum.Owner.getIndex()])) {
+                continue;
+            }
+
             // Check if it has jira issue key already
             String issueKey = element[EAHeaderEnum.JiraIssueKey.getIndex()];
             if (JiraKeyUtil.isValid(issueKey)) {

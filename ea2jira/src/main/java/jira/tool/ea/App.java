@@ -31,8 +31,8 @@ public class App {
 
         Date time_start = new Date();
         Set<String> filePaths = new HashSet<String>() {{
-//            add(".\\");
-            add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹\\jira_transfer\\1128");
+            add(".\\");
+            add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹\\jira_transfer\\1201");
         }};
 
         if (args != null) {
@@ -102,8 +102,9 @@ public class App {
                 FileWriter writer = new FileWriter(outputFileName);
 
                 if (writer.open()) {
-                    writer.writeLine(String.format("Total: %d", preCreatedStoryList.size()));
-                    writer.writeLine(preCreatedStoryList.toString());
+                    String key = preCreatedStoryList.toString();
+                    key = key.substring(1, key.length() - 1);
+                    writer.writeLine(String.format("key in(%s)", key));
                 }
                 writer.close();
             }
@@ -136,7 +137,7 @@ public class App {
                     } else {
                         teams.add(team);
                     }
-                    
+
                     for (String tmp : teams) {
                         String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(Team_File_name, strToday, tmp, stories.size() - 1), Folder_name);
                         CsvUtil.saveToFile(stories, outputFileName);

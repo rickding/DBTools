@@ -24,7 +24,7 @@ public class EADateUtilTest {
 
     @Test
     public void testProcessDueDate() {
-        Date today = DateUtils.parse("2017-12-15", "yyyy-MM-dd");
+        Date today = DateUtils.parse("2017-12-05", "yyyy-MM-dd");
         Map<String, String> mapIO = new HashMap<String, String>(){{
             put("1-15", "2018/01/15");
             put("12.28", "2017/12/28");
@@ -32,6 +32,7 @@ public class EADateUtilTest {
             put("2017-12-15", "2017/12/15");
             put("2018-1-3", "2018/01/03");
             put("20171230", "2017/12/30");
+            put("1208", "2017/12/08");
         }};
 
         for (Map.Entry<String, String> io : mapIO.entrySet()) {
@@ -49,6 +50,7 @@ public class EADateUtilTest {
             put("12月18日", "2018/12/18");
             put("2017-12-15", "2017/12/15");
             put("2018-1-3", "2018/01/03");
+            put("1208", "2018/12/08");
         }};
 
         for (Map.Entry<String, String> io : mapIO.entrySet()) {

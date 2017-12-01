@@ -20,7 +20,7 @@ public class EADateUtil {
     public static String format(String strDate) {
         Date date = parse(strDate);
         if (date == null) {
-            System.out.printf("Error when parse date: %s", strDate);
+            System.out.printf("Error when parse date: %s\r\n", strDate);
             return null;
         }
         return DateUtils.format(date, "yyyyMMdd");
@@ -29,7 +29,7 @@ public class EADateUtil {
     public static boolean needsToBeProcessed(String strDate) {
         Date date = parse(strDate);
         if (date == null) {
-            System.out.printf("Error when parse date: %s", strDate);
+            System.out.printf("Error when parse date: %s\r\n", strDate);
             return false;
         }
 
