@@ -9,6 +9,8 @@ import java.util.*;
 public class EA2Jira {
     public static String Jira_Date_Format = "yyyy/MM/dd";
     private static Date today = DateUtils.parse(DateUtils.format(new Date(), "yyyy-MM-dd"), "yyyy-MM-dd");
+    private static String svnUrl = "http://svn.odianyun.local/svn/doc/30-项目/PMO/需求内容确认文件夹";
+    private static String svnUrl2 = "http://svn.odianyun.local/svn/doc/30-项目/PMO/需求内容提交文件夹";
 
     private static String processEstimation(String value) {
         if (StrUtils.isEmpty(value) || StrUtils.isEmpty(value.trim())) {
@@ -19,13 +21,13 @@ public class EA2Jira {
         try {
             int base = 0;
             double v = 0.0;
-            if (value.endsWith("h")) {
+            if (value.endsWith("h") || value.endsWith("hour") || value.endsWith("hr")) {
                 v = Double.valueOf(value.substring(0, value.length() - 1));
                 base = 3600;
-            } else if (value.endsWith("d")) {
+            } else if (value.endsWith("d") || value.endsWith("day")) {
                 v = Double.valueOf(value.substring(0, value.length() - 1));
                 base = 8 * 3600;
-            } else if (value.endsWith("w")) {
+            } else if (value.endsWith("w") || value.endsWith("week")) {
                 v = Double.valueOf(value.substring(0, value.length() - 1));
                 base = 5 * 8 * 3600;
             } else {
@@ -273,7 +275,7 @@ public class EA2Jira {
 
         // EA file
         if(!StrUtils.isEmpty(projectName)) {
-            sb.append(String.format("EA文件: %s.EAP, \r\n\r\n", projectName));
+            sb.append(String.format("EA文件: %s/%s.EAP (PMO整理前、产品提交的svn目录为: %s), \r\n\r\n", svnUrl, projectName, svnUrl2));
         }
 
         // EA parent package
