@@ -12,37 +12,6 @@ public class EA2Jira {
     private static String svnUrl = "http://svn.odianyun.local/svn/doc/30-项目/PMO/需求内容确认文件夹";
     private static String svnUrl2 = "http://svn.odianyun.local/svn/doc/30-项目/PMO/需求内容提交文件夹";
 
-    private static String processEstimation(String value) {
-        if (StrUtils.isEmpty(value) || StrUtils.isEmpty(value.trim())) {
-            return null;
-        }
-
-        value = value.trim().toLowerCase();
-        try {
-            int base = 0;
-            double v = 0.0;
-            if (value.endsWith("h") || value.endsWith("hour") || value.endsWith("hr")) {
-                v = Double.valueOf(value.substring(0, value.length() - 1));
-                base = 3600;
-            } else if (value.endsWith("d") || value.endsWith("day")) {
-                v = Double.valueOf(value.substring(0, value.length() - 1));
-                base = 8 * 3600;
-            } else if (value.endsWith("w") || value.endsWith("week")) {
-                v = Double.valueOf(value.substring(0, value.length() - 1));
-                base = 5 * 8 * 3600;
-            } else {
-                v = Double.valueOf(value);
-                base = 8 * 3600; // default as a day
-            }
-
-            int tmp = (int) (v * base);
-            return tmp <= 0 ? null : String.format("%d", tmp);
-        } catch (Exception e) {
-            System.out.printf("Error when process estimation: %s\n", value);
-        }
-        return null;
-    }
-
     private static String processValue(EA2JiraHeaderEnum jiraHeaderEnum, String value) {
         if (jiraHeaderEnum == null || StrUtils.isEmpty(jiraHeaderEnum.getCode())) {
             return value;
@@ -64,7 +33,7 @@ public class EA2Jira {
 
         // Estimation
         if (jiraHeader.equalsIgnoreCase(EA2JiraHeaderEnum.Estimation.getCode())) {
-            return processEstimation(value);
+            return EAEstimationUtil.processEstimation(value);
         }
 
         // DueDate
@@ -150,7 +119,7 @@ public class EA2Jira {
             }
 
             // Check if the estimation and due-date are valid
-            if (StrUtils.isEmpty(processEstimation(element[EAHeaderEnum.Estimation.getIndex()]))
+            if (StrUtils.isEmpty(EAEstimationUtil.processEstimation(element[EAHeaderEnum.Estimation.getIndex()]))
                     || StrUtils.isEmpty(EADateUtil.processDueDate(element[EAHeaderEnum.DueDate.getIndex()], today))) {
                 continue;
             }
