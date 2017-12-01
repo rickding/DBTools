@@ -47,6 +47,7 @@ public class JiraUtil {
         Map<Long, Story> guidMap = toMap(mapper.getEAGUIDList());
         Map<Long, Story> labelMap = toMap(mapper.getPMOLabelList());
         Map<Long, Story> startDateMap = toMap(mapper.getStartDateList());
+        Map<Long, Story> releaseDateMap = toMap(mapper.getReleaseDateList());
         Map<Long, Story> customer = toMap(getCustomerList());
 
         for (Story story : storyList) {
@@ -61,6 +62,10 @@ public class JiraUtil {
 
             if (startDateMap != null && startDateMap.containsKey(id)) {
                 story.setStartDate(startDateMap.get(id).getStartDate());
+            }
+
+            if (releaseDateMap != null && releaseDateMap.containsKey(id)) {
+                story.setReleaseDate(releaseDateMap.get(id).getReleaseDate());
             }
 
             if (customer != null && customer.containsKey(id)) {

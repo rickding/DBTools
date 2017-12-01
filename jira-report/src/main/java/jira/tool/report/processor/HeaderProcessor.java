@@ -8,6 +8,7 @@ import java.util.List;
 public class HeaderProcessor {
     public static HeaderProcessor dueDateHeader = new HeaderProcessor("Due Date", "到期日");
     public static HeaderProcessor resolveDateHeader = new HeaderProcessor("Resolve Date", "解决");
+    public static HeaderProcessor releaseDateHeader = new HeaderProcessor("Release Date", "Custom field (实际上线日期)");
     public static HeaderProcessor startDateHeader = new HeaderProcessor("Start Date", "Custom field (计划开始日期)");
     public static HeaderProcessor teamKeyHeader = new HeaderProcessor("Team Key", "Project key");
     public static HeaderProcessor teamNameHeader = new HeaderProcessor("Team Name", "Project name");
@@ -19,6 +20,7 @@ public class HeaderProcessor {
     public static List<HeaderProcessor> headerList = new ArrayList<HeaderProcessor>() {{
         add(HeaderProcessor.dueDateHeader);
         add(HeaderProcessor.resolveDateHeader);
+        add(HeaderProcessor.releaseDateHeader);
         add(HeaderProcessor.startDateHeader);
         add(HeaderProcessor.teamKeyHeader);
         add(HeaderProcessor.teamNameHeader);

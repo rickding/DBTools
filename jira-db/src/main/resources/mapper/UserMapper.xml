@@ -17,6 +17,7 @@
         <result column="project_key" property="projectKey"/>
         <result column="due_date" property="dueDate"/>
         <result column="result_date" property="resultDate"/>
+        <result column="release_date" property="releaseDate"/>
         <result column="start_date" property="startDate"/>
         <result column="original_estimation" property="originalEstimation"/>
         <result column="time_spent" property="timeSpent"/>
@@ -48,6 +49,14 @@
         SELECT distinct field_value.ISSUE as id, field_value.DATEVALUE as start_date
         FROM jiradb.customfieldvalue as field_value
         where field_value.CUSTOMFIELD in (select distinct id from jiradb.customfield where cfname = '计划开始日期')
+        order by field_value.id desc;
+    </select>
+
+    <!-- Return the release date list -->
+    <select id="getReleaseDateList" resultMap="storyMap">
+        SELECT distinct field_value.ISSUE as id, field_value.DATEVALUE as release_date
+        FROM jiradb.customfieldvalue as field_value
+        where field_value.CUSTOMFIELD in (select distinct id from jiradb.customfield where cfname = '实际上线日期')
         order by field_value.id desc;
     </select>
 

@@ -9,6 +9,7 @@ import java.util.List;
 public interface JiraMapper {
     List<Story> getResolvedStoryList();
     List<Story> getStartDateList();
+    List<Story> getReleaseDateList();
     List<Story> getCustomerList();
     List<Story> getCustomerOptionList();
 

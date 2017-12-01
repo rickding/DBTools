@@ -60,6 +60,7 @@ public class JiraUtilEx {
         return new HashMap<String, String>() {{
             put(HeaderProcessor.dueDateHeader.getValue(), DateUtils.format(story.getDueDate()));
             put(HeaderProcessor.resolveDateHeader.getValue(), DateUtils.format(story.getResultDate()));
+            put(HeaderProcessor.releaseDateHeader.getValue(), DateUtils.format(story.getReleaseDate()));
             put(HeaderProcessor.startDateHeader.getValue(), DateUtils.format(story.getStartDate()));
             put(HeaderProcessor.teamKeyHeader.getValue(), story.getProjectKey());
             put(HeaderProcessor.teamNameHeader.getValue(), story.getProjectName());

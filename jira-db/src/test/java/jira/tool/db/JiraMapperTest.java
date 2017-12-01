@@ -36,6 +36,15 @@ public class JiraMapperTest {
     }
 
     @Test
+    public void getGetReleaseDateList() {
+        Assert.assertNotNull(mapper);
+
+        List<Story> ret = mapper.getReleaseDateList();
+        System.out.printf("Released dates: %d\r\n", ret == null ? 0 : ret.size());
+        Assert.assertNotNull(ret);
+    }
+
+    @Test
     public void testGetCustomerList() {
         Assert.assertNotNull(mapper);
 

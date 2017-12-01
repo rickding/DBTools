@@ -23,7 +23,7 @@ public class WeeklyReleaseReport extends ReleasePlanReport {
         mapSheetName.put("data2", "人力库存");
         mapSheetName.put("graph2", "本周交付人均");
 
-        dateProcessor = HeaderProcessor.resolveDateHeader;
+        dateProcessor = HeaderProcessor.releaseDateHeader;
         isPlanDate = false;
         fillWholeDate = true;
     }
@@ -35,7 +35,7 @@ public class WeeklyReleaseReport extends ReleasePlanReport {
 
     @Override
     public String getFileName() {
-        return String.format("人天交付运行能力%s.xlsx", DateUtils.format(new Date(), "MMdd"));
+        return String.format("人天交付运营能力%s.xlsx", DateUtils.format(new Date(), "MMdd"));
     }
 
     @Override
@@ -61,7 +61,7 @@ public class WeeklyReleaseReport extends ReleasePlanReport {
         // sum up
         pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, HeaderProcessor.headerList.indexOf(HeaderProcessor.issueKeyHeader));
         // add filter
-        pivotTable.addReportFilter(HeaderProcessor.headerList.indexOf(HeaderProcessor.resolveDateHeader));
+        pivotTable.addReportFilter(HeaderProcessor.headerList.indexOf(HeaderProcessor.releaseDateHeader));
 
         // Create graph 3
     }
@@ -95,7 +95,7 @@ public class WeeklyReleaseReport extends ReleasePlanReport {
             if (pivotTable != null) {
                 // Decorate graph
                 pivotTable.addRowLabel(HeaderProcessor.headerList.indexOf(HeaderProcessor.teamNameHeader));
-                pivotTable.addRowLabel(HeaderProcessor.headerList.indexOf(HeaderProcessor.resolveDateHeader));
+                pivotTable.addRowLabel(HeaderProcessor.headerList.indexOf(HeaderProcessor.releaseDateHeader));
                 pivotTable.addColumnLabel(DataConsolidateFunction.COUNT, HeaderProcessor.headerList.indexOf(HeaderProcessor.issueKeyHeader));
                 pivotTable.addReportFilter(HeaderProcessor.headerList.indexOf(HeaderProcessor.projectHeader));
             } else {

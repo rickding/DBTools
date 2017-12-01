@@ -20,10 +20,19 @@ public class Story {
     private String customer;
     private Date dueDate;
     private Date resultDate;
+    private Date releaseDate;
     private Date startDate;
     private long originalEstimation;
     private long estimation;
     private long timeSpent;
+
+    public Date getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(Date releaseDate) {
+        this.releaseDate = releaseDate;
+    }
 
     public Date getDueDate() {
         return dueDate;
