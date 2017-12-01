@@ -8,29 +8,37 @@ public class EAEstimationUtil {
             return null;
         }
 
-        value = value.trim().toLowerCase();
-        try {
-            int base = 0;
-            double v = 0.0;
-            if (value.endsWith("h") || value.endsWith("hour") || value.endsWith("hr")) {
-                v = Double.valueOf(value.substring(0, value.length() - 1));
-                base = 3600;
-            } else if (value.endsWith("d") || value.endsWith("day")) {
-                v = Double.valueOf(value.substring(0, value.length() - 1));
-                base = 8 * 3600;
-            } else if (value.endsWith("w") || value.endsWith("week")) {
-                v = Double.valueOf(value.substring(0, value.length() - 1));
-                base = 5 * 8 * 3600;
-            } else {
-                v = Double.valueOf(value);
-                base = 8 * 3600; // default as a day
-            }
+        String[] values = value.trim().toLowerCase().split(" ");
+        double estimation = 0.0;
 
-            int tmp = (int) (v * base);
-            return tmp <= 0 ? null : String.format("%d", tmp);
-        } catch (Exception e) {
-            System.out.printf("Error when process estimation: %s\n", value);
+        for (String str : values) {
+            value = str;
+            try {
+                int base = 0;
+                double v = 0.0;
+                if (value.endsWith("min") || value.endsWith("minute") || value.endsWith("minutes")) {
+                    v = Double.valueOf(value.substring(0, value.indexOf("min")));
+                    base = 60;
+                } else if (value.endsWith("h") || value.endsWith("hour") || value.endsWith("hours") || value.endsWith("hr")) {
+                    v = Double.valueOf(value.substring(0, value.indexOf("h")));
+                    base = 3600;
+                } else if (value.endsWith("d") || value.endsWith("day") || value.endsWith("days")) {
+                    v = Double.valueOf(value.substring(0, value.indexOf("d")));
+                    base = 8 * 3600;
+                } else if (value.endsWith("w") || value.endsWith("week") || value.endsWith("weeks")) {
+                    v = Double.valueOf(value.substring(0, value.indexOf("w")));
+                    base = 5 * 8 * 3600;
+                } else {
+                    v = Double.valueOf(value);
+                    base = 8 * 3600; // default as a day
+                }
+                estimation += v * base;
+            } catch (Exception e) {
+                System.out.printf("Error when process estimation: %s\n", value);
+            }
         }
-        return null;
+
+        int tmp = (int) (estimation);
+        return tmp <= 0 ? null : String.format("%d", tmp);
     }
 }
