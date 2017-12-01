@@ -128,8 +128,19 @@ public class App {
                     ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, String.format("%s-%d", teamStories.getKey(), stories.size() - 1)), stories);
 
                     // Save separate csv files
-                    String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(Team_File_name, strToday, teamStories.getKey(), stories.size() - 1), Folder_name);
-                    CsvUtil.saveToFile(stories, outputFileName);
+                    List<String> teams = new ArrayList<String>(2);
+                    String team = teamStories.getKey();
+                    if ("APP".equalsIgnoreCase(team)) {
+                        teams.add("IOS");
+                        teams.add("APPA");
+                    } else {
+                        teams.add(team);
+                    }
+                    
+                    for (String tmp : teams) {
+                        String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(Team_File_name, strToday, tmp, stories.size() - 1), Folder_name);
+                        CsvUtil.saveToFile(stories, outputFileName);
+                    }
                 }
 
                 // Save file
