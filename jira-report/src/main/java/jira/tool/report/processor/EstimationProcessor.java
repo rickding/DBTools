@@ -15,7 +15,7 @@ public class EstimationProcessor implements ValueProcessor {
 
         if (!StrUtils.isEmpty(value)) {
             try {
-                Double time = Double.valueOf(value);
+                double time = Double.valueOf(value);
                 time = time / (8 * 3600);
                 cell.setCellValue((time));
                 return;

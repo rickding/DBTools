@@ -1,6 +1,7 @@
 package jira.tool.report.processor;
 
 import dbtools.common.utils.DateUtils;
+import dbtools.common.utils.DoubleUtil;
 import dbtools.common.utils.StrUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -112,7 +113,7 @@ public class TeamProcessor {
 
         Double totalTime = null;
         if (!dateTimeMap.containsKey(date) || dateTimeMap.get(date) == null) {
-            totalTime = new Double(0.0);
+            totalTime = new Double(time);
         } else {
             totalTime = dateTimeMap.get(date) + time;
         }
@@ -183,9 +184,9 @@ public class TeamProcessor {
             r.createCell(col++).setCellValue(date);
             r.createCell(col++).setCellValue(team.getName());
             r.createCell(col++).setCellValue(story);
-            r.createCell(col++).setCellValue(dateTimeMap.get(date));
+            r.createCell(col++).setCellValue(dateTimeMap.get(date) == null ? 0.0 : DoubleUtil.format(dateTimeMap.get(date), 3));
             r.createCell(col++).setCellValue(team.getReleaseMax());
-            r.createCell(col++).setCellValue(manDay == 0 ? 0.0 : (double) story / manDay);
+            r.createCell(col++).setCellValue(manDay == 0 ? 0.0 : DoubleUtil.format((double) story / manDay, 3));
             r.createCell(col++).setCellValue(team.getReleaseMin());
             r.createCell(col++).setCellValue(manDay);
             r.createCell(col++).setCellValue(day);

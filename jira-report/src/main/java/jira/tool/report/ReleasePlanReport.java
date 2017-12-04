@@ -139,6 +139,7 @@ public class ReleasePlanReport extends BaseReport {
         // Headers
         int row = 0;
         HeaderProcessor[] headers = TeamProcessor.getHeaders();
+        TeamProcessor.dateHeader.setName(dateProcessor.getName());
         ExcelUtil.fillRow(dataSheet, row++, HeaderProcessor.toStrings(headers));
 
         // Data
