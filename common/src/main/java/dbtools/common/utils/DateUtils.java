@@ -3,6 +3,7 @@ package dbtools.common.utils;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -28,6 +29,26 @@ public class DateUtils {
         return "";
     }
 
+    public static Date parse(String value, String[] formatArray) {
+        return parse(value, formatArray, false);
+    }
+
+    public static Date parse(String value, String[] formatArray, boolean showError) {
+        if (!StrUtils.isEmpty(value) && formatArray != null && formatArray.length > 0) {
+            for (String format : formatArray) {
+                Date date = DateUtils.parse(value, format, showError);
+                if (date != null) {
+                    return date;
+                }
+            }
+        }
+
+        if (showError) {
+            System.out.printf("Error when parseDate: %s, %s\r\n", value, Arrays.asList(formatArray).toString());
+        }
+        return null;
+    }
+
     public static Date parse(String str, String format) {
         return parse(str, format, true);
     }
@@ -39,7 +60,7 @@ public class DateUtils {
 
         try {
             DateFormat df = new SimpleDateFormat(format);
-            return df.parse(str);
+            return df.parse(str.trim());
         } catch (ParseException e) {
             if (showError) {
                 System.out.printf("%s, %s\r\n", e.getMessage(), format);

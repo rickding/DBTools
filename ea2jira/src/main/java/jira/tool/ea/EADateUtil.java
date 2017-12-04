@@ -6,7 +6,7 @@ import dbtools.common.utils.StrUtils;
 import java.util.Date;
 
 public class EADateUtil {
-    private static String EA_Date_Format = "dd-MMM-yyyy HH:mm:ss";
+    private static String[] EA_Date_Format_Array = new String[] {"dd-MMM-yyyy HH:mm:ss", "dd-MM月-yyyy HH:mm:ss", "dd-MM-yyyy HH:mm:ss", "yyyy-MM-dd HH:mm:ss"};
     private static String strToday = DateUtils.format(new Date(), "yyyyMMdd");
     public static String Date_Skip = "20171123";
 
@@ -14,7 +14,7 @@ public class EADateUtil {
         if (StrUtils.isEmpty(strDate)) {
             return null;
         }
-        return DateUtils.parse(strDate.trim(), EA_Date_Format);
+        return DateUtils.parse(strDate.trim(), EA_Date_Format_Array);
     }
 
     public static String format(String strDate) {

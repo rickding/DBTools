@@ -4,15 +4,46 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Created by user on 2017/9/23.
  */
 public class DateUtilsTest {
+    protected List<String> dateFormatList = new ArrayList<String>() {{
+        add("yyyy/MM/dd HH:mm:ss");
+        add("yyyy/MM/dd HH:mm a");
+        add("yyyy/MM/dd HH:mm");
+        add("yyyy/MM/dd");
+        add("yyyy-MM-dd HH:mm:ss");
+        add("yyyy-MM-dd HH:mm");
+        add("yyyy-MM-dd");
+    }};
+
+    @Test
+    public void testParseDate() {
+        Map<String, String> mapIO = new HashMap<String, String>() {{
+            put("2017/11/17 5:43 下午", "2017-11-17"); // 解决
+            put("2017/11/07 12:00 上午", "2017-11-07"); // 到期日
+            put("2017/11/02 12:00 上午", "2017-11-02"); // 计划开始日期
+            put("2017/11/20 6:11 下午", "2017-11-20"); // 实际上线日期
+            put("2017-12-04 10:12:55", "2017-12-04"); // from DB
+        }};
+
+        String[] formatArray = new String[dateFormatList.size()];
+        dateFormatList.toArray(formatArray);
+
+        for (Map.Entry<String, String> io : mapIO.entrySet()) {
+            Date ret = DateUtils.parse(io.getKey(), formatArray);
+            Assert.assertEquals(io.getValue(), DateUtils.format(ret, "yyyy-MM-dd"));
+        }
+    }
+
     @Test
     public void testGetLeftDays() {
         Map<String[], Integer> mapIO = new HashMap<String[], Integer>(){{

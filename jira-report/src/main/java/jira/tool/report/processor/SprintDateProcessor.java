@@ -59,16 +59,12 @@ public class SprintDateProcessor implements ValueProcessor {
     }
 
     public Date parseDate(String value) {
-        if (StrUtils.isEmpty(value) || dateFormatList == null || dateFormatList.size() <= 0) {
-            return null;
-        }
+        String[] formatArray = new String[dateFormatList.size()];
+        dateFormatList.toArray(formatArray);
 
-        Date date = null;
-        for (String format : dateFormatList) {
-            date = DateUtils.parse(value, format, false);
-            if (date != null) {
-                break;
-            }
+        Date date = DateUtils.parse(value, formatArray, false);
+        if (date == null) {
+            System.out.printf("Error when parseDate: %s, %s\r\n", value, dateFormatList.toString());
         }
         return date;
     }

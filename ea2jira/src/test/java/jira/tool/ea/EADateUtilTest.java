@@ -14,6 +14,7 @@ public class EADateUtilTest {
         Map<String, String> mapIO = new HashMap<String, String>() {{
             put("07-十一月-2017 21:16:44", "2017-11-07");
             put("21-十一月-2017 13:01:07", "2017-11-21");
+            put("27-11月-2017 16:26:42", "2017-11-27");
         }};
 
         for (Map.Entry<String, String> io : mapIO.entrySet()) {
