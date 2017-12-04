@@ -194,7 +194,8 @@ public class EA2Jira {
 
             // Check if GUID exists in story
             if (guidStoryMap != null && guidStoryMap.containsKey(guid)) {
-                System.out.printf("GUID already connects with one story: %s, %s\n", guid, guidStoryMap.get(guid));
+                String tmp = guidStoryMap.get(guid);
+                System.out.printf("GUID already connects with one story: %s, %s, %s\r\n", guid, tmp, keyElementMap.get(tmp));
                 continue;
             }
 
