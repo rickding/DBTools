@@ -9,6 +9,13 @@ import java.util.List;
 
 public class JiraUtilTest {
     @Test
+    public void getGetReleasePlanStoryList() {
+        List<Story> ret = JiraUtil.getReleasePlanStoryList();
+        System.out.printf("Plan to release stories from JiraUtil: %d\r\n", ret == null ? 0 : ret.size());
+        Assert.assertNotNull(ret);
+    }
+
+    @Test
     public void testGetStartPlanStoryList() {
         List<Story> ret = JiraUtil.getStartPlanStoryList();
         System.out.printf("Plan to start stories from JiraUtil: %d\r\n", ret == null ? 0 : ret.size());
@@ -16,16 +23,9 @@ public class JiraUtilTest {
     }
 
     @Test
-    public void testGetResolvedStoryList() {
-        List<Story> ret = JiraUtil.getResolvedStoryList();
-        System.out.printf("Resolved stories from JiraUtil: %d\r\n", ret == null ? 0 : ret.size());
-        Assert.assertNotNull(ret);
-    }
-
-    @Test
-    public void testGetUserList() {
-        List<User> ret = JiraUtil.getUserList();
-        System.out.printf("Users from JiraUtil: %d\r\n", ret == null ? 0 : ret.size());
+    public void testGetReleasedStoryList() {
+        List<Story> ret = JiraUtil.getReleasedStoryList();
+        System.out.printf("Released stories from JiraUtil: %d\r\n", ret == null ? 0 : ret.size());
         Assert.assertNotNull(ret);
     }
 
@@ -33,6 +33,13 @@ public class JiraUtilTest {
     public void testGetPMOStoryList() {
         List<Story> ret = JiraUtil.getPMOStoryList();
         System.out.printf("PMO stories from JiraUtil: %d\r\n", ret == null ? 0 : ret.size());
+        Assert.assertNotNull(ret);
+    }
+
+    @Test
+    public void testGetUserList() {
+        List<User> ret = JiraUtil.getUserList();
+        System.out.printf("Users from JiraUtil: %d\r\n", ret == null ? 0 : ret.size());
         Assert.assertNotNull(ret);
     }
 }

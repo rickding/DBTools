@@ -8,8 +8,9 @@ import java.util.List;
 
 public interface JiraMapper {
     // For weekly report
+    List<Story> getReleasePlanStoryList();
     List<Story> getStartPlanStoryList();
-    List<Story> getResolvedStoryList();
+    List<Story> getReleasedStoryList();
     List<Story> getStartDateList();
     List<Story> getReleaseDateList();
     List<Story> getCustomerList();

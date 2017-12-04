@@ -18,6 +18,15 @@ public class JiraMapperTest {
     }
 
     @Test
+    public void getGetReleasePlanStoryList() {
+        Assert.assertNotNull(mapper);
+
+        List<Story> ret = mapper.getReleasePlanStoryList();
+        System.out.printf("Plan to release stories: %d\r\n", ret == null ? 0 : ret.size());
+        Assert.assertNotNull(ret);
+    }
+
+    @Test
     public void testGetStartPlanStoryList() {
         Assert.assertNotNull(mapper);
 
@@ -30,7 +39,7 @@ public class JiraMapperTest {
     public void testGetResolvedStoryList() {
         Assert.assertNotNull(mapper);
 
-        List<Story> ret = mapper.getResolvedStoryList();
+        List<Story> ret = mapper.getReleasedStoryList();
         System.out.printf("Resolved stories: %d\r\n", ret == null ? 0 : ret.size());
         Assert.assertNotNull(ret);
     }
@@ -67,16 +76,7 @@ public class JiraMapperTest {
         Assert.assertNotNull(mapper);
 
         List<Story> ret = mapper.getCustomerOptionList();
-        System.out.printf("Customer options: %d\r\n", ret == null ? 0 : ret.size());
-        Assert.assertNotNull(ret);
-    }
-
-    @Test
-    public void testGetUserList() {
-        Assert.assertNotNull(mapper);
-
-        List<User> ret = mapper.getUserList();
-        System.out.printf("Users: %d\r\n", ret == null ? 0 : ret.size());
+//        System.out.printf("Customer options: %d\r\n", ret == null ? 0 : ret.size());
         Assert.assertNotNull(ret);
     }
 
@@ -104,6 +104,15 @@ public class JiraMapperTest {
 
         List<Story> ret = mapper.getPMOLabelList();
         System.out.printf("PMO Labels: %d\r\n", ret == null ? 0 : ret.size());
+        Assert.assertNotNull(ret);
+    }
+
+    @Test
+    public void testGetUserList() {
+        Assert.assertNotNull(mapper);
+
+        List<User> ret = mapper.getUserList();
+        System.out.printf("Users: %d\r\n", ret == null ? 0 : ret.size());
         Assert.assertNotNull(ret);
     }
 }

@@ -21,6 +21,14 @@ public class JiraUtil {
         return userList;
     }
 
+    public static List<Story> getReleasePlanStoryList() {
+        List<Story> storyList = null;
+        synchronized ("getReleasePlanStoryList") {
+            storyList = DB.getDb().getMapper(JiraMapper.class).getReleasePlanStoryList();
+        }
+        return updateStoryList(storyList);
+    }
+
     public static List<Story> getStartPlanStoryList() {
         List<Story> storyList = null;
         synchronized ("getStartPlanStoryList") {
@@ -29,10 +37,10 @@ public class JiraUtil {
         return updateStoryList(storyList);
     }
 
-    public static List<Story> getResolvedStoryList() {
+    public static List<Story> getReleasedStoryList() {
         List<Story> storyList = null;
-        synchronized ("getResolvedStoryList") {
-            storyList = DB.getDb().getMapper(JiraMapper.class).getResolvedStoryList();
+        synchronized ("getReleasedStoryList") {
+            storyList = DB.getDb().getMapper(JiraMapper.class).getReleasedStoryList();
         }
         return updateStoryList(storyList);
     }

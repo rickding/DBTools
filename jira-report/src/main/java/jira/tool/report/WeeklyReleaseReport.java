@@ -40,7 +40,7 @@ public class WeeklyReleaseReport extends ReleasePlanReport {
 
     @Override
     protected List<Story> getStoryList() {
-        return JiraUtil.getResolvedStoryList();
+        return JiraUtil.getReleasedStoryList();
     }
 
     /**
