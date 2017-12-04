@@ -4,6 +4,7 @@ import dbtools.common.file.CsvUtil;
 import dbtools.common.file.ExcelUtil;
 import dbtools.common.file.FileUtils;
 import dbtools.common.file.FileWriter;
+import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -129,18 +130,12 @@ public class App {
                     ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, String.format("%s-%d", teamStories.getKey(), stories.size() - 1)), stories);
 
                     // Save separate csv files
-                    List<String> teams = new ArrayList<String>(2);
-                    String team = teamStories.getKey();
-                    if ("APP".equalsIgnoreCase(team)) {
-                        teams.add("IOS");
-                        teams.add("APPA");
-                    } else {
-                        teams.add(team);
-                    }
-
-                    for (String tmp : teams) {
-                        String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(Team_File_name, strToday, tmp, stories.size() - 1), Folder_name);
-                        CsvUtil.saveToFile(stories, outputFileName);
+                    String[] teams = JiraTeamEnum.getTeams(teamStories.getKey());
+                    if (!ArrayUtils.isEmpty(teams)) {
+                        for (String tmp : teams) {
+                            String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(Team_File_name, strToday, tmp, stories.size() - 1), Folder_name);
+                            CsvUtil.saveToFile(stories, outputFileName);
+                        }
                     }
                 }
 

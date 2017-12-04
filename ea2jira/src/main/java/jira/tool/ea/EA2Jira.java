@@ -132,10 +132,14 @@ public class EA2Jira {
             // Check if it has jira issue key already
             String issueKey = element[EAHeaderEnum.JiraIssueKey.getIndex()];
             if (JiraKeyUtil.isValid(issueKey)) {
-                issueKey = issueKey.trim().toUpperCase();
                 // Return the pre-created story if it has no pmo label
-                if (preCreatedStoryList != null && !preCreatedStoryList.contains(issueKey) && (pmoLabelKeySet == null || !pmoLabelKeySet.contains(issueKey))) {
-                    preCreatedStoryList.add(issueKey);
+                issueKey = issueKey.trim().toUpperCase();
+                if ((pmoLabelKeySet == null || !pmoLabelKeySet.contains(issueKey)) && preCreatedStoryList != null) {
+                    if (!preCreatedStoryList.contains(issueKey)) {
+                        preCreatedStoryList.add(issueKey);
+                    } else {
+                        System.out.printf("Duplicated issue in pre-created story info: %s\r\n", issueKey, element.toString());
+                    }
                 }
                 continue;
             }
