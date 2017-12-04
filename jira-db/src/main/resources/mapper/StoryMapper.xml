@@ -17,23 +17,43 @@
         <result column="customer_id" property="customerId"/>
     </resultMap>
 
+    <!-- Return the start-plan story list -->
+    <!-- type in (Story, 变更) AND resolution = Unresolved AND (labels in (PMO-EA导入（禁止私动）) OR EA-GUID is not EMPTY) ORDER BY 计划开始日期 -->
+    <select id="getStartPlanStoryList" resultMap="storyMap">
+        select distinct issue.ID as id, concat(project.pkey, '-', issue.issuenum) as issue_key, issue.SUMMARY as title,
+            issue.DUEDATE as due_date, issue.RESOLUTIONDATE as resolve_date,
+            issue.TIMEORIGINALESTIMATE as original_estimation, issue.TIMEESTIMATE as estimation, issue.TIMESPENT as time_spent,
+            issuetype.pname as type, issuestatus.pname as status, issue.resolution,
+            project.pname as project_name, project.pkey as project_key
+        from jiradb.jiraissue as issue
+            left join jiradb.issuetype on issue.issuetype = issuetype.ID
+            left join jiradb.issuestatus on issue.issuestatus = issuestatus.ID
+            left join jiradb.project on issue.project = project.id
+        where issuetype.pname in ('Story', '变更', 'UserStory')
+	        and (issue.RESOLUTION is null or issue.RESOLUTION in (select distinct id from jiradb.resolution where resolution.pname not in ('完成', '已解决', 'Done', '取消')))
+            and (issue.id in (select distinct issue FROM jiradb.customfieldvalue where CUSTOMFIELD in (select id from jiradb.customfield where cfname = 'EA-GUID'))
+            or issue.id in (select distinct issue FROM jiradb.label where label = 'PMO-EA导入（禁止私动）'))
+        order by issue.id desc;
+    </select>
+
     <!-- Return the resolved story list -->
+    <!-- type in (Story, 变更) AND status in (关闭) AND resolution in (完成, 已解决) AND resolutiondate >= 2017-10-28 AND (labels in (PMO-EA导入（禁止私动）) OR EA-GUID is not EMPTY OR resolutiondate < 2017-11-9 AND createdDate < 2017-10-30) ORDER BY resolved DESC -->
     <select id="getResolvedStoryList" resultMap="storyMap">
         select distinct issue.ID as id, concat(project.pkey, '-', issue.issuenum) as issue_key, issue.SUMMARY as title,
-        issue.DUEDATE as due_date, issue.RESOLUTIONDATE as resolve_date,
-        issue.TIMEORIGINALESTIMATE as original_estimation, issue.TIMEESTIMATE as estimation, issue.TIMESPENT as time_spent,
-        issuetype.pname as type, issuestatus.pname as status, resolution.pname as resolution,
-        project.pname as project_name, project.pkey as project_key
+            issue.DUEDATE as due_date, issue.RESOLUTIONDATE as resolve_date,
+            issue.TIMEORIGINALESTIMATE as original_estimation, issue.TIMEESTIMATE as estimation, issue.TIMESPENT as time_spent,
+            issuetype.pname as type, issuestatus.pname as status, resolution.pname as resolution,
+            project.pname as project_name, project.pkey as project_key
         from jiradb.jiraissue as issue
-        left join jiradb.issuetype on issue.issuetype = issuetype.ID
-        left join jiradb.issuestatus on issue.issuestatus = issuestatus.ID
-        left join jiradb.resolution on issue.RESOLUTION = resolution.ID
-        left join jiradb.project on issue.project = project.id
+            left join jiradb.issuetype on issue.issuetype = issuetype.ID
+            left join jiradb.issuestatus on issue.issuestatus = issuestatus.ID
+            left join jiradb.resolution on issue.RESOLUTION = resolution.ID
+            left join jiradb.project on issue.project = project.id
         where issuetype.pname in ('Story', '变更', 'UserStory') and issuestatus.pname in ('关闭') and resolution.pname in ('完成', '已解决')
-        and issue.RESOLUTIONDATE >= '2017-10-28'
-        and (issue.id in (select distinct issue FROM jiradb.customfieldvalue where CUSTOMFIELD in (select id from jiradb.customfield where cfname = 'EA-GUID'))
-        or issue.id in (select distinct issue FROM jiradb.label where label = 'PMO-EA导入（禁止私动）')
-        or issue.RESOLUTIONDATE &lt; '2017-11-9' and issue.CREATED &lt; '2017-10-30')
+            and issue.RESOLUTIONDATE >= '2017-10-28'
+            and (issue.id in (select distinct issue FROM jiradb.customfieldvalue where CUSTOMFIELD in (select id from jiradb.customfield where cfname = 'EA-GUID'))
+            or issue.id in (select distinct issue FROM jiradb.label where label = 'PMO-EA导入（禁止私动）')
+            or issue.RESOLUTIONDATE &lt; '2017-11-9' and issue.CREATED &lt; '2017-10-30')
         order by issue.id desc;
     </select>
 
@@ -69,6 +89,7 @@
     </select>
 
     <!-- Return the pmo story list, which have pmo label or have EA GUID -->
+    <!-- EA-GUID is not EMPTY OR labels in (PMO-EA导入（禁止私动）) ORDER BY created DESC -->
     <select id="getPMOStoryList" resultMap="storyMap">
         select distinct issue.ID as id, concat(project.pkey, '-', issue.issuenum) as issue_key, issue.SUMMARY as title,
             issuetype.pname as type, issuestatus.pname as status, resolution.pname as resolution,

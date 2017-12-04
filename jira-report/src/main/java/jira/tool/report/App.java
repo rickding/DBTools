@@ -25,7 +25,7 @@ public class App {
 //            add(".\\");
 //            add("C:\\Work\\doc\\30-项目-PMO\\PMO报表\\Jira统计日报");
 //            add("C:\\Work\\doc\\30-项目-PMO\\PMO报表\\交付计划");
-            put("C:\\Work\\doc\\30-项目-PMO\\PMO报表\\PMO周报", new BaseReport[]{new WeeklyReleaseReport()});
+            put("C:\\Work\\doc\\30-项目-PMO\\PMO报表\\PMO周报", new BaseReport[]{new WeeklyReleaseReport(), new WeeklyStartPlanReport()});
         }};
 
         List<String> projects = new ArrayList<String>();

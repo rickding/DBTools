@@ -18,6 +18,15 @@ public class JiraMapperTest {
     }
 
     @Test
+    public void testGetStartPlanStoryList() {
+        Assert.assertNotNull(mapper);
+
+        List<Story> ret = mapper.getStartPlanStoryList();
+        System.out.printf("Plan to start stories: %d\r\n", ret == null ? 0 : ret.size());
+        Assert.assertNotNull(ret);
+    }
+
+    @Test
     public void testGetResolvedStoryList() {
         Assert.assertNotNull(mapper);
 
