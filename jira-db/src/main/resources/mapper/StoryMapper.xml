@@ -17,6 +17,26 @@
         <result column="customer_id" property="customerId"/>
     </resultMap>
 
+    <!-- Return the un-developed story list -->
+    <select id="getUnDevelopedStoryList" resultMap="storyMap">
+        select distinct issue.ID as id, concat(project.pkey, '-', issue.issuenum) as issue_key, issue.SUMMARY as title,
+            issue.DUEDATE as due_date, issue.RESOLUTIONDATE as resolve_date,
+            issue.TIMEORIGINALESTIMATE as original_estimation, issue.TIMEESTIMATE as estimation, issue.TIMESPENT as time_spent,
+            issuetype.pname as type, issuestatus.pname as status, resolution.pname as resolution,
+            project.pname as project_name, project.pkey as project_key
+        from jiradb.jiraissue as issue
+            left join jiradb.issuetype on issue.issuetype = issuetype.ID
+            left join jiradb.issuestatus on issue.issuestatus = issuestatus.ID
+            left join jiradb.resolution on issue.RESOLUTION = resolution.ID
+            left join jiradb.project on issue.project = project.id
+        where issuetype.pname in ('Story', '变更', 'UserStory')
+			and issuestatus.pname in ('待办', '开发中', '架构设计评审中', '架构设计评审完成')
+            and duedate &lt; date_add(curdate(), interval 28 day)
+            and (issue.id in (select distinct issue FROM jiradb.customfieldvalue where CUSTOMFIELD in (select id from jiradb.customfield where cfname = 'EA-GUID'))
+            or issue.id in (select distinct issue FROM jiradb.label where label = 'PMO-EA导入（禁止私动）'))
+        order by issue.id desc;
+    </select>
+
     <!-- Return the release-plan story list -->
     <select id="getReleasePlanStoryList" resultMap="storyMap">
         select distinct issue.ID as id, concat(project.pkey, '-', issue.issuenum) as issue_key, issue.SUMMARY as title,
@@ -56,7 +76,7 @@
         order by issue.id desc;
     </select>
 
-    <!-- Return the resolved story list -->
+    <!-- Return the released story list -->
     <select id="getReleasedStoryList" resultMap="storyMap">
         select distinct issue.ID as id, concat(project.pkey, '-', issue.issuenum) as issue_key, issue.SUMMARY as title,
             issue.DUEDATE as due_date, issue.RESOLUTIONDATE as resolve_date,

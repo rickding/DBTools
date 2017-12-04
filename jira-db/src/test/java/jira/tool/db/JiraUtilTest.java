@@ -9,6 +9,13 @@ import java.util.List;
 
 public class JiraUtilTest {
     @Test
+    public void testGetUnDevelopedStoryList() {
+        List<Story> ret = JiraUtil.getUnDevelopedStoryList();
+        System.out.printf("Un-developed stories from JiraUtil: %d\r\n", ret == null ? 0 : ret.size());
+        Assert.assertNotNull(ret);
+    }
+
+    @Test
     public void getGetReleasePlanStoryList() {
         List<Story> ret = JiraUtil.getReleasePlanStoryList();
         System.out.printf("Plan to release stories from JiraUtil: %d\r\n", ret == null ? 0 : ret.size());

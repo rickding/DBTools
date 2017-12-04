@@ -7,6 +7,9 @@ import jira.tool.db.model.User;
 import java.util.List;
 
 public interface JiraMapper {
+    // Half-weekly report: un-developed
+    List<Story> getUnDevelopedStoryList();
+
     // For weekly report
     List<Story> getReleasePlanStoryList();
     List<Story> getStartPlanStoryList();
