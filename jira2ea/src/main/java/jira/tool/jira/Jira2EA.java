@@ -314,7 +314,13 @@ public class Jira2EA {
         String customFieldId = "select id from jiradb.customfield where cfname = 'EA-GUID'";
         List<String> issueIds = new ArrayList<String>();
         for (Map.Entry<String, String> guidKey : updateGUIDKeyMap.entrySet()) {
-            String issueId = keyStoryMap.get(guidKey.getValue())[JiraHeaderEnum.ID.getIndex()];
+            String issueKey = guidKey.getValue();
+            if (StrUtils.isEmpty(issueKey) || !keyStoryMap.containsKey(issueKey)) {
+                System.out.printf("Can't find story key: %s, %s\n", guidKey.getKey(), guidKey.getValue());
+                continue;
+            }
+
+            String issueId = keyStoryMap.get(issueKey)[JiraHeaderEnum.ID.getIndex()];
             if (StrUtils.isEmpty(issueId) || StrUtils.isEmpty(guidKey.getKey())) {
                 System.out.printf("Can't find story id for key: %s, %s\n", guidKey.getKey(), guidKey.getValue());
                 continue;
