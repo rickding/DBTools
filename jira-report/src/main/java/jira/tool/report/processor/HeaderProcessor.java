@@ -15,6 +15,8 @@ public class HeaderProcessor {
     public static HeaderProcessor issueKeyHeader = new HeaderProcessor("Issue Key", "Issue key");
     public static HeaderProcessor issueIdHeader = new HeaderProcessor("Issue ID", "Issue id");
     public static HeaderProcessor issueTypeHeader = new HeaderProcessor("Issue Type", "问题类型");
+    public static HeaderProcessor statusHeader = new HeaderProcessor("Status", "状态");
+    public static HeaderProcessor resolutionHeader = new HeaderProcessor("Resolution", "解决结果");
     public static HeaderProcessor projectHeader = new HeaderProcessor("Project", "Custom field (所属项目)");
     public static HeaderProcessor estimationHeader = new HeaderProcessor("Estimation Man-day", "剩余时间");
 
@@ -29,6 +31,8 @@ public class HeaderProcessor {
         add(HeaderProcessor.issueKeyHeader);
         add(HeaderProcessor.issueIdHeader);
         add(HeaderProcessor.issueTypeHeader);
+        add(HeaderProcessor.statusHeader);
+        add(HeaderProcessor.resolutionHeader);
         add(HeaderProcessor.projectHeader);
         add(HeaderProcessor.estimationHeader);
     }};

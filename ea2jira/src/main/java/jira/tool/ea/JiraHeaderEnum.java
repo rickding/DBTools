@@ -42,7 +42,7 @@ public enum JiraHeaderEnum {
 
         return new String[] {
                 story.getTitle(), story.getKey(), String.valueOf(story.getId()),
-                story.getStatus(), story.getResult(),
+                story.getStatus(), story.getResolution(),
                 story.getLabel(), story.getEAGUID()
         };
     }

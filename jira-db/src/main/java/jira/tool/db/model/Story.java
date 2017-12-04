@@ -11,7 +11,7 @@ public class Story {
     private String title;
     private String type;
     private String status;
-    private String result;
+    private String resolution;
     private String label;
     private String EAGUID;
     private String projectName;
@@ -19,7 +19,7 @@ public class Story {
     private long customerId;
     private String customer;
     private Date dueDate;
-    private Date resultDate;
+    private Date resolveDate;
     private Date releaseDate;
     private Date startDate;
     private long originalEstimation;
@@ -42,12 +42,12 @@ public class Story {
         this.dueDate = dueDate;
     }
 
-    public Date getResultDate() {
-        return resultDate;
+    public Date getResolveDate() {
+        return resolveDate;
     }
 
-    public void setResultDate(Date resultDate) {
-        this.resultDate = resultDate;
+    public void setResolveDate(Date resolveDate) {
+        this.resolveDate = resolveDate;
     }
 
     public Date getStartDate() {
@@ -138,12 +138,12 @@ public class Story {
         this.status = status;
     }
 
-    public String getResult() {
-        return result;
+    public String getResolution() {
+        return resolution;
     }
 
-    public void setResult(String result) {
-        this.result = result;
+    public void setResolution(String resolution) {
+        this.resolution = resolution;
     }
 
     public String getLabel() {
