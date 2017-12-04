@@ -145,16 +145,12 @@ public class Jira2EA {
         }
 
         String key = element[EAHeaderEnum.JiraIssueKey.getIndex()];
-        if (StrUtils.isEmpty(key)) {
-            return false;
-        }
-
-        String[] story = guidKeyMap.get(key);
-        if (ArrayUtils.isEmpty(story)) {
+        if (StrUtils.isEmpty(key) || !guidKeyMap.containsKey(key)) {
             return false;
         }
 
         // Only changed from Implemented to Approved
+        String[] story = guidKeyMap.get(key);
         int statusIndex = EAHeaderEnum.Status.getIndex();
         if (EAStatusEnum.isMappedToStory(element[statusIndex])
                 && JiraStatusEnum.isClosed(story[JiraHeaderEnum.Status.getIndex()])) {
