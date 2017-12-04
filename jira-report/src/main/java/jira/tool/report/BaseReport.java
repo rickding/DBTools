@@ -6,7 +6,6 @@ import dbtools.common.utils.StrUtils;
 import jira.tool.db.model.Story;
 import jira.tool.report.processor.EstimationProcessor;
 import jira.tool.report.processor.HeaderProcessor;
-import jira.tool.report.processor.ResolveDateProcessor;
 import jira.tool.report.processor.SprintDateProcessor;
 import jira.tool.report.processor.StartDateProcessor;
 import jira.tool.report.processor.TeamNameProcessor;
@@ -32,7 +31,6 @@ public class BaseReport {
     // Configure the processors
     protected List<ValueProcessor> valueProcessors = new ArrayList<ValueProcessor>() {{
         add(new SprintDateProcessor());
-        add(new ResolveDateProcessor());
         add(new StartDateProcessor());
         add(new TeamNameProcessor());
         add(new EstimationProcessor());

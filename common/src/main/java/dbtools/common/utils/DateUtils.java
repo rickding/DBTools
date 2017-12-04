@@ -11,7 +11,7 @@ import java.util.Date;
  */
 public class DateUtils {
     public static String format(Date date) {
-        return format(date, "yyyy-MM-dd");
+        return format(date, "yyyy-MM-dd HH:mm:ss");
     }
 
     public static String format(Date date, String format) {
@@ -23,7 +23,7 @@ public class DateUtils {
             SimpleDateFormat sdf = new SimpleDateFormat(format);
             return sdf.format(date);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.printf("%s, %s\r\n", e.getMessage(), format);
         }
         return "";
     }
@@ -42,7 +42,7 @@ public class DateUtils {
             return df.parse(str);
         } catch (ParseException e) {
             if (showError) {
-                System.out.println(e.getMessage());
+                System.out.printf("%s, %s\r\n", e.getMessage(), format);
             }
         }
 

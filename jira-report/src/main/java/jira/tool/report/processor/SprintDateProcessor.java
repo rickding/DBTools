@@ -4,8 +4,10 @@ import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
 import org.apache.poi.ss.usermodel.Cell;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class SprintDateProcessor implements ValueProcessor {
     public static Date today = DateUtils.parse(DateUtils.format(new Date(), "yyyy-MM-dd"), "yyyy-MM-dd");
@@ -23,12 +25,30 @@ public class SprintDateProcessor implements ValueProcessor {
         return days;
     }
 
-    protected String format = "yyyy/MM/dd HH:mm a";
+    protected List<String> dateFormatList = new ArrayList<String>() {{
+        add("yyyy/MM/dd HH:mm:ss");
+        add("yyyy/MM/dd HH:mm a");
+        add("yyyy/MM/dd HH:mm");
+        add("yyyy/MM/dd");
+        add("yyyy-MM-dd HH:mm:ss");
+        add("yyyy-MM-dd");
+    }};
+
     protected int sprintEnd = Calendar.SATURDAY;
     protected boolean adjustDelay = true;
+    protected List<HeaderProcessor> acceptedHeaderList = new ArrayList<HeaderProcessor>() {{
+        add(HeaderProcessor.dueDateHeader);
+    }};
 
     public boolean accept(String header) {
-        return !StrUtils.isEmpty(header) && header.equalsIgnoreCase(HeaderProcessor.dueDateHeader.getName());
+        if (!StrUtils.isEmpty(header) && acceptedHeaderList != null && acceptedHeaderList.size() > 0) {
+            for (HeaderProcessor processor : acceptedHeaderList) {
+                if (header.equalsIgnoreCase(processor.getName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void process(String value, Cell cell) {
@@ -38,12 +58,27 @@ public class SprintDateProcessor implements ValueProcessor {
         cell.setCellValue(process(value, adjustDelay));
     }
 
+    public Date parseDate(String value) {
+        if (StrUtils.isEmpty(value) || dateFormatList == null || dateFormatList.size() <= 0) {
+            return null;
+        }
+
+        Date date = null;
+        for (String format : dateFormatList) {
+            date = DateUtils.parse(value, format, false);
+            if (date != null) {
+                break;
+            }
+        }
+        return date;
+    }
+
     public String process(String value, boolean adjustDelay) {
-        if (StrUtils.isEmpty(value)) {
+        if (StrUtils.isEmpty(value) || dateFormatList == null || dateFormatList.size() <= 0) {
             return value;
         }
 
-        Date date = DateUtils.parse(value, format);
+        Date date = parseDate(value);
         if (date == null) {
             return value;
         }

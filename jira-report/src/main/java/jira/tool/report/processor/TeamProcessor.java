@@ -128,7 +128,6 @@ public class TeamProcessor {
             if (!StrUtils.isEmpty(date)) {
                 if (!dateStoryMap.containsKey(date)) {
                     dateStoryMap.put(date, new Integer(0));
-                    System.out.printf("Fill date to story map: %s, %s\n", date, team.getName());
                 }
                 if (!dateTimeMap.containsKey(date)) {
                     dateTimeMap.put(date, new Double(0.0));

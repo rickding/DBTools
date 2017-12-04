@@ -13,6 +13,8 @@ public class HeaderProcessor {
     public static HeaderProcessor teamKeyHeader = new HeaderProcessor("Team Key", "Project key");
     public static HeaderProcessor teamNameHeader = new HeaderProcessor("Team Name", "Project name");
     public static HeaderProcessor issueKeyHeader = new HeaderProcessor("Issue Key", "Issue key");
+    public static HeaderProcessor issueIdHeader = new HeaderProcessor("Issue ID", "Issue id");
+    public static HeaderProcessor issueTypeHeader = new HeaderProcessor("Issue Type", "问题类型");
     public static HeaderProcessor projectHeader = new HeaderProcessor("Project", "Custom field (所属项目)");
     public static HeaderProcessor estimationHeader = new HeaderProcessor("Estimation Man-day", "剩余时间");
 
@@ -25,6 +27,8 @@ public class HeaderProcessor {
         add(HeaderProcessor.teamKeyHeader);
         add(HeaderProcessor.teamNameHeader);
         add(HeaderProcessor.issueKeyHeader);
+        add(HeaderProcessor.issueIdHeader);
+        add(HeaderProcessor.issueTypeHeader);
         add(HeaderProcessor.projectHeader);
         add(HeaderProcessor.estimationHeader);
     }};

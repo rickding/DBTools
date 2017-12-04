@@ -1,8 +1,10 @@
 package jira.tool.report.processor;
 
+import dbtools.common.utils.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,8 +12,24 @@ public class SprintDateProcessorTest {
     private SprintDateProcessor processor = new SprintDateProcessor();
 
     @Test
+    public void testParseDate() {
+        Map<String, String> mapIO = new HashMap<String, String>() {{
+            put("2017/11/17 5:43 下午", "2017-11-17"); // 解决
+            put("2017/11/07 12:00 上午", "2017-11-07"); // 到期日
+            put("2017/11/02 12:00 上午", "2017-11-02"); // 计划开始日期
+            put("2017/11/20 6:11 下午", "2017-11-20"); // 实际上线日期
+            put("2017-12-04 10:12:55", "2017-12-04"); // DB
+        }};
+
+        for (Map.Entry<String, String> io : mapIO.entrySet()) {
+            Date ret = processor.parseDate(io.getKey());
+            Assert.assertEquals(io.getValue(), DateUtils.format(ret, "yyyy-MM-dd"));
+        }
+    }
+
+    @Test
     public void testGetLeftDays() {
-        Map<String[], Integer> mapIO = new HashMap<String[], Integer>(){{
+        Map<String[], Integer> mapIO = new HashMap<String[], Integer>() {{
             put(new String[]{"2017-11-15", "2017-11-15"}, 2);
             put(new String[]{"2017-11-15", "2017-11-16"}, 1);
             put(new String[]{"2017-11-15", "2017-11-17"}, 0);
@@ -42,7 +60,7 @@ public class SprintDateProcessorTest {
     public void testProcess() {
         Map<String, String> mapIO = new HashMap<String, String>() {{
             put(null, null);
-            put("2017/10/24 12:00", "2017/10/24 12:00");
+            put("2017/10/24 12:00", "2017-10-28");
 
             put("2018/01/04 12:00 上午", "2018-01-06");
             put("2018/01/03 12:00 上午", "2018-01-06");

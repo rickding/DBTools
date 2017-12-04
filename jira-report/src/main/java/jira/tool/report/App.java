@@ -49,7 +49,7 @@ public class App {
                 String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, report.getFileName(), Folder_name);
                 ExcelUtil.saveToFile(wb, outputFileName);
 
-                projects.add(report.getClass().toString());
+                projects.add(report.getFileName());
             }
         }
 
