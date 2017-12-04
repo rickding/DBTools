@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jira.tool.db.mapper.JiraMapper">
+    <resultMap id="storyMap" type="jira.tool.db.model.Story">
+        <id column="id" property="id"/>
+        <result column="issue_key" property="key"/>
+        <result column="project_name" property="projectName"/>
+        <result column="project_key" property="projectKey"/>
+        <result column="due_date" property="dueDate"/>
+        <result column="resolve_date" property="resolveDate"/>
+        <result column="release_date" property="releaseDate"/>
+        <result column="start_date" property="startDate"/>
+        <result column="original_estimation" property="originalEstimation"/>
+        <result column="time_spent" property="timeSpent"/>
+        <result column="customer_id" property="customerId"/>
+    </resultMap>
+
+    <!-- Return the resolved story list -->
+    <select id="getResolvedStoryList" resultMap="storyMap">
+        select distinct issue.ID as id, concat(project.pkey, '-', issue.issuenum) as issue_key, issue.SUMMARY as title,
+        issue.DUEDATE as due_date, issue.RESOLUTIONDATE as resolve_date,
+        issue.TIMEORIGINALESTIMATE as original_estimation, issue.TIMEESTIMATE as estimation, issue.TIMESPENT as time_spent,
+        issuetype.pname as type, issuestatus.pname as status, resolution.pname as resolution,
+        project.pname as project_name, project.pkey as project_key
+        from jiradb.jiraissue as issue
+        left join jiradb.issuetype on issue.issuetype = issuetype.ID
+        left join jiradb.issuestatus on issue.issuestatus = issuestatus.ID
+        left join jiradb.resolution on issue.RESOLUTION = resolution.ID
+        left join jiradb.project on issue.project = project.id
+        where issuetype.pname in ('Story', '变更', 'UserStory') and issuestatus.pname in ('关闭') and resolution.pname in ('完成', '已解决')
+        and issue.RESOLUTIONDATE >= '2017-10-28'
+        and (issue.id in (select distinct issue FROM jiradb.customfieldvalue where CUSTOMFIELD in (select id from jiradb.customfield where cfname = 'EA-GUID'))
+        or issue.id in (select distinct issue FROM jiradb.label where label = 'PMO-EA导入（禁止私动）')
+        or issue.RESOLUTIONDATE &lt; '2017-11-9' and issue.CREATED &lt; '2017-10-30')
+        order by issue.id desc;
+    </select>
+
+    <!-- Return the start date list -->
+    <select id="getStartDateList" resultMap="storyMap">
+        SELECT distinct field_value.ISSUE as id, field_value.DATEVALUE as start_date
+        FROM jiradb.customfieldvalue as field_value
+        where field_value.CUSTOMFIELD in (select distinct id from jiradb.customfield where cfname = '计划开始日期')
+        order by field_value.id desc;
+    </select>
+
+    <!-- Return the release date list -->
+    <select id="getReleaseDateList" resultMap="storyMap">
+        SELECT distinct field_value.ISSUE as id, field_value.DATEVALUE as release_date
+        FROM jiradb.customfieldvalue as field_value
+        where field_value.CUSTOMFIELD in (select distinct id from jiradb.customfield where cfname = '实际上线日期')
+        order by field_value.id desc;
+    </select>
+
+    <!-- Return the customer list. The customer value needs to be updated with option value. -->
+    <select id="getCustomerList" resultMap="storyMap">
+        SELECT distinct field_value.ISSUE as id, cast(field_value.STRINGVALUE as signed) as customer_id
+        FROM jiradb.customfieldvalue as field_value
+        where field_value.CUSTOMFIELD in (select distinct id from jiradb.customfield where cfname = '所属项目')
+        order by field_value.id desc;
+    </select>
+
+    <!-- Return the customer option list -->
+    <select id="getCustomerOptionList" resultMap="storyMap">
+        select id, customvalue as customer
+        from customfieldoption
+        where CUSTOMFIELD in (select distinct id from jiradb.customfield where cfname = '所属项目')
+    </select>
+
+    <!-- Return the pmo story list, which have pmo label or have EA GUID -->
+    <select id="getPMOStoryList" resultMap="storyMap">
+        select distinct issue.ID as id, concat(project.pkey, '-', issue.issuenum) as issue_key, issue.SUMMARY as title,
+            issuetype.pname as type, issuestatus.pname as status, resolution.pname as resolution,
+            project.pname as project_name, project.pkey as project_key
+        from jiradb.jiraissue as issue
+            left join issuetype on issue.issuetype = issuetype.ID
+            left join issuestatus on issue.issuestatus = issuestatus.ID
+            left join resolution on issue.RESOLUTION = resolution.ID
+            left join project on issue.project = project.id
+        where issue.id in (select distinct issue FROM jiradb.customfieldvalue where CUSTOMFIELD in (select id from jiradb.customfield where cfname = 'EA-GUID'))
+	        or issue.id in (select distinct issue FROM jiradb.label where label = 'PMO-EA导入（禁止私动）')
+        order by issue.id desc;
+    </select>
+
+    <!-- Return the issue id and EA GUID list -->
+    <select id="getEAGUIDList" resultMap="storyMap">
+        SELECT distinct ISSUE as id, STRINGVALUE as EAGUID
+        FROM jiradb.customfieldvalue
+        where CUSTOMFIELD in (select distinct id from jiradb.customfield where cfname = 'EA-GUID')
+        order by id desc;
+    </select>
+
+    <!-- Return the issue id list of pmo label -->
+    <select id="getPMOLabelList" resultMap="storyMap">
+        SELECT distinct issue as id, label
+        FROM jiradb.label
+        where label = 'PMO-EA导入（禁止私动）'
+        order by id desc;
+    </select>
+</mapper>
