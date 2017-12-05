@@ -17,11 +17,11 @@ import java.util.*;
  */
 public class App {
     private static String strToday = DateUtils.format(new Date(), "MMdd");
-    private static String Sql_File_Name = "%s-update-guid-%d.sql";
+    private static String Sql_File_Name = "%s-jira2ea-update-guid-%d.sql";
 
     private static String File_Prefix = "";
     private static String File_Ext = ".csv";
-    private static String File_Name = "%s-story-key-%s-%d.csv";
+    private static String File_Name = "%s-jira2ea-%s-%d.csv";
     private static String Folder_name = "";
 
     public static void main(String[] args) {
@@ -31,7 +31,7 @@ public class App {
         Date time_start = new Date();
         Set<String> filePaths = new HashSet<String>() {{
             add(".\\");
-            add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹\\jira_transfer\\1201");
+            add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹\\jira_transfer\\1205");
         }};
 
         if (args != null) {

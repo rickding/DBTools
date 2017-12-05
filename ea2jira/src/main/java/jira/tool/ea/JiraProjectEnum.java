@@ -19,16 +19,16 @@ public enum JiraProjectEnum {
     CloudPOS("A-海航", new String[]{"云POS项目需求", "云POS需求管理", "云POS"}),
     YunDianPu("A-海航", new String[]{"云店铺项目需求", "云店铺需求管理", "云店铺"}),
 
-    BI("D-技术优化", new String[]{"技术优化-大数据", "大数据", }),
-    DGX("D-技术优化", new String[]{"技术优化-导购线", "导购线", }),
-    JYX("D-技术优化", new String[]{"技术优化-交易线", "交易线", }),
-    SJX("D-技术优化", new String[]{"技术优化-商家线", "商家线", }),
-    SPX("D-技术优化", new String[]{"技术优化-商品线", "商品线", }),
-    YHX("D-技术优化", new String[]{"技术优化-用户线", "用户线", }),
+    BI("D-技术优化", new String[]{"技术优化-大数据", "技术-大数据", "大数据", }),
+    DGX("D-技术优化", new String[]{"技术优化-导购线", "技术-导购线", "导购线", }),
+    JYX("D-技术优化", new String[]{"技术优化-交易线", "技术-交易线", "交易线", }),
+    SJX("D-技术优化", new String[]{"技术优化-商家线", "技术-商家线", "商家线", }),
+    SPX("D-技术优化", new String[]{"技术优化-商品线", "技术-商品线", "商品线", }),
+    YHX("D-技术优化", new String[]{"技术优化-用户线", "技术-用户线", "用户线", }),
 
     TechDebt("D-技术优化", new String[]{
-            "技术优化", "大数据", "导购线", "交易线", "商家线", "商品线", "用户线",
-            "技术", "one instance改造方案"
+            "大数据", "导购线", "交易线", "商家线", "商品线", "用户线",
+            "技术优化", "技术", "one instance改造方案"
     });
 
     private static JiraProjectEnum[] projectArray = new JiraProjectEnum[]{
