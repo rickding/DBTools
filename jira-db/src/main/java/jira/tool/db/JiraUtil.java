@@ -21,6 +21,22 @@ public class JiraUtil {
         return userList;
     }
 
+    public static List<Story> getNoDueDateStoryList() {
+        List<Story> storyList = null;
+        synchronized ("getNoDueDateStoryList") {
+            storyList = DB.getDb().getMapper(JiraMapper.class).getNoDueDateStoryList();
+        }
+        return updateStoryList(storyList);
+    }
+
+    public static List<Story> getDevelopedStoryList() {
+        List<Story> storyList = null;
+        synchronized ("getDevelopedStoryList") {
+            storyList = DB.getDb().getMapper(JiraMapper.class).getDevelopedStoryList();
+        }
+        return updateStoryList(storyList);
+    }
+
     public static List<Story> getUnDevelopedStoryList() {
         List<Story> storyList = null;
         synchronized ("getUnDevelopedStoryList") {

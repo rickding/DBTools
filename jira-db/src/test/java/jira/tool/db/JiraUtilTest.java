@@ -9,6 +9,20 @@ import java.util.List;
 
 public class JiraUtilTest {
     @Test
+    public void testGetNoDueDateStoryList() {
+        List<Story> ret = JiraUtil.getNoDueDateStoryList();
+        System.out.printf("No due-date stories from JiraUtil: %d\r\n", ret == null ? 0 : ret.size());
+        Assert.assertNotNull(ret);
+    }
+
+    @Test
+    public void getGetDevelopedStoryList() {
+        List<Story> ret = JiraUtil.getDevelopedStoryList();
+        System.out.printf("Develop finished stories from JiraUtil: %d\r\n", ret == null ? 0 : ret.size());
+        Assert.assertNotNull(ret);
+    }
+
+    @Test
     public void testGetUnDevelopedStoryList() {
         List<Story> ret = JiraUtil.getUnDevelopedStoryList();
         System.out.printf("Un-developed stories from JiraUtil: %d\r\n", ret == null ? 0 : ret.size());
