@@ -12,6 +12,7 @@ public interface JiraMapper {
     List<Story> getNoDueDateStoryList();
 
     // Half-weekly report
+    List<Story> getQAStoryList();
     List<Story> getUnDevelopedStoryList();
 
     // Weekly report

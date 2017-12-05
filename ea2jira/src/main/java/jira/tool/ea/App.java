@@ -18,12 +18,12 @@ import java.util.*;
 public class App {
     private static String File_Prefix = "";
     private static String File_Ext = ".csv";
-    private static String File_Name = "%s-ea2jira-create-story-%d.xlsx";
-    private static String Team_File_name = "%s-ea2jira-create-story-%s-%d.csv";
+    private static String File_Name = "%s-create-story-%d.xlsx";
+    private static String Team_File_name = "%s-create-story-%s-%d.csv";
     private static String Folder_name = "";
 
     private static String strToday = DateUtils.format(new Date(), "MMdd");
-    private static String Label_File_Name = "%s-ea2jira-add-label-%d.txt";
+    private static String Label_File_Name = "%s-add-label-%d.txt";
     private static String Sheet_EA = "ea-%s";
 
     public static void main(String[] args) {
