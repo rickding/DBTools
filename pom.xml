@@ -18,6 +18,7 @@
         <module>ea2jira</module>
         <module>jira2ea</module>
         <module>jira-db</module>
+        <module>ea-checker</module>
     </modules>
 
 </project>

@@ -7,11 +7,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>db-tools</groupId>
-    <artifactId>sql-updater</artifactId>
+    <groupId>ea-tool</groupId>
+    <artifactId>ea-checker</artifactId>
+    <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>sql-updater</name>
+    <name>ea-checker</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -25,6 +26,7 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>db-tools</groupId>
             <artifactId>common</artifactId>
@@ -33,6 +35,24 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>spring-application.xml</include>
+                </includes>
+                <filtering>true</filtering>
+                <targetPath>.</targetPath>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+                <targetPath>.</targetPath>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -48,7 +68,7 @@
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>dbtools.sqlupdater.App</mainClass>
+                                    <mainClass>.tool.ea.checker.App</mainClass>
                                 </transformer>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
