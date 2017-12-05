@@ -16,8 +16,8 @@ public enum EAHeaderEnum {
     JiraIssueKey("Stereotype", 7),
     Status("Status", 8),
     Notes("Notes", 9),
-    Keywords("Keywords", -1),
 
+    Keywords("Keywords", -1),
     CreatedDate("Created Date", -1),
     ModifiedDate("Modified Date", -1),
 
@@ -27,7 +27,7 @@ public enum EAHeaderEnum {
     // The needed headers from csv file
     private static EAHeaderEnum[] headerList = new EAHeaderEnum[]{
             GUID, Type, Name, Author, Estimation, DueDate, Owner, JiraIssueKey, Status, Notes,
-            CreatedDate, ModifiedDate,
+            Keywords, CreatedDate, ModifiedDate,
             Key, ParentKey,
     };
 

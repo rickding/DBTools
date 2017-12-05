@@ -178,7 +178,7 @@ public class EA2Jira {
                 } else if (jiraHeader.equalsIgnoreCase(EA2JiraHeaderEnum.Description.getCode())) {
                     // Format desc with ea file and package path
                     String parentPath = EAElementUtil.getParentPath(element, keyElementMap);
-                    value = formatDescription(projectName, parentPath, value);
+                    value = formatDescription(projectName, parentPath, value, element[EAHeaderEnum.Keywords.getIndex()]);
                 } else if (jiraHeader.equalsIgnoreCase(EA2JiraHeaderEnum.Title.getCode())) {
                     // Format title with package
                     value = formatTitle(value, element, keyElementMap);
@@ -206,8 +206,9 @@ public class EA2Jira {
                 teamStoryListMap.put(team, stories);
             }
 
-            // Add story
+            // Update and add story
             updateQA(values, team);
+            JiraEpicUtil.updateEpic(values);
             stories.add(values);
         }
     }
@@ -245,7 +246,7 @@ public class EA2Jira {
         return title;
     }
 
-    private static String formatDescription(String projectName, String parentPath, String desc) {
+    private static String formatDescription(String projectName, String parentPath, String desc, String keywords) {
         if (StrUtils.isEmpty(projectName) && StrUtils.isEmpty(parentPath)) {
             return desc;
         }
@@ -262,11 +263,15 @@ public class EA2Jira {
             sb.append(String.format("EA包路径: %s, \r\n\r\n", parentPath));
         }
 
-        // Original note
-        if (!StrUtils.isEmpty(desc)) {
-            sb.append(desc);
+        // Keywords
+        if (!StrUtils.isEmpty(keywords)) {
+            sb.append(String.format("关键词: %s \r\n\r\n", keywords));
         }
 
+        // Original note
+        if (!StrUtils.isEmpty(desc)) {
+            sb.append(String.format("%s \r\n\r\n", desc));
+        }
         return sb.toString();
     }
 }

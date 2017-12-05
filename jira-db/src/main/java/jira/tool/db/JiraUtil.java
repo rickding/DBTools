@@ -77,6 +77,14 @@ public class JiraUtil {
         return updateStoryList(storyList);
     }
 
+    public static List<Story> getEpicList() {
+        List<Story> storyList = null;
+        synchronized ("getEpicList") {
+            storyList = DB.getDb().getMapper(JiraMapper.class).getEpicList();
+        }
+        return updateStoryList(storyList);
+    }
+
     public static List<Story> updateStoryList(List<Story> storyList) {
         if (storyList == null || storyList.size() <= 0) {
             return storyList;

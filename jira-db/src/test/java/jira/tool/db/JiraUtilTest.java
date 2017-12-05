@@ -58,6 +58,13 @@ public class JiraUtilTest {
     }
 
     @Test
+    public void testGetEpicList() {
+        List<Story> ret = JiraUtil.getEpicList();
+        System.out.printf("Epics from JiraUtil: %d\r\n", ret == null ? 0 : ret.size());
+        Assert.assertNotNull(ret);
+    }
+
+    @Test
     public void testGetUserList() {
         List<User> ret = JiraUtil.getUserList();
         System.out.printf("Users from JiraUtil: %d\r\n", ret == null ? 0 : ret.size());

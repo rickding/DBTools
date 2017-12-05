@@ -39,8 +39,10 @@ public class JiraUser {
 
     private static JiraUser[] getUserArray() {
         // Get users from db
-        if (userListFromDB == null) {
-            userListFromDB = JiraUtil.getUserList();
+        synchronized("getUserArray") {
+            if (userListFromDB == null) {
+                userListFromDB = JiraUtil.getUserList();
+            }
         }
 
         // Combine the users
