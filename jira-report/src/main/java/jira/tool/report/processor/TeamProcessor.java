@@ -49,7 +49,8 @@ public class TeamProcessor {
 
         Map<String, TeamProcessor> teamProcessors = new HashMap<String, TeamProcessor>();
         for (TeamEnum team : teams) {
-            if (TeamEnum.AA.getName().equalsIgnoreCase(team.getName())) {
+            if (TeamEnum.AA.getName().equalsIgnoreCase(team.getName())
+                    || TeamEnum.SAAS.getName().equalsIgnoreCase(team.getName())) {
                 continue;
             }
             teamProcessors.put(team.getName().toLowerCase(), new TeamProcessor(team));
