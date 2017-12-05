@@ -45,7 +45,27 @@ public class DateUtilsTest {
     }
 
     @Test
-    public void testGetLeftDays() {
+    public void testDayOfWeek() {
+        Map<String, Integer> mapIO = new HashMap<String, Integer>(){{
+            put("", 0);
+            put("", 0);
+            put("yyyy/MM/dd HH:mm", 0);
+            put("2017-12-07 18:00", Calendar.THURSDAY);
+            put("2017-12-09 18:00", Calendar.SATURDAY);
+            put("2017-12-07", Calendar.THURSDAY);
+            put("2017-12-23", Calendar.SATURDAY);
+            put("2017-12-24", Calendar.SUNDAY);
+            put("2017-12-30", Calendar.SATURDAY);
+        }};
+
+        for (Map.Entry<String, Integer> io : mapIO.entrySet()) {
+            int ret = DateUtils.dayOfWeek(io.getKey());
+            Assert.assertEquals(io.getValue().intValue(), ret);
+        }
+    }
+
+    @Test
+    public void testDiffDays() {
         Map<String[], Integer> mapIO = new HashMap<String[], Integer>(){{
             put(new String[]{null, ""}, 0);
             put(new String[]{"", ""}, 0);

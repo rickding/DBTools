@@ -49,12 +49,15 @@ public class DateUtils {
         return null;
     }
 
+    public static Date parse(String str) {
+        return parse(str, "yyyy-MM-dd HH:mm:ss", true);
+    }
     public static Date parse(String str, String format) {
         return parse(str, format, true);
     }
 
     public static Date parse(String str, String format, boolean showError) {
-        if (StrUtils.isEmpty(str) || StrUtils.isEmpty(format)) {
+        if (StrUtils.isEmpty(str) || StrUtils.isEmpty(str.trim()) || StrUtils.isEmpty(format)) {
             return null;
         }
 
@@ -66,7 +69,6 @@ public class DateUtils {
                 System.out.printf("%s, %s\r\n", e.getMessage(), format);
             }
         }
-
         return null;
     }
 
@@ -81,7 +83,20 @@ public class DateUtils {
         return (int) ((d1.getTime() - d2.getTime()) / (1000 * 3600 * 24));
     }
 
+    public static int dayOfWeek(String strDate) {
+        Date date = parse(strDate, "yyyy-MM-dd");
+        if (date == null) {
+            return 0;
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal.get(Calendar.DAY_OF_WEEK);
+    }
+
     public static Date adjustDate(Date date, int days) {
+        if (date == null) {
+            return null;
+        }
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.add(Calendar.DATE, days);
