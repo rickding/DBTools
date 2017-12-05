@@ -12,14 +12,13 @@ import java.util.List;
 public class SprintDateProcessor implements ValueProcessor {
     public static Date today = DateUtils.parse(DateUtils.format(new Date(), "yyyy-MM-dd"), "yyyy-MM-dd");
 
-    public static int getLeftWorkDays(String date1, String date2) {
-        int days = DateUtils.diffDays(date1, date2);
-
-        // Adjust the release date
-        days += 2;
-        if (days < 0) {
+    public static int getLeftWorkDays(String date, String today) {
+        Date dateDate = getSprintDate(DateUtils.parse(date, "yyyy-MM-dd"), false);
+        Date todayDate = DateUtils.parse(today, "yyyy-MM-dd");
+        int days = DateUtils.diffDays(dateDate, todayDate);
+        if (days <= 1) {
             days = 0;
-        } else if (days > 5) {
+        } else {
             days = 5;
         }
         return days;
@@ -34,8 +33,9 @@ public class SprintDateProcessor implements ValueProcessor {
         add("yyyy-MM-dd");
     }};
 
-    protected int sprintEnd = Calendar.SATURDAY;
+    protected static int sprintEnd = Calendar.SATURDAY;
     protected boolean adjustDelay = true;
+
     protected List<HeaderProcessor> acceptedHeaderList = new ArrayList<HeaderProcessor>() {{
         add(HeaderProcessor.dueDateHeader);
     }};
@@ -78,6 +78,14 @@ public class SprintDateProcessor implements ValueProcessor {
         if (date == null) {
             return value;
         }
+        date = getSprintDate(date, adjustDelay);
+        return DateUtils.format(date, "yyyy-MM-dd");
+    }
+
+    public static Date getSprintDate(Date date, boolean adjustDelay) {
+        if (date == null) {
+            return null;
+        }
 
         // Keep date only
         date = DateUtils.parse(DateUtils.format(date, "yyyy-MM-dd"), "yyyy-MM-dd");
@@ -97,7 +105,6 @@ public class SprintDateProcessor implements ValueProcessor {
             day = 7;
         }
         cal.add(Calendar.DATE, day);
-
-        return DateUtils.format(cal.getTime(), "yyyy-MM-dd");
+        return cal.getTime();
     }
 }

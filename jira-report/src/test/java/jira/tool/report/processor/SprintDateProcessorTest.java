@@ -30,28 +30,82 @@ public class SprintDateProcessorTest {
     @Test
     public void testGetLeftDays() {
         Map<String[], Integer> mapIO = new HashMap<String[], Integer>() {{
-            put(new String[]{"2017-11-15", "2017-11-15"}, 2);
-            put(new String[]{"2017-11-15", "2017-11-16"}, 1);
-            put(new String[]{"2017-11-15", "2017-11-17"}, 0);
-            put(new String[]{"2017-11-15", "2017-11-18"}, 0);
-            put(new String[]{"2017-11-15", "2017-11-19"}, 0);
-            put(new String[]{"2017-11-15", "2017-11-20"}, 0);
-            put(new String[]{"2017-11-15", "2017-11-21"}, 0);
+            // Run on Friday, one day before sprint end
+            put(new String[]{"2017-11-27", "2017-12-01"}, 0);
+            put(new String[]{"2017-11-28", "2017-12-01"}, 0);
+            put(new String[]{"2017-11-29", "2017-12-01"}, 0);
+            put(new String[]{"2017-11-30", "2017-12-01"}, 0);
+            put(new String[]{"2017-12-01", "2017-12-01"}, 0);
+            put(new String[]{"2017-12-02", "2017-12-01"}, 5);
+            put(new String[]{"2017-12-03", "2017-12-01"}, 5);
 
-            put(new String[]{"2017-11-22", "2017-11-15"}, 5);
-            put(new String[]{"2017-11-22", "2017-11-16"}, 5);
-            put(new String[]{"2017-11-22", "2017-11-17"}, 5);
-            put(new String[]{"2017-11-22", "2017-11-18"}, 5);
-            put(new String[]{"2017-11-22", "2017-11-19"}, 5);
-            put(new String[]{"2017-11-22", "2017-11-20"}, 4);
-            put(new String[]{"2017-11-22", "2017-11-21"}, 3);
+            put(new String[]{"2017-12-04", "2017-12-01"}, 5);
+            put(new String[]{"2017-12-05", "2017-12-01"}, 5);
+            put(new String[]{"2017-12-06", "2017-12-01"}, 5);
+            put(new String[]{"2017-12-07", "2017-12-01"}, 5);
+            put(new String[]{"2017-12-08", "2017-12-01"}, 5);
+            put(new String[]{"2017-12-09", "2017-12-01"}, 5);
+            put(new String[]{"2017-12-10", "2017-12-01"}, 5);
 
-            put(new String[]{"2017-12-13", "2017-11-16"}, 5);
+            // Run on Saturday, the day of sprint end
+            put(new String[]{"2017-11-27", "2017-12-02"}, 0);
+            put(new String[]{"2017-11-28", "2017-12-02"}, 0);
+            put(new String[]{"2017-11-29", "2017-12-02"}, 0);
+            put(new String[]{"2017-11-30", "2017-12-02"}, 0);
+            put(new String[]{"2017-12-01", "2017-12-02"}, 0);
+            put(new String[]{"2017-12-02", "2017-12-02"}, 5);
+            put(new String[]{"2017-12-03", "2017-12-02"}, 5);
+
+            put(new String[]{"2017-12-04", "2017-12-02"}, 5);
+            put(new String[]{"2017-12-05", "2017-12-02"}, 5);
+            put(new String[]{"2017-12-06", "2017-12-02"}, 5);
+            put(new String[]{"2017-12-07", "2017-12-02"}, 5);
+            put(new String[]{"2017-12-08", "2017-12-02"}, 5);
+            put(new String[]{"2017-12-09", "2017-12-02"}, 5);
+            put(new String[]{"2017-12-10", "2017-12-02"}, 5);
+
+            // Run on Sunday, the day after the sprint end
+            put(new String[]{"2017-11-27", "2017-12-03"}, 0);
+            put(new String[]{"2017-11-28", "2017-12-03"}, 0);
+            put(new String[]{"2017-11-29", "2017-12-03"}, 0);
+            put(new String[]{"2017-11-30", "2017-12-03"}, 0);
+            put(new String[]{"2017-12-01", "2017-12-03"}, 0);
+            put(new String[]{"2017-12-02", "2017-12-03"}, 5);
+            put(new String[]{"2017-12-03", "2017-12-03"}, 5);
+
+            put(new String[]{"2017-12-04", "2017-12-03"}, 5);
+            put(new String[]{"2017-12-05", "2017-12-03"}, 5);
+            put(new String[]{"2017-12-06", "2017-12-03"}, 5);
+            put(new String[]{"2017-12-07", "2017-12-03"}, 5);
+            put(new String[]{"2017-12-08", "2017-12-03"}, 5);
+            put(new String[]{"2017-12-09", "2017-12-03"}, 5);
+            put(new String[]{"2017-12-10", "2017-12-03"}, 5);
+
+            // Run on Monday
+            put(new String[]{"2017-11-27", "2017-12-04"}, 0);
+            put(new String[]{"2017-11-28", "2017-12-04"}, 0);
+            put(new String[]{"2017-11-29", "2017-12-04"}, 0);
+            put(new String[]{"2017-11-30", "2017-12-04"}, 0);
+            put(new String[]{"2017-12-01", "2017-12-04"}, 0);
+            put(new String[]{"2017-12-02", "2017-12-04"}, 5);
+            put(new String[]{"2017-12-03", "2017-12-04"}, 5);
+
+            put(new String[]{"2017-12-04", "2017-12-04"}, 5);
+            put(new String[]{"2017-12-05", "2017-12-04"}, 5);
+            put(new String[]{"2017-12-06", "2017-12-04"}, 5);
+            put(new String[]{"2017-12-07", "2017-12-04"}, 5);
+            put(new String[]{"2017-12-08", "2017-12-04"}, 5);
+            put(new String[]{"2017-12-09", "2017-12-04"}, 5);
+            put(new String[]{"2017-12-10", "2017-12-04"}, 5);
         }};
 
         for (Map.Entry<String[], Integer> io : mapIO.entrySet()) {
             String[] params = io.getKey();
             int ret = SprintDateProcessor.getLeftWorkDays(params[0], params[1]);
+            if (io.getValue().intValue() != ret) {
+                System.out.printf("%s, %s, expected: %d, actual: %d\r\n", params[0], params[1], io.getValue(), ret);
+                ret = SprintDateProcessor.getLeftWorkDays(params[0], params[1]);
+            }
             Assert.assertEquals(io.getValue().intValue(), ret);
         }
     }
