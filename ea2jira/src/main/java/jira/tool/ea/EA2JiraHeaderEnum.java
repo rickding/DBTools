@@ -20,8 +20,10 @@ public enum EA2JiraHeaderEnum {
     QAFinishDate(13, "测试完成日期"), // DueDate
     DueDate(14, "到期日"), // DueDate
     Label(15, "标签"),
+    EAGUID(16, "EA-GUID"), // GUID
     Importance(17, "重要性"),
-    EAGUID(16, "EA-GUID"); // GUID
+    EpicLink(19, "Epic Link"),
+    EpicName(18, "Epic Name");
 
     // Map the Jira header to EA header
     public static Map<EA2JiraHeaderEnum, EAHeaderEnum> JiraEAHeaderMap = new HashMap<EA2JiraHeaderEnum, EAHeaderEnum>() {{
@@ -42,6 +44,8 @@ public enum EA2JiraHeaderEnum {
         put(EA2JiraHeaderEnum.Label, null);
         put(EA2JiraHeaderEnum.Importance, null);
         put(EA2JiraHeaderEnum.Description, EAHeaderEnum.Notes);
+        put(EA2JiraHeaderEnum.EpicLink, null);
+        put(EA2JiraHeaderEnum.EpicName, EAHeaderEnum.Keywords);
     }};
 
     // Some special values which are not from ea

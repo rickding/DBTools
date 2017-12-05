@@ -16,6 +16,7 @@ public enum EAHeaderEnum {
     JiraIssueKey("Stereotype", 7),
     Status("Status", 8),
     Notes("Notes", 9),
+    Keywords("Keywords", -1),
 
     CreatedDate("Created Date", -1),
     ModifiedDate("Modified Date", -1),
