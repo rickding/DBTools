@@ -5,6 +5,7 @@ import dbtools.common.file.ExcelUtil;
 import dbtools.common.file.FileUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
+import ea.tool.api.EAUtil;
 import jira.tool.ea.EA2JiraHeaderEnum;
 import jira.tool.ea.JiraProjectEnum;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -23,7 +24,7 @@ import java.util.Set;
  */
 public class App {
     private static String File_Prefix = "";
-    private static String File_Ext = ".csv";
+    private static String File_Ext = ".eap";
     private static String File_Name = "%s-implemented-%d-pre-create-story-%d.xlsx";
     private static String Folder_name = "";
     private static String strToday = DateUtils.format(new Date(), "MMdd");
@@ -35,7 +36,9 @@ public class App {
         Date time_start = new Date();
         Set<String> filePaths = new HashSet<String>() {{
             add(".\\");
+            add("..\\");
             add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹\\check");
+            add("C:\\Work\\doc\\30-项目-PMO\\需求内容提交文件夹");
         }};
 
         if (args != null) {
@@ -66,21 +69,24 @@ public class App {
 
             Map<String, List<String[]>> teamStoryListMap = new HashMap<String, List<String[]>>();
             List<String> preCreatedStoryList = new ArrayList<String>();
+            boolean isCsv = File_Ext.toLowerCase().endsWith(".csv");
 
             for (File f : files) {
                 // Check the date in file name
                 String fileName = f.getName();
 
-                // Read date in the file name
-                int extIndex = fileName.indexOf(File_Ext);
-                if (extIndex < 4) {
-                    continue;
-                }
+                if (isCsv) {
+                    // Read date in the file name
+                    int extIndex = fileName.indexOf(File_Ext);
+                    if (extIndex < 4) {
+                        continue;
+                    }
 
-                // Skip the old files
-                String strDate = fileName.substring(extIndex - 4, extIndex);
-                if (strDate.compareTo(strToday) != 0) {
-                    continue;
+                    // Skip the old files
+                    String strDate = fileName.substring(extIndex - 4, extIndex);
+                    if (strDate.compareTo(strToday) != 0) {
+                        continue;
+                    }
                 }
 
                 // Find project
@@ -91,7 +97,7 @@ public class App {
                 }
 
                 // Read file and fill excel
-                List<String[]> records = CsvUtil.readFile(f.getPath());
+                List<String[]> records = isCsv ? CsvUtil.readFile(f.getPath()) : EAUtil.getElementList(f.getPath());
                 EACheckUtil.formatDate(records);
                 ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, f.getName()), records);
 

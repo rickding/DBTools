@@ -116,7 +116,7 @@ public class EACheckUtil {
                 continue;
             }
 
-            // TODO: Update QA
+            // TODO: Check QA
 
             // Valid
             if (teamElementListMap != null) {

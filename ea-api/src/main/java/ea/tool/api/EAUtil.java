@@ -123,25 +123,26 @@ public class EAUtil {
 
         // Open file
         Repository eaRepo = new Repository();
-        Collection<Package> packages = null;
+        List<Package> packageList = new ArrayList<Package>();
+        List<Element> elementList = new ArrayList<Element>();
+        List<String[]> elements = null;
 
         try {
             eaRepo.OpenFile(eaFile);
-            packages = eaRepo.GetModels();
+            Collection<Package> packages = eaRepo.GetModels();
+
+            // Read
+            getElementList(packages, packageList, elementList);
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.printf("Error when getElementList: %s\r\n", eaFile);
+        } finally {
+            // Format
+            elements = formatElementList(packageList, elementList);
+
+            // Close
+            eaRepo.CloseFile();
         }
-
-        // Read
-        List<Package> packageList = new ArrayList<Package>();
-        List<Element> elementList = new ArrayList<Element>();
-        getElementList(packages, packageList, elementList);
-
-        // Format
-        List<String[]> elements = formatElementList(packageList, elementList);
-
-        // Close
-        eaRepo.CloseFile();
         return elements;
     }
 }
