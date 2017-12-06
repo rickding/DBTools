@@ -255,22 +255,22 @@ public class EA2Jira {
 
         // EA file
         if(!StrUtils.isEmpty(projectName)) {
-            sb.append(String.format("EA文件: %s/%s.EAP (PMO整理前、产品提交的svn目录为: %s), \r\n\r\n", svnUrl, projectName, svnUrl2));
+            sb.append(String.format("【EA文件】%s/%s.EAP (PMO整理前、产品提交的svn目录为: %s), \r\n\r\n", svnUrl, projectName, svnUrl2));
         }
 
         // EA parent package
         if (!StrUtils.isEmpty(parentPath)) {
-            sb.append(String.format("EA包路径: %s, \r\n\r\n", parentPath));
+            sb.append(String.format("【EA包路径】%s, \r\n\r\n", parentPath));
         }
 
         // Keywords
         if (!StrUtils.isEmpty(keywords)) {
-            sb.append(String.format("关键词: %s \r\n\r\n", keywords));
+            sb.append(String.format("【关键词】%s \r\n\r\n", keywords));
         }
 
         // Original note
         if (!StrUtils.isEmpty(desc)) {
-            sb.append(String.format("%s \r\n\r\n", desc));
+            sb.append(String.format("【注释】%s \r\n\r\n", desc));
         }
         return sb.toString();
     }
