@@ -10,13 +10,35 @@ import jira.tool.ea.EAStatusEnum;
 import jira.tool.ea.EATypeEnum;
 import jira.tool.ea.JiraKeyUtil;
 import jira.tool.ea.JiraProjectEnum;
+import jira.tool.ea.JiraUser;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 public class EACheckUtil {
     private static Date today = DateUtils.parse(DateUtils.format(new Date(), "yyyy-MM-dd"), "yyyy-MM-dd");
+
+    public static String getLastMeetingDate() {
+        return getLastMeetingDate(today);
+    }
+
+    public static String getLastMeetingDate(Date date) {
+        if (date == null) {
+            return null;
+        }
+
+        // Get the last meeting: Tuesday or Friday
+        int day = DateUtils.dayOfWeek(date);
+        if (day > Calendar.TUESDAY && day <= Calendar.FRIDAY) {
+            day = day - Calendar.TUESDAY;
+        } else {
+            day = (day - Calendar.FRIDAY + 7) % 7;
+        }
+        return DateUtils.format(DateUtils.adjustDate(date, -day), "yyyyMMdd");
+    }
 
     public static void formatDate(List<String[]> elementList) {
         if (elementList == null || elementList.size() <= 0) {
@@ -40,12 +62,12 @@ public class EACheckUtil {
 
             String strDate = element[createIndex];
             if (!StrUtils.isEmpty(strDate)) {
-                element[createIndex] = EADateUtil.format(strDate, "yyyy-MM-dd");
+                element[createIndex] = EADateUtil.format(strDate, "yyyy-MM-dd HH:mm:ss");
             }
 
             strDate = element[modifyIndex];
             if (!StrUtils.isEmpty(strDate)) {
-                element[modifyIndex] = EADateUtil.format(strDate, "yyyy-MM-dd");
+                element[modifyIndex] = EADateUtil.format(strDate, "yyyy-MM-dd HH:mm:ss");
             }
         }
     }
@@ -77,9 +99,9 @@ public class EACheckUtil {
                 continue;
             }
 
-            // Check the created and modified dates
-            if (!EADateUtil.needsToBeProcessed(element[EAHeaderEnum.CreatedDate.getIndex()])
-                    && !EADateUtil.needsToBeProcessed(element[EAHeaderEnum.ModifiedDate.getIndex()])) {
+            // Check the created and modified dates: since the last meeting: Tuesday or Friday
+            if (!EADateUtil.needsToBeProcessed(element[EAHeaderEnum.CreatedDate.getIndex()], getLastMeetingDate())
+                    && !EADateUtil.needsToBeProcessed(element[EAHeaderEnum.ModifiedDate.getIndex()], getLastMeetingDate())) {
                 continue;
             }
 
@@ -89,9 +111,25 @@ public class EACheckUtil {
                 continue;
             }
 
-            // Check if the author exists
-            if (StrUtils.isEmpty(element[EAHeaderEnum.Author.getIndex()]) || StrUtils.isEmpty(element[EAHeaderEnum.Owner.getIndex()])) {
+            // Check if the author and owner exist
+            if (JiraUser.findUser(element[EAHeaderEnum.Author.getIndex()]) == null || JiraUser.findUser(element[EAHeaderEnum.Owner.getIndex()]) == null) {
                 continue;
+            }
+
+            // TODO: Update QA
+
+            // Valid
+            if (teamElementListMap != null) {
+                // Group as team
+                String team = JiraUser.findUser(element[EAHeaderEnum.Owner.getIndex()]).getTeam();
+                List<String[]> stories = teamElementListMap.get(team);
+                if (stories == null) {
+                    stories = new ArrayList<String[]>();
+                    teamElementListMap.put(team, stories);
+                }
+
+                // Add
+                stories.add(element);
             }
 
             // Check if it has jira issue key already
@@ -106,7 +144,6 @@ public class EACheckUtil {
                         System.out.printf("Duplicated issue in pre-created story info: %s\r\n", issueKey, element.toString());
                     }
                 }
-                continue;
             }
         }
     }

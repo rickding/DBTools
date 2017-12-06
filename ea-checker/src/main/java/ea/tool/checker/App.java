@@ -24,7 +24,7 @@ import java.util.Set;
 public class App {
     private static String File_Prefix = "";
     private static String File_Ext = ".csv";
-    private static String File_Name = "%s-new-%d-pre-create-%d.xlsx";
+    private static String File_Name = "%s-implemented-%d-pre-create-story-%d.xlsx";
     private static String Folder_name = "";
     private static String strToday = DateUtils.format(new Date(), "MMdd");
 
@@ -59,6 +59,10 @@ public class App {
             if (wb == null) {
                 continue;
             }
+
+            int implementedCount = 0;
+            int preCreateCount = 0;
+            int preProjectCount = projects.size();
 
             Map<String, List<String[]>> teamStoryListMap = new HashMap<String, List<String[]>>();
             List<String> preCreatedStoryList = new ArrayList<String>();
@@ -97,25 +101,24 @@ public class App {
             }
 
             // Save the existed story id for label
-            int preCreateCount = 0;
             if (preCreatedStoryList != null && preCreatedStoryList.size() > 0) {
+                preCreateCount += preCreatedStoryList.size();
             }
 
             // Fill stories to wb
-            int newCount = 0;
             if (teamStoryListMap != null && teamStoryListMap.size() > 0) {
                 // Get the headers
                 EA2JiraHeaderEnum[] jiraHeaders = EA2JiraHeaderEnum.getSavedHeaders();
                 String[] headers = new String[jiraHeaders.length];
-                int i = 0;
+                int headerIndex = 0;
                 for (EA2JiraHeaderEnum jiraHeader : jiraHeaders) {
-                    headers[i++] = jiraHeader.getCode();
+                    headers[headerIndex++] = jiraHeader.getCode();
                 }
 
                 // Write data to excel
                 for (Map.Entry<String, List<String[]>> teamStories : teamStoryListMap.entrySet()) {
                     List<String[]> stories = teamStories.getValue();
-                    newCount += stories.size();
+                    implementedCount += stories.size();
 
                     stories.add(0, headers);
                     ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, String.format("%s-%d", teamStories.getKey(), stories.size() - 1)), stories);
@@ -123,8 +126,10 @@ public class App {
             }
 
             // Save file
-            String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(File_Name, strToday, newCount, preCreateCount), Folder_name);
-            ExcelUtil.saveToFile(wb, outputFileName);
+            if (preProjectCount < projects.size()) {
+                String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(File_Name, strToday, implementedCount, preCreateCount), Folder_name);
+                ExcelUtil.saveToFile(wb, outputFileName);
+            }
         }
 
         System.out.printf("Finished %d folder(s), %d file(s), start: %s, end: %s\n",

@@ -6,7 +6,10 @@ import dbtools.common.utils.StrUtils;
 import java.util.Date;
 
 public class EADateUtil {
-    private static String[] EA_Date_Format_Array = new String[] {"dd-MMM-yyyy HH:mm:ss", "dd-MM月-yyyy HH:mm:ss", "dd-MM-yyyy HH:mm:ss", "yyyy-MM-dd HH:mm:ss"};
+    private static String[] EA_Date_Format_Array = new String[] {
+            "dd-MMM-yyyy HH:mm:ss", "dd-MM月-yyyy HH:mm:ss",
+            "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd",
+    };
     private static String strToday = DateUtils.format(new Date(), "yyyyMMdd");
     public static String Date_Skip = "20171123";
 
@@ -31,6 +34,10 @@ public class EADateUtil {
     }
 
     public static boolean needsToBeProcessed(String strDate) {
+        return needsToBeProcessed(strDate, strToday);
+    }
+
+    public static boolean needsToBeProcessed(String strDate, String startDate) {
         Date date = parse(strDate);
         if (date == null) {
             System.out.printf("Error when parse date: %s\r\n", strDate);
@@ -38,7 +45,7 @@ public class EADateUtil {
         }
 
         strDate = DateUtils.format(date, "yyyyMMdd");
-        return strToday.compareTo(strDate) >= 0 && Date_Skip.compareTo(strDate) <= 0;
+        return startDate.compareTo(strDate) >= 0 && Date_Skip.compareTo(strDate) <= 0;
     }
 
     public static String processDueDate(String value, Date today) {

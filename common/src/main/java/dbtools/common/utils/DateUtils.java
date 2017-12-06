@@ -84,7 +84,10 @@ public class DateUtils {
     }
 
     public static int dayOfWeek(String strDate) {
-        Date date = parse(strDate, "yyyy-MM-dd");
+        return dayOfWeek(parse(strDate, "yyyy-MM-dd"));
+    }
+
+    public static int dayOfWeek(Date date) {
         if (date == null) {
             return 0;
         }
