@@ -19,6 +19,7 @@
         <module>jira2ea</module>
         <module>jira-db</module>
         <module>ea-checker</module>
+        <module>ea-api</module>
     </modules>
 
 </project>

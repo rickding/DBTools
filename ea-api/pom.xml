@@ -1,13 +1,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>db-tools</artifactId>
+        <groupId>db-tools</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>ea-tool</groupId>
-  <artifactId>ea-tool</artifactId>
+  <artifactId>ea-api</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>ea-tool</name>
+  <name>ea-api</name>
   <url>http://maven.apache.org</url>
 
   <properties>
