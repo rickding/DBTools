@@ -18,12 +18,16 @@ public class EADateUtil {
     }
 
     public static String format(String strDate) {
+        return format(strDate, "yyyyMMdd");
+    }
+
+    public static String format(String strDate, String format) {
         Date date = parse(strDate);
         if (date == null) {
             System.out.printf("Error when parse date: %s\r\n", strDate);
             return null;
         }
-        return DateUtils.format(date, "yyyyMMdd");
+        return DateUtils.format(date, format);
     }
 
     public static boolean needsToBeProcessed(String strDate) {

@@ -5,7 +5,6 @@ import dbtools.common.file.ExcelUtil;
 import dbtools.common.file.FileUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
-import jira.tool.ea.EA2Jira;
 import jira.tool.ea.EA2JiraHeaderEnum;
 import jira.tool.ea.JiraProjectEnum;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -87,12 +86,13 @@ public class App {
                     continue;
                 }
 
-                // Read file and fill to excel
+                // Read file and fill excel
                 List<String[]> records = CsvUtil.readFile(f.getPath());
+                EACheckUtil.formatDate(records);
                 ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, f.getName()), records);
 
                 // Process
-                EA2Jira.process(project, records, teamStoryListMap, null, preCreatedStoryList, null);
+                EACheckUtil.process(project, records, teamStoryListMap, preCreatedStoryList, null);
                 projects.add(f.getPath());
             }
 
