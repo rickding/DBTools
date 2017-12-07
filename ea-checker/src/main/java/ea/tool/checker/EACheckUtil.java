@@ -1,16 +1,18 @@
 package ea.tool.checker;
 
+import dbtools.common.file.ExcelUtil;
 import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
+import ea.tool.api.EAHeaderEnum;
 import jira.tool.ea.EADateUtil;
 import jira.tool.ea.EAEstimationUtil;
-import ea.tool.api.EAHeaderEnum;
 import jira.tool.ea.EAStatusEnum;
 import jira.tool.ea.EATypeEnum;
 import jira.tool.ea.JiraKeyUtil;
 import jira.tool.ea.JiraProjectEnum;
 import jira.tool.ea.JiraUser;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,38 +40,6 @@ public class EACheckUtil {
             day = (day - Calendar.FRIDAY + 7) % 7;
         }
         return DateUtils.format(DateUtils.adjustDate(date, -day), "yyyyMMdd");
-    }
-
-    public static void formatDate(List<String[]> elementList) {
-        if (elementList == null || elementList.size() <= 0) {
-            return;
-        }
-
-        int rowStart = 0;
-        int rowEnd = elementList.size() - 1;
-
-        // Headers
-        EAHeaderEnum.fillIndex(elementList.get(rowStart++));
-
-        // Data
-        int createIndex = EAHeaderEnum.CreatedDate.getIndex();
-        int modifyIndex = EAHeaderEnum.ModifiedDate.getIndex();
-        while (rowStart <= rowEnd) {
-            String[] element = elementList.get(rowStart++);
-            if (ArrayUtils.isEmpty(element)) {
-                continue;
-            }
-
-            String strDate = element[createIndex];
-            if (!StrUtils.isEmpty(strDate)) {
-                element[createIndex] = EADateUtil.format(strDate, "yyyy-MM-dd HH:mm:ss");
-            }
-
-            strDate = element[modifyIndex];
-            if (!StrUtils.isEmpty(strDate)) {
-                element[modifyIndex] = EADateUtil.format(strDate, "yyyy-MM-dd HH:mm:ss");
-            }
-        }
     }
 
     public static void process(
@@ -105,23 +75,23 @@ public class EACheckUtil {
                 continue;
             }
 
+            // Check if the author and owner exist
+            if (JiraUser.findUser(element[EAHeaderEnum.Author.getIndex()]) == null
+                    || JiraUser.findUser(element[EAHeaderEnum.Dev.getIndex()]) == null
+                    || JiraUser.findUser(element[EAHeaderEnum.QA.getIndex()]) == null) {
+                continue;
+            }
+
             // Check if the estimation and due-date are valid
             if (StrUtils.isEmpty(EAEstimationUtil.processEstimation(element[EAHeaderEnum.Estimation.getIndex()]))
                     || StrUtils.isEmpty(EADateUtil.processDueDate(element[EAHeaderEnum.DueDate.getIndex()], today))) {
                 continue;
             }
 
-            // Check if the author and owner exist
-            if (JiraUser.findUser(element[EAHeaderEnum.Author.getIndex()]) == null || JiraUser.findUser(element[EAHeaderEnum.Owner.getIndex()]) == null) {
-                continue;
-            }
-
-            // TODO: Check QA
-
             // Valid
             if (teamElementListMap != null) {
                 // Group as team
-                String team = JiraUser.findUser(element[EAHeaderEnum.Owner.getIndex()]).getTeam();
+                String team = JiraUser.findUser(element[EAHeaderEnum.Dev.getIndex()]).getTeam();
                 List<String[]> stories = teamElementListMap.get(team);
                 if (stories == null) {
                     stories = new ArrayList<String[]>();
@@ -144,6 +114,61 @@ public class EACheckUtil {
                         System.out.printf("Duplicated issue in pre-created story info: %s\r\n", issueKey, element.toString());
                     }
                 }
+            }
+        }
+    }
+
+    public static int fillExcel(XSSFSheet sheet, Map<String, List<String[]>> teamStoryListMap, boolean hasHeaders) {
+        if (sheet == null || teamStoryListMap == null || teamStoryListMap.size() <= 0) {
+            return 0;
+        }
+
+        // Get the headers
+        List<String[]> stories = new ArrayList<String[]>(){{
+            add(EAHeaderEnum.getHeaders());
+        }};
+
+        // Write data to excel
+        for (Map.Entry<String, List<String[]>> teamStories : teamStoryListMap.entrySet()) {
+            if (hasHeaders) {
+                stories.addAll(1, teamStories.getValue());
+            } else {
+                stories.addAll(teamStories.getValue());
+            }
+        }
+
+        ExcelUtil.fillSheet(sheet, stories);
+        return stories.size() - 1;
+    }
+
+    public static void formatDate(List<String[]> elementList) {
+        if (elementList == null || elementList.size() <= 0) {
+            return;
+        }
+
+        int rowStart = 0;
+        int rowEnd = elementList.size() - 1;
+
+        // Headers
+        EAHeaderEnum.fillIndex(elementList.get(rowStart++));
+
+        // Data
+        int createIndex = EAHeaderEnum.CreatedDate.getIndex();
+        int modifyIndex = EAHeaderEnum.ModifiedDate.getIndex();
+        while (rowStart <= rowEnd) {
+            String[] element = elementList.get(rowStart++);
+            if (ArrayUtils.isEmpty(element)) {
+                continue;
+            }
+
+            String strDate = element[createIndex];
+            if (!StrUtils.isEmpty(strDate)) {
+                element[createIndex] = EADateUtil.format(strDate, "yyyy-MM-dd HH:mm:ss");
+            }
+
+            strDate = element[modifyIndex];
+            if (!StrUtils.isEmpty(strDate)) {
+                element[modifyIndex] = EADateUtil.format(strDate, "yyyy-MM-dd HH:mm:ss");
             }
         }
     }

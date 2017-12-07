@@ -25,7 +25,7 @@ import java.util.Set;
 public class App {
     private static String File_Prefix = "";
     private static String File_Ext = ".eap";
-    private static String File_Name = "%s-implemented-%d-pre-create-story-%d.xlsx";
+    private static String File_Name = "%s-all-%d-implemented-%d-pre-create-story-%d.xlsx";
     private static String Folder_name = "";
     private static String strToday = DateUtils.format(new Date(), "MMdd");
 
@@ -57,16 +57,13 @@ public class App {
         // Process files
         List<String> projects = new ArrayList<String>();
         boolean isCsv = File_Ext.toLowerCase().endsWith(".csv");
-
+        File outputFile = null;
         XSSFWorkbook wb = new XSSFWorkbook();
         if (wb == null) {
             return;
         }
 
-        File outputFile = null;
-        int implementedCount = 0;
-        int preCreateCount = 0;
-
+        Map<String, List<String[]>> fileElementListMap = new HashMap<String, List<String[]>>();
         Map<String, List<String[]>> teamStoryListMap = new HashMap<String, List<String[]>>();
         List<String> preCreatedStoryList = new ArrayList<String>();
 
@@ -117,7 +114,12 @@ public class App {
                     records = EAFileUtil.readFile(f.getPath());
                 }
 
-                ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, f.getName()), records);
+                // Remember the elements
+                String fileNameKey = fileName;
+                if (fileElementListMap.containsKey(fileNameKey)) {
+                    fileNameKey = String.format("%s_%d", fileNameKey, fileElementListMap.size());
+                }
+                fileElementListMap.put(fileNameKey, records);
 
                 // Process
                 EACheckUtil.process(project, records, teamStoryListMap, preCreatedStoryList, null);
@@ -125,30 +127,22 @@ public class App {
             }
         }
 
-        // Save the existed story id for label
+        // Fill the elements
+        int allCount = EACheckUtil.fillExcel(ExcelUtil.getOrCreateSheet(wb, String.format("%s-all", strToday)), fileElementListMap, true);
+
+        // Fill the existed stories
+        int preCreateCount = 0;
         if (preCreatedStoryList != null && preCreatedStoryList.size() > 0) {
-            preCreateCount += preCreatedStoryList.size();
+            preCreateCount = preCreatedStoryList.size();
         }
 
         // Fill stories to wb
-        if (teamStoryListMap != null && teamStoryListMap.size() > 0) {
-            // Get the headers
-            String[] headers = EAHeaderEnum.getHeaders();
-
-            // Write data to excel
-            for (Map.Entry<String, List<String[]>> teamStories : teamStoryListMap.entrySet()) {
-                List<String[]> stories = teamStories.getValue();
-                implementedCount += stories.size();
-
-                stories.add(0, headers);
-                ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, String.format("%s-%d", teamStories.getKey(), stories.size() - 1)), stories);
-            }
-        }
+        int implementedCount = EACheckUtil.fillExcel(ExcelUtil.getOrCreateSheet(wb, String.format("%s-implemented", strToday)), teamStoryListMap, false);
 
         // Save file
         String outputFileName = null;
         if (outputFile != null) {
-            outputFileName = FileUtils.getOutputFileName(outputFile, "", File_Ext, String.format(File_Name, strToday, implementedCount, preCreateCount), Folder_name);
+            outputFileName = FileUtils.getOutputFileName(outputFile, "", File_Ext, String.format(File_Name, strToday, allCount, implementedCount, preCreateCount), Folder_name);
             ExcelUtil.saveToFile(wb, outputFileName);
         }
 
