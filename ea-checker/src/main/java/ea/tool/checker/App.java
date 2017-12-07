@@ -6,6 +6,8 @@ import dbtools.common.file.FileUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
 import ea.tool.api.EAFileUtil;
+import ea.tool.api.EAHeaderEnum;
+import jira.tool.ea.EADateUtil;
 import jira.tool.ea.JiraProjectEnum;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -81,6 +83,11 @@ public class App {
             for (File f : files) {
                 // Check the date in file name
                 String fileName = f.getName();
+                String fileDate = DateUtils.format(new Date(f.lastModified()), "yyyy-MM-dd");
+                if (!EADateUtil.needsToBeProcessed(fileDate, EACheckUtil.getLastMeetingDate())) {
+                    System.out.printf("Skip file: %s\n", fileName);
+                    continue;
+                }
 
                 if (isCsv) {
                     // Read date in the file name

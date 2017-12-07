@@ -11,9 +11,9 @@ public class EAQAUtilTest {
     public void testFormatQA() {
         Map<String, String> mapIO = new HashMap<String, String>() {{
             put("qa_test", "qa_test");
-            put("李存 英", "测试A");
-            put("李存 英、测工师", "测试A, 测工师");
-            put("李存 英, 测工师", "测试A, 测工师");
+            put("测工 师", "测工师");
+            put("测试 A、测工师", "测试A, 测工师");
+            put("测试 A, 测工师", "测试A, 测工师");
             put("测试A、测工师", "测试A, 测工师");
         }};
 
@@ -58,10 +58,10 @@ public class EAQAUtilTest {
             put("QA: test", "test");
             put("测试", null);
             put("QAtest", null);
-            put("测试：测试A", "测试A");
-            put("测试：测试A、测工师", "测试A, 测工师");
-            put("测试：测试A, 测工师", "测试A, 测工师");
-            put("测试Leader：测试A</font>", "测试A");
+            put("测试：测试A", "测试a");
+            put("测试：测试A、测工师", "测试a, 测工师");
+            put("测试：测试A, 测工师", "测试a, 测工师");
+            put("测试Leader：测试A</font>", "测试a");
         }};
 
         for (Map.Entry<String, String> io : mapIO.entrySet()) {
