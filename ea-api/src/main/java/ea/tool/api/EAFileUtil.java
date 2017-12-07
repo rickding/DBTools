@@ -119,7 +119,9 @@ public class EAFileUtil {
         // Elements
         if (elementList != null && elementList.size() > 0) {
             for (Element element : elementList) {
-                elements.add(EAElementUtil.getValues(element));
+                if (EATypeEnum.isSavedType(element.GetType())) {
+                    elements.add(EAElementUtil.getValues(element));
+                }
             }
         }
         return elements;

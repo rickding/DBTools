@@ -25,7 +25,7 @@ public enum EATypeEnum {
         return containsType(type, savedTypeList);
     }
 
-    public static boolean containsType(String type, EATypeEnum[] typeList) {
+    private static boolean containsType(String type, EATypeEnum[] typeList) {
         if (StrUtils.isEmpty(type) || typeList == null || typeList.length <= 0) {
             return false;
         }
