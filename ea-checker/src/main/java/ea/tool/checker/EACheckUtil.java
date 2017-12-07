@@ -77,10 +77,14 @@ public class EACheckUtil {
 
             // Check if the author and owner exist
             if (JiraUser.findUser(element[EAHeaderEnum.Author.getIndex()]) == null
-                    || JiraUser.findUser(element[EAHeaderEnum.Dev.getIndex()]) == null
-                    || JiraUser.findUser(element[EAHeaderEnum.QA.getIndex()]) == null) {
+                    || JiraUser.findUser(element[EAHeaderEnum.Dev.getIndex()]) == null) {
                 continue;
             }
+
+            // Check QA
+//            if (JiraUser.findUser(element[EAHeaderEnum.QA.getIndex()]) == null) {
+//                continue;
+//            }
 
             // Check if the estimation and due-date are valid
             if (StrUtils.isEmpty(EAEstimationUtil.processEstimation(element[EAHeaderEnum.Estimation.getIndex()]))
@@ -131,7 +135,9 @@ public class EACheckUtil {
         // Write data to excel
         for (Map.Entry<String, List<String[]>> teamStories : teamStoryListMap.entrySet()) {
             if (hasHeaders) {
-                stories.addAll(1, teamStories.getValue());
+                List<String[]> tmpList = teamStories.getValue();
+                tmpList = tmpList.subList(1, tmpList.size());
+                stories.addAll(tmpList);
             } else {
                 stories.addAll(teamStories.getValue());
             }

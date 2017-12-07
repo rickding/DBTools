@@ -6,7 +6,6 @@ import dbtools.common.file.FileUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
 import ea.tool.api.EAFileUtil;
-import ea.tool.api.EAHeaderEnum;
 import jira.tool.ea.JiraProjectEnum;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -25,7 +24,7 @@ import java.util.Set;
 public class App {
     private static String File_Prefix = "";
     private static String File_Ext = ".eap";
-    private static String File_Name = "%s-all-%d-implemented-%d-pre-create-story-%d.xlsx";
+    private static String File_Name = "%s-all-%d-implemented-%d-jira-%d.xlsx";
     private static String Folder_name = "";
     private static String strToday = DateUtils.format(new Date(), "MMdd");
 
@@ -128,7 +127,7 @@ public class App {
         }
 
         // Fill the elements
-        int allCount = EACheckUtil.fillExcel(ExcelUtil.getOrCreateSheet(wb, String.format("%s-all", strToday)), fileElementListMap, true);
+        int allCount = EACheckUtil.fillExcel(ExcelUtil.getOrCreateSheet(wb, "all"), fileElementListMap, true);
 
         // Fill the existed stories
         int preCreateCount = 0;
@@ -137,7 +136,7 @@ public class App {
         }
 
         // Fill stories to wb
-        int implementedCount = EACheckUtil.fillExcel(ExcelUtil.getOrCreateSheet(wb, String.format("%s-implemented", strToday)), teamStoryListMap, false);
+        int implementedCount = EACheckUtil.fillExcel(ExcelUtil.getOrCreateSheet(wb, "implemented"), teamStoryListMap, false);
 
         // Save file
         String outputFileName = null;

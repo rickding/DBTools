@@ -9,7 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EAElementUtil {
-    private static String EA_Date_Format = "yyyy-MM-dd HH:mm:ss";
+    private static String EA_Date_Format = "yyyy-MM-dd";
+    private static String EA_Time_Format = "HH:mm:ss";
 
     public static String[] getValues(Element element) {
         return getValues(formatElement(element));
@@ -53,8 +54,10 @@ public class EAElementUtil {
         values.put(EAHeaderEnum.Notes.getCode(), element.GetNotes());
 
         values.put(EAHeaderEnum.Keywords.getCode(), element.GetTag());
-        values.put(EAHeaderEnum.CreatedDate.getCode(), format(element.GetCreated()));
-        values.put(EAHeaderEnum.ModifiedDate.getCode(), format(element.GetModified()));
+        values.put(EAHeaderEnum.CreatedDate.getCode(), format(element.GetCreated(), EA_Date_Format));
+        values.put(EAHeaderEnum.ModifiedDate.getCode(), format(element.GetModified(), EA_Date_Format));
+        values.put(EAHeaderEnum.CreatedTime.getCode(), format(element.GetCreated(), EA_Time_Format));
+        values.put(EAHeaderEnum.ModifiedTime.getCode(), format(element.GetModified(), EA_Time_Format));
 
         values.put(EAHeaderEnum.Key.getCode(), String.valueOf(element.GetElementID()));
         values.put(EAHeaderEnum.ParentKey.getCode(), String.valueOf(element.GetParentID()));
@@ -80,16 +83,12 @@ public class EAElementUtil {
             put(EAHeaderEnum.Notes.getCode(), pack.GetNotes());
 
             put(EAHeaderEnum.Keywords.getCode(), null);
-            put(EAHeaderEnum.CreatedDate.getCode(), format(pack.GetCreated()));
-            put(EAHeaderEnum.ModifiedDate.getCode(), format(pack.GetModified()));
+            put(EAHeaderEnum.CreatedDate.getCode(), format(pack.GetCreated(), EA_Date_Format));
+            put(EAHeaderEnum.ModifiedDate.getCode(), format(pack.GetModified(), EA_Date_Format));
 
             put(EAHeaderEnum.Key.getCode(), String.valueOf(pack.GetPackageID()));
             put(EAHeaderEnum.ParentKey.getCode(), String.valueOf(pack.GetParentID()));
         }};
-    }
-
-    private static String format(Date date) {
-        return format(date, EA_Date_Format);
     }
 
     private static String format(Date date, String format) {

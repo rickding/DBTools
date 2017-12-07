@@ -21,7 +21,9 @@ public enum EAHeaderEnum {
 
     Keywords("Keywords", -1),
     CreatedDate("Created Date", -1),
+    CreatedTime("Created Time", -1),
     ModifiedDate("Modified Date", -1),
+    ModifiedTime("Modified Time", -1),
 
     Key("CSV_KEY", 10),
     ParentKey("CSV_PARENT_KEY", 11);
@@ -31,7 +33,7 @@ public enum EAHeaderEnum {
             FileName, GUID, Type, Name,
             Author, Estimation, DueDate, Dev, QA,
             JiraIssueKey, Status, Notes,
-            Keywords, CreatedDate, ModifiedDate,
+            Keywords, CreatedDate, CreatedTime, ModifiedDate, ModifiedTime,
             Key, ParentKey,
     };
 
