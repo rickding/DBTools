@@ -1,5 +1,6 @@
 package ea.tool.api;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -12,5 +13,9 @@ public class App {
         String file = "C:\\Work\\dbtools\\dbtools\\sample\\sample.EAP";
         List<String[]> elements = EAFileUtil.readFile(file);
         System.out.printf("%s, elements: %d, %s\r\n", file, elements.size(), elements);
+
+        for (String[] values : elements) {
+            System.out.println(Arrays.asList(values));
+        }
     }
 }

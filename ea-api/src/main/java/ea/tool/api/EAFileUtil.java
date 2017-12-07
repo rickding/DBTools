@@ -66,15 +66,25 @@ public class EAFileUtil {
             }
 
             // Elements
-            Collection<Element> elements = pack.GetElements();
-            for (Element element : elements) {
-                if (elementList != null) {
-                    elementList.add(element);
-                }
-            }
+            getElementList(pack.GetElements(), elementList);
 
             // Sub packages
             getElementList(pack.GetPackages(), packageList, elementList);
+        }
+    }
+
+    private static void getElementList(Collection<Element> elements, List<Element> elementList) {
+        if (elements == null || elements.GetCount() <= 0) {
+            return;
+        }
+
+        for (Element element : elements) {
+            if (elementList != null) {
+                elementList.add(element);
+            }
+
+            // children elements
+            getElementList(element.GetElements(), elementList);
         }
     }
 
