@@ -35,10 +35,15 @@ public class App {
 
         Date time_start = new Date();
         Set<String> filePaths = new HashSet<String>() {{
-            add(".\\");
-            add("..\\");
-            add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹\\check");
             add("C:\\Work\\doc\\30-项目-PMO\\需求内容提交文件夹");
+            add("C:\\Work\\doc\\30-项目-PMO\\需求内容提交文件夹\\商家线");
+            add("C:\\Work\\doc\\30-项目-PMO\\需求内容提交文件夹\\海航ERP需求管理");
+            add("..\\");
+            add("..\\商家线");
+            add("..\\海航ERP需求管理");
+            add(".\\");
+            add(".\\商家线");
+            add(".\\海航ERP需求管理");
         }};
 
         if (args != null) {
@@ -51,6 +56,20 @@ public class App {
 
         // Process files
         List<String> projects = new ArrayList<String>();
+        boolean isCsv = File_Ext.toLowerCase().endsWith(".csv");
+
+        XSSFWorkbook wb = new XSSFWorkbook();
+        if (wb == null) {
+            return;
+        }
+
+        File outputFile = null;
+        int implementedCount = 0;
+        int preCreateCount = 0;
+
+        Map<String, List<String[]>> teamStoryListMap = new HashMap<String, List<String[]>>();
+        List<String> preCreatedStoryList = new ArrayList<String>();
+
         for (String filePath : filePaths) {
             File file = new File(filePath);
             File[] files = FileUtils.findFiles(filePath, File_Prefix, File_Ext, File_Name);
@@ -58,18 +77,10 @@ public class App {
                 continue;
             }
 
-            XSSFWorkbook wb = new XSSFWorkbook();
-            if (wb == null) {
-                continue;
+            // Remember the first filePath to save the output file
+            if (outputFile == null) {
+                outputFile = file;
             }
-
-            int implementedCount = 0;
-            int preCreateCount = 0;
-            int preProjectCount = projects.size();
-
-            Map<String, List<String[]>> teamStoryListMap = new HashMap<String, List<String[]>>();
-            List<String> preCreatedStoryList = new ArrayList<String>();
-            boolean isCsv = File_Ext.toLowerCase().endsWith(".csv");
 
             for (File f : files) {
                 // Check the date in file name
@@ -95,8 +106,9 @@ public class App {
                     System.out.printf("Can't find project definition: %s\n", fileName);
                     continue;
                 }
-
+                
                 // Read file and fill excel
+                System.out.printf("Start to read: %s\n", fileName);
                 List<String[]> records = isCsv ? CsvUtil.readFile(f.getPath()) : EAUtil.getElementList(f.getPath());
                 EACheckUtil.formatDate(records);
                 ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, f.getName()), records);
@@ -105,37 +117,37 @@ public class App {
                 EACheckUtil.process(project, records, teamStoryListMap, preCreatedStoryList, null);
                 projects.add(f.getPath());
             }
+        }
 
-            // Save the existed story id for label
-            if (preCreatedStoryList != null && preCreatedStoryList.size() > 0) {
-                preCreateCount += preCreatedStoryList.size();
+        // Save the existed story id for label
+        if (preCreatedStoryList != null && preCreatedStoryList.size() > 0) {
+            preCreateCount += preCreatedStoryList.size();
+        }
+
+        // Fill stories to wb
+        if (teamStoryListMap != null && teamStoryListMap.size() > 0) {
+            // Get the headers
+            EA2JiraHeaderEnum[] jiraHeaders = EA2JiraHeaderEnum.getSavedHeaders();
+            String[] headers = new String[jiraHeaders.length];
+            int headerIndex = 0;
+            for (EA2JiraHeaderEnum jiraHeader : jiraHeaders) {
+                headers[headerIndex++] = jiraHeader.getCode();
             }
 
-            // Fill stories to wb
-            if (teamStoryListMap != null && teamStoryListMap.size() > 0) {
-                // Get the headers
-                EA2JiraHeaderEnum[] jiraHeaders = EA2JiraHeaderEnum.getSavedHeaders();
-                String[] headers = new String[jiraHeaders.length];
-                int headerIndex = 0;
-                for (EA2JiraHeaderEnum jiraHeader : jiraHeaders) {
-                    headers[headerIndex++] = jiraHeader.getCode();
-                }
+            // Write data to excel
+            for (Map.Entry<String, List<String[]>> teamStories : teamStoryListMap.entrySet()) {
+                List<String[]> stories = teamStories.getValue();
+                implementedCount += stories.size();
 
-                // Write data to excel
-                for (Map.Entry<String, List<String[]>> teamStories : teamStoryListMap.entrySet()) {
-                    List<String[]> stories = teamStories.getValue();
-                    implementedCount += stories.size();
-
-                    stories.add(0, headers);
-                    ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, String.format("%s-%d", teamStories.getKey(), stories.size() - 1)), stories);
-                }
+                stories.add(0, headers);
+                ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, String.format("%s-%d", teamStories.getKey(), stories.size() - 1)), stories);
             }
+        }
 
-            // Save file
-            if (preProjectCount < projects.size()) {
-                String outputFileName = FileUtils.getOutputFileName(file, "", File_Ext, String.format(File_Name, strToday, implementedCount, preCreateCount), Folder_name);
-                ExcelUtil.saveToFile(wb, outputFileName);
-            }
+        // Save file
+        if (outputFile != null) {
+            String outputFileName = FileUtils.getOutputFileName(outputFile, "", File_Ext, String.format(File_Name, strToday, implementedCount, preCreateCount), Folder_name);
+            ExcelUtil.saveToFile(wb, outputFileName);
         }
 
         System.out.printf("Finished %d folder(s), %d file(s), start: %s, end: %s\n",
