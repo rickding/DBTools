@@ -10,7 +10,7 @@ public class App {
         System.out.println("Start...");
 
         String file = "C:\\Work\\dbtools\\dbtools\\sample\\sample.EAP";
-        List<String[]> elements = EAUtil.getElementList(file);
+        List<String[]> elements = EAFileUtil.readFile(file);
         System.out.printf("%s, elements: %d, %s\r\n", file, elements.size(), elements);
     }
 }
