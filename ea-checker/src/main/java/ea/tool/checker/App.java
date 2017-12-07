@@ -106,7 +106,7 @@ public class App {
                     System.out.printf("Can't find project definition: %s\n", fileName);
                     continue;
                 }
-                
+
                 // Read file and fill excel
                 System.out.printf("Start to read: %s\n", fileName);
                 List<String[]> records = isCsv ? CsvUtil.readFile(f.getPath()) : EAUtil.getElementList(f.getPath());
@@ -127,12 +127,7 @@ public class App {
         // Fill stories to wb
         if (teamStoryListMap != null && teamStoryListMap.size() > 0) {
             // Get the headers
-            EA2JiraHeaderEnum[] jiraHeaders = EA2JiraHeaderEnum.getSavedHeaders();
-            String[] headers = new String[jiraHeaders.length];
-            int headerIndex = 0;
-            for (EA2JiraHeaderEnum jiraHeader : jiraHeaders) {
-                headers[headerIndex++] = jiraHeader.getCode();
-            }
+            String[] headers = EAUtil.getHeaders();
 
             // Write data to excel
             for (Map.Entry<String, List<String[]>> teamStories : teamStoryListMap.entrySet()) {
@@ -145,12 +140,13 @@ public class App {
         }
 
         // Save file
+        String outputFileName = null;
         if (outputFile != null) {
-            String outputFileName = FileUtils.getOutputFileName(outputFile, "", File_Ext, String.format(File_Name, strToday, implementedCount, preCreateCount), Folder_name);
+            outputFileName = FileUtils.getOutputFileName(outputFile, "", File_Ext, String.format(File_Name, strToday, implementedCount, preCreateCount), Folder_name);
             ExcelUtil.saveToFile(wb, outputFileName);
         }
 
-        System.out.printf("Finished %d folder(s), %d file(s), start: %s, end: %s\n",
+        System.out.printf("Finished %d folder(s), %d file(s), start: %s, end: %s\r\n",
                 filePaths.size(),
                 projects.size(),
                 DateUtils.format(time_start, "hh:mm:ss"),
@@ -159,5 +155,7 @@ public class App {
         for (String project : projects) {
             System.out.println(project);
         }
+
+        System.out.printf("\r\nSaved to: %s\r\n", outputFileName);
     }
 }

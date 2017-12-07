@@ -29,7 +29,7 @@ public class EAUtil {
         return "";
     }
 
-    private static String[] getHeaders() {
+    public static String[] getHeaders() {
         return new String[] {
                 "Name", "Type", "GUID", "Notes",
                 "Phase", "Version", "Priority",
@@ -142,6 +142,7 @@ public class EAUtil {
 
             // Close
             eaRepo.CloseFile();
+            eaRepo.Exit();
         }
         return elements;
     }

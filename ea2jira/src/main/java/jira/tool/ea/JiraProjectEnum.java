@@ -8,7 +8,7 @@ public enum JiraProjectEnum {
     HaiHangB2B2C("A-海航", new String[]{"海航B2B2C需求管理", "海航B2B2C"}),
     HaiHangB2B("A-海航", new String[]{"海航B2B需求管理", "海航B2B"}),
     HaiHangERP("A-海航", new String[]{"海航ERP需求管理", "海航ERP"}),
-    HaiHangOO("A-海航", new String[]{"海航O+O需求管理", "海航O+O"}),
+    HaiHangOO("A-海航", new String[]{"海航O+O需求管理", "海航O+O", "O+O大集到家优化需求", "O+O大集到家接口需求", "O+O大集到家", "产品化O+O需求管理", "产品化O+O"}),
     JingKeLong("A-京客隆", new String[]{"京客隆O+O需求管理", "京客隆O+O", "京客隆"}),
     LaiYiFen("A-来伊份", new String[]{"来伊份需求管理", "来伊份"}),
     OuPu("A-欧普照明", new String[]{"欧普需求管理", "欧普照明", "欧普"}),
@@ -28,7 +28,8 @@ public enum JiraProjectEnum {
 
     TechDebt("D-技术优化", new String[]{
             "大数据", "导购线", "交易线", "商家线", "商品线", "用户线",
-            "技术优化", "技术", "one instance改造方案"
+            "技术优化", "技术", "one instance改造方案",
+            "环境问题", "BBC演示站"
     });
 
     private static JiraProjectEnum[] projectArray = new JiraProjectEnum[]{
