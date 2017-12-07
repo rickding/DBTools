@@ -5,24 +5,11 @@ import org.sparx.Element;
 import org.sparx.Package;
 import org.sparx.Repository;
 
-import java.text.SimpleDateFormat;
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class EAFileUtil {
-    public static String[] getHeaders() {
-        return new String[] {
-                "Name", "Type", "GUID", "Notes",
-                "Phase", "Version", "Priority",
-                "Stereotype", "Language", "Author", "Scope", "Alias", "Status",
-                "Complexity", "Keywords", "Is Abstract", "Is Leaf", "Is Root",
-                "Is Specification", "Created Date", "Modified Date",
-                "Requirement Difficulty", "Requirement Priority", "GenFile",
-                "Profile Metatype", "CSV_KEY", "CSV_PARENT_KEY",
-        };
-    }
-
     public static List<String[]> readFile(String eaFile) {
         if (eaFile == null || eaFile.trim().length() <= 0) {
             return null;
@@ -51,7 +38,36 @@ public class EAFileUtil {
             eaRepo.CloseFile();
             eaRepo.Exit();
         }
+
+        addFileName(elements, eaFile);
         return elements;
+    }
+
+    private static void addFileName(List<String[]> elements, String fileName) {
+        if (elements == null || elements.size() <= 0 || fileName == null || fileName.trim().length() <= 0) {
+            return;
+        }
+
+        // Get file name
+        File file = new File(fileName);
+        fileName = file.getName();
+        if (fileName == null || fileName.trim().length() <= 0) {
+            return;
+        }
+
+        // Headers
+        int index = 0;
+        EAHeaderEnum.fillIndex(elements.get(index++));
+        int fileIndex = EAHeaderEnum.FileName.getIndex();
+        if (fileIndex < 0) {
+            System.out.println("Error when addFileName(), can't find index");
+            return;
+        }
+
+        // Set values
+        for (; index < elements.size(); index++) {
+            elements.get(index)[fileIndex] = fileName;
+        }
     }
 
     private static void getElementList(Collection<Package> packages, List<Package> packageList, List<Element> elementList) {
@@ -90,70 +106,22 @@ public class EAFileUtil {
 
     private static List<String[]> formatElementList(List<Package> packageList, List<Element> elementList) {
         List<String[]> elements = new ArrayList<String[]>() {{
-            add(getHeaders());
+            add(EAHeaderEnum.getHeaders());
         }};
 
         // packages
         if (packageList != null && packageList.size() > 0) {
             for (Package pack : packageList) {
-                elements.add(formatPackage(pack));
+                elements.add(EAElementUtil.getValues(pack));
             }
         }
 
         // Elements
         if (elementList != null && elementList.size() > 0) {
             for (Element element : elementList) {
-                elements.add(formatElement(element));
+                elements.add(EAElementUtil.getValues(element));
             }
         }
         return elements;
-    }
-
-    private static String[] formatElement(Element pack) {
-        if (pack == null) {
-            return null;
-        }
-        return new String[]{
-                pack.GetName(), pack.GetType(), pack.GetElementGUID(), pack.GetNotes(),
-                pack.GetPhase(), pack.GetVersion(), pack.GetPriority(),
-                pack.GetStereotypeEx(), null, pack.GetAuthor(), null, pack.GetAlias(), pack.GetStatus(),
-                null, null, null, null, null, // Keywords
-                null, format(pack.GetCreated()), format(pack.GetModified()),
-                null, null, null,
-                null, String.valueOf(pack.GetPackageID()), pack.GetParentID() <= 0 ? null : String.valueOf(pack.GetParentID())
-        };
-    }
-
-    private static String[] formatPackage(Package pack) {
-        if (pack == null) {
-            return null;
-        }
-        return new String[]{
-                pack.GetName(), "package", pack.GetPackageGUID(), pack.GetNotes(),
-                null, pack.GetVersion(), null,
-                pack.GetStereotypeEx(), null, pack.GetOwner(), null, pack.GetAlias(), null,
-                null, null, null, null, null,
-                null, format(pack.GetCreated()), format(pack.GetModified()),
-                null, null, null,
-                null, String.valueOf(pack.GetPackageID()), pack.GetParentID() <= 0 ? null : String.valueOf(pack.GetParentID())
-        };
-    }
-
-    private static String format(Date date) {
-        return format(date, "yyyy-MM-dd HH:mm:ss");
-    }
-
-    private static String format(Date date, String format) {
-        if (date == null || format == null || format.trim().length() <= 0) {
-            return "";
-        }
-
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat(format);
-            return sdf.format(date);
-        } catch (Exception e) {
-            System.out.printf("%s, %s\r\n", e.getMessage(), format);
-        }
-        return "";
     }
 }

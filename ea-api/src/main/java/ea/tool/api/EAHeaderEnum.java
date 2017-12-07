@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum EAHeaderEnum {
+    FileName("File", -1),
     GUID("GUID", 0),
     Type("Type", 1),
     Name("Name", 2),
 
     Author("Author", 3),
-    Estimation("Version", 4),
-    DueDate("Phase", 5),
-    Owner("Alias", 6),
+    Estimation("Estimation", 4), // Estimation
+    DueDate("DueDate", 5), // Due Date
+    Owner("Owner", 6), // Dev Owner
 
-    JiraIssueKey("Stereotype", 7),
+    JiraIssueKey("JiraIssueKey", 7), // Jira Issue Key
     Status("Status", 8),
     Notes("Notes", 9),
 
@@ -26,12 +27,20 @@ public enum EAHeaderEnum {
 
     // The needed headers from csv file
     private static EAHeaderEnum[] headerList = new EAHeaderEnum[]{
-            GUID, Type, Name,
+            FileName, GUID, Type, Name,
             Author, Estimation, DueDate, Owner,
             JiraIssueKey, Status, Notes,
             Keywords, CreatedDate, ModifiedDate,
             Key, ParentKey,
     };
+
+    public static String[] getHeaders() {
+        String[] headers = new String[headerList.length];
+        for (int i = 0; i < headerList.length; i++) {
+            headers[i] = headerList[i].code;
+        }
+        return headers;
+    }
 
     /**
      * Fill the index according to csv file headers
