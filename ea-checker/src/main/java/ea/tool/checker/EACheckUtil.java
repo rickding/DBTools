@@ -5,7 +5,7 @@ import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
 import jira.tool.ea.EADateUtil;
 import jira.tool.ea.EAEstimationUtil;
-import jira.tool.ea.EAHeaderEnum;
+import ea.tool.api.EAHeaderEnum;
 import jira.tool.ea.EAStatusEnum;
 import jira.tool.ea.EATypeEnum;
 import jira.tool.ea.JiraKeyUtil;

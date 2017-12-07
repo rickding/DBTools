@@ -45,7 +45,7 @@ public class EAElementUtil {
         values.put(EAHeaderEnum.Author.getCode(), element.GetAuthor());
         values.put(EAHeaderEnum.Estimation.getCode(), element.GetVersion());
         values.put(EAHeaderEnum.DueDate.getCode(), element.GetPhase());
-        values.put(EAHeaderEnum.Owner.getCode(), element.GetAlias());
+        values.put(EAHeaderEnum.Dev.getCode(), element.GetAlias());
 
         values.put(EAHeaderEnum.JiraIssueKey.getCode(), element.GetStereotype());
         values.put(EAHeaderEnum.Status.getCode(), element.GetStatus());
@@ -72,7 +72,7 @@ public class EAElementUtil {
             put(EAHeaderEnum.Author.getCode(), pack.GetOwner());
             put(EAHeaderEnum.Estimation.getCode(), pack.GetVersion());
             put(EAHeaderEnum.DueDate.getCode(), null);
-            put(EAHeaderEnum.Owner.getCode(), pack.GetAlias());
+            put(EAHeaderEnum.Dev.getCode(), pack.GetAlias());
 
             put(EAHeaderEnum.JiraIssueKey.getCode(), null);
             put(EAHeaderEnum.Status.getCode(), null);

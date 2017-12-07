@@ -6,6 +6,7 @@ import dbtools.common.file.FileUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
 import ea.tool.api.EAFileUtil;
+import ea.tool.api.EAHeaderEnum;
 import jira.tool.ea.JiraProjectEnum;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -108,8 +109,14 @@ public class App {
 
                 // Read file and fill excel
                 System.out.printf("Start to read: %s\n", fileName);
-                List<String[]> records = isCsv ? CsvUtil.readFile(f.getPath()) : EAFileUtil.readFile(f.getPath());
-                EACheckUtil.formatDate(records);
+                List<String[]> records = null;
+                if (isCsv) {
+                    records = CsvUtil.readFile(f.getPath());
+                    EACheckUtil.formatDate(records);
+                } else {
+                    records = EAFileUtil.readFile(f.getPath());
+                }
+
                 ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, f.getName()), records);
 
                 // Process
@@ -126,7 +133,7 @@ public class App {
         // Fill stories to wb
         if (teamStoryListMap != null && teamStoryListMap.size() > 0) {
             // Get the headers
-            String[] headers = EAFileUtil.getHeaders();
+            String[] headers = EAHeaderEnum.getHeaders();
 
             // Write data to excel
             for (Map.Entry<String, List<String[]>> teamStories : teamStoryListMap.entrySet()) {
