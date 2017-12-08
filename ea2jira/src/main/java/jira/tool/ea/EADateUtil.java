@@ -8,7 +8,7 @@ import java.util.Date;
 public class EADateUtil {
     private static String[] EA_Date_Format_Array = new String[] {
             "dd-MMM-yyyy HH:mm:ss", "dd-MM月-yyyy HH:mm:ss",
-            "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd",
+            "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd", "yyyyMMdd",
     };
     private static String strToday = DateUtils.format(new Date(), "yyyyMMdd");
     public static String Date_Skip = "20171123";
@@ -37,15 +37,22 @@ public class EADateUtil {
         return needsToBeProcessed(strDate, strToday);
     }
 
-    public static boolean needsToBeProcessed(String strDate, String startDate) {
-        Date date = parse(strDate);
+    public static boolean needsToBeProcessed(String modifyDate, String processDate) {
+        Date date = parse(modifyDate);
         if (date == null) {
-            System.out.printf("Error when parse date: %s\r\n", strDate);
+            System.out.printf("Error when parse modify date: %s\r\n", modifyDate);
             return false;
         }
+        modifyDate = DateUtils.format(date, "yyyyMMdd");
 
-        strDate = DateUtils.format(date, "yyyyMMdd");
-        return startDate.compareTo(strDate) >= 0 && Date_Skip.compareTo(strDate) <= 0;
+        date = parse(processDate);
+        if (date == null) {
+            System.out.printf("Error when parse process date: %s\r\n", processDate);
+            return false;
+        }
+        processDate = DateUtils.format(date, "yyyyMMdd");
+
+        return processDate.compareTo(modifyDate) >= 0 && Date_Skip.compareTo(modifyDate) <= 0;
     }
 
     public static String processDueDate(String value, Date today) {

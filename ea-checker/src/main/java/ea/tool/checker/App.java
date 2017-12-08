@@ -83,9 +83,9 @@ public class App {
             for (File f : files) {
                 // Check the date in file name
                 String fileName = f.getName();
-                String fileDate = DateUtils.format(new Date(f.lastModified()), "yyyy-MM-dd");
-                if (!EADateUtil.needsToBeProcessed(fileDate, EACheckUtil.getLastMeetingDate())) {
-                    System.out.printf("Skip file: %s\n", fileName);
+                String fileDate = DateUtils.format(new Date(f.lastModified()), "yyyyMMdd");
+                if (!EADateUtil.needsToBeProcessed(EACheckUtil.getLastMeetingDate(), fileDate)) {
+                    System.out.printf("Skip file: %s, %s, %s\r\n", EACheckUtil.getLastMeetingDate(), fileDate, fileName);
                     continue;
                 }
 

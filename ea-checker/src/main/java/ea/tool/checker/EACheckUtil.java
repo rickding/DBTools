@@ -70,8 +70,8 @@ public class EACheckUtil {
             }
 
             // Check the created and modified dates: since the last meeting: Tuesday or Friday
-            if (!EADateUtil.needsToBeProcessed(element[EAHeaderEnum.CreatedDate.getIndex()], getLastMeetingDate())
-                    && !EADateUtil.needsToBeProcessed(element[EAHeaderEnum.ModifiedDate.getIndex()], getLastMeetingDate())) {
+            if (!EADateUtil.needsToBeProcessed(getLastMeetingDate(), element[EAHeaderEnum.CreatedDate.getIndex()])
+                    && !EADateUtil.needsToBeProcessed(getLastMeetingDate(), element[EAHeaderEnum.ModifiedDate.getIndex()])) {
                 continue;
             }
 

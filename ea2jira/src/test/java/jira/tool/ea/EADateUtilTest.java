@@ -24,9 +24,26 @@ public class EADateUtilTest {
     }
 
     @Test
+    public void testNeedsToBeProcessed() {
+        Map<String[], Boolean> mapIO = new HashMap<String[], Boolean>() {{
+            put(new String[]{"20171204", "20171203"}, false);
+            put(new String[]{"20171203", "20171203"}, true);
+            put(new String[]{"20171203", "20171204"}, true);
+            put(new String[]{"20171204", "2017-12-05"}, true);
+            put(new String[]{"20171204", "2017-12-02"}, false);
+        }};
+
+        for (Map.Entry<String[], Boolean> io : mapIO.entrySet()) {
+            String[] params = io.getKey();
+            boolean ret = EADateUtil.needsToBeProcessed(params[0], params[1]);
+            Assert.assertEquals(io.getValue(), ret);
+        }
+    }
+
+    @Test
     public void testProcessDueDate() {
         Date today = DateUtils.parse("2017-12-05", "yyyy-MM-dd");
-        Map<String, String> mapIO = new HashMap<String, String>(){{
+        Map<String, String> mapIO = new HashMap<String, String>() {{
             put("1-15", "2018/01/15");
             put("12.28", "2017/12/28");
             put("12月18日", "2017/12/18");
@@ -45,7 +62,7 @@ public class EADateUtilTest {
     @Test
     public void testProcessDueDate2() {
         Date today = DateUtils.parse("2018-1-5", "yyyy-MM-dd");
-        Map<String, String> mapIO = new HashMap<String, String>(){{
+        Map<String, String> mapIO = new HashMap<String, String>() {{
             put("1-15", "2018/01/15");
             put("12.28", "2018/12/28");
             put("12月18日", "2018/12/18");
