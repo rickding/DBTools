@@ -36,7 +36,7 @@ public class SprintDateProcessorTest {
             put(new String[]{"2017-11-29", "2017-12-01"}, 0);
             put(new String[]{"2017-11-30", "2017-12-01"}, 0);
             put(new String[]{"2017-12-01", "2017-12-01"}, 0);
-            put(new String[]{"2017-12-02", "2017-12-01"}, 5);
+            put(new String[]{"2017-12-02", "2017-12-01"}, 0);
             put(new String[]{"2017-12-03", "2017-12-01"}, 5);
 
             put(new String[]{"2017-12-04", "2017-12-01"}, 5);
@@ -97,6 +97,8 @@ public class SprintDateProcessorTest {
             put(new String[]{"2017-12-08", "2017-12-04"}, 5);
             put(new String[]{"2017-12-09", "2017-12-04"}, 5);
             put(new String[]{"2017-12-10", "2017-12-04"}, 5);
+
+            put(new String[]{"2017-12-09", "2017-12-08"}, 0);
         }};
 
         for (Map.Entry<String[], Integer> io : mapIO.entrySet()) {

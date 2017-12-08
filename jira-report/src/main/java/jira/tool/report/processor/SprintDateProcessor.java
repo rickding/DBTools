@@ -13,13 +13,22 @@ public class SprintDateProcessor implements ValueProcessor {
     public static Date today = DateUtils.parse(DateUtils.format(new Date(), "yyyy-MM-dd"), "yyyy-MM-dd");
 
     public static int getLeftWorkDays(String date, String today) {
-        Date dateDate = getSprintDate(DateUtils.parse(date, "yyyy-MM-dd"), false);
+        Date beforeAdjustDate = DateUtils.parse(date, "yyyy-MM-dd");
+        Date dateDate = getSprintDate(beforeAdjustDate, false);
         Date todayDate = DateUtils.parse(today, "yyyy-MM-dd");
+
         int days = DateUtils.diffDays(dateDate, todayDate);
         if (days <= 1) {
             days = 0;
         } else {
-            days = 5;
+            if (DateUtils.dayOfWeek(todayDate) == Calendar.FRIDAY
+                    && DateUtils.diffDays(beforeAdjustDate, todayDate) == 1
+                    && DateUtils.diffDays(beforeAdjustDate, dateDate) == -7) {
+                // It's special when report is generated on Friday
+                days = 0;
+            } else {
+                days = 5;
+            }
         }
         return days;
     }
