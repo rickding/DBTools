@@ -8,6 +8,7 @@ import org.sparx.Repository;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class EAFileUtil {
     public static List<String[]> readFile(String eaFile) {
@@ -39,34 +40,49 @@ public class EAFileUtil {
             eaRepo.Exit();
         }
 
-        addFileName(elements, eaFile);
+        updateInfo(elements, eaFile);
         return elements;
     }
 
-    private static void addFileName(List<String[]> elements, String fileName) {
-        if (elements == null || elements.size() <= 0 || fileName == null || fileName.trim().length() <= 0) {
+    private static void updateInfo(List<String[]> elements, String fileName) {
+        if (elements == null || elements.size() <= 0) {
             return;
         }
 
         // Get file name
-        File file = new File(fileName);
-        fileName = file.getName();
-        if (fileName == null || fileName.trim().length() <= 0) {
-            return;
+        if (fileName != null && fileName.trim().length() > 0) {
+            File file = new File(fileName);
+            fileName = file.getName();
+            if (fileName == null || fileName.trim().length() <= 0) {
+                fileName = null;
+            }
+        } else {
+            fileName = null;
         }
 
         // Headers
         int index = 0;
         EAHeaderEnum.fillIndex(elements.get(index++));
+
+        Map<String, String[]> keyElementMap = EAElementUtil.getKeyElementMap(elements, true);
         int fileIndex = EAHeaderEnum.FileName.getIndex();
-        if (fileIndex < 0) {
-            System.out.println("Error when addFileName(), can't find index");
-            return;
+        int parentPathIndex = EAHeaderEnum.ParentPath.getIndex();
+
+        if (fileIndex < 0 || parentPathIndex < 0) {
+            System.out.printf("Error when addFileName(), can't find index: fileIndex: %d, parentPathIndex: %d\r\n", fileIndex, parentPathIndex);
         }
 
         // Set values
         for (; index < elements.size(); index++) {
-            elements.get(index)[fileIndex] = fileName;
+            String[] element = elements.get(index);
+
+            if (fileIndex >= 0 && fileName != null) {
+                element[fileIndex] = fileName;
+            }
+
+            if (parentPathIndex >= 0 && keyElementMap != null && keyElementMap.size() > 0) {
+                element[parentPathIndex] = EAElementUtil.getParentPath(element, keyElementMap);
+            }
         }
     }
 

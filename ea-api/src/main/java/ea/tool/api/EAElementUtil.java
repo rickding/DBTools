@@ -6,6 +6,7 @@ import org.sparx.Package;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class EAElementUtil {
@@ -60,7 +61,7 @@ public class EAElementUtil {
         values.put(EAHeaderEnum.ModifiedTime.getCode(), format(element.GetModified(), EA_Time_Format));
 
         values.put(EAHeaderEnum.Key.getCode(), String.valueOf(element.GetElementID()));
-        values.put(EAHeaderEnum.ParentKey.getCode(), String.valueOf(element.GetParentID()));
+        values.put(EAHeaderEnum.ParentKey.getCode(), String.valueOf(element.GetParentID() > 0 ? element.GetParentID() : element.GetPackageID()));
         return values;
     }
 
@@ -103,5 +104,80 @@ public class EAElementUtil {
             System.out.printf("%s, %s, %s\r\n", e.getMessage(), date, format);
         }
         return "";
+    }
+
+    public static String getParentPath(String[] element, Map<String, String[]> keyElementMap) {
+        return getParentPath(element, keyElementMap, -1, -1);
+    }
+
+    public static String getParentPath(String[] element, Map<String, String[]> keyElementMap, int level, int maxLength) {
+        if (element == null || element.length <= 0 || keyElementMap == null || keyElementMap.size() <= 0) {
+            return null;
+        }
+
+        int count = 0;
+        String parentKey = element[EAHeaderEnum.ParentKey.getIndex()];
+        StringBuilder sb = new StringBuilder();
+        while (parentKey != null && parentKey.trim().length() > 0) {
+            count++;
+            if (level >= 0 && count > level) {
+                break;
+            }
+
+            String[] parentElement = keyElementMap.get(parentKey);
+            if (parentElement == null || parentElement.length <= 0) {
+                break;
+            }
+
+            String strParent = parentElement[EAHeaderEnum.Name.getIndex()];
+            if (maxLength >= 0 && sb.length() + strParent.length() > maxLength) {
+                break;
+            }
+
+            sb.insert(0, strParent);
+            sb.insert(0, "-");
+
+            parentKey = parentElement[EAHeaderEnum.ParentKey.getIndex()];
+        }
+
+        if (sb.length() > 0) {
+            return sb.substring(1);
+        }
+        return null;
+    }
+
+    public static Map<String, String[]> getKeyElementMap(List<String[]> elements) {
+        return getKeyElementMap(elements, false);
+    }
+
+    public static Map<String, String[]> getKeyElementMap(List<String[]> elements, boolean ignoreFirstModel) {
+        if (elements == null || elements.size() <= 0) {
+            return null;
+        }
+
+        // headers at first line
+        int startIndex = 1;
+        int keyIndex = EAHeaderEnum.Key.getIndex();
+        int nameIndex = EAHeaderEnum.Name.getIndex();
+
+        // Generate the map: key to parent elements
+        Map<String, String[]> keyElementMap = new HashMap<String, String[]>(elements.size());
+        for (int i = startIndex; i < elements.size(); i++) {
+            String[] element = elements.get(i);
+            if (element == null || element.length <= 0 || keyIndex < 0 || keyIndex >= element.length) {
+                continue;
+            }
+
+            if (ignoreFirstModel && "Model".equalsIgnoreCase(element[nameIndex])) {
+                continue;
+            }
+
+            String key = element[keyIndex];
+            if (key != null && key.trim().length() > 0) {
+                keyElementMap.put(key, element);
+            }
+        }
+
+        return keyElementMap;
     }
 }

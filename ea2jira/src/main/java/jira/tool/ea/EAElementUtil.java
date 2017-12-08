@@ -28,7 +28,6 @@ public class EAElementUtil {
                 break;
             }
 
-
             String strParent = parentElement[EAHeaderEnum.Name.getIndex()];
             if (maxLength >= 0 && sb.length() + strParent.length() > maxLength) {
                 break;
