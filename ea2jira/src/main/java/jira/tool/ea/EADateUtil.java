@@ -61,6 +61,10 @@ public class EADateUtil {
         }
 
         value = value.trim();
+        if ("1.0".equalsIgnoreCase(value) || "1.".equalsIgnoreCase(value) || "1".equalsIgnoreCase(value)) {
+            return null;
+        }
+
         for (String format : new String[]{
                 "yyyy.MM.dd", "yyyy-MM-dd", "yyyy/MM/dd", "yyyy年MM月dd日", "yyyy年MM月dd号",
                 "yy.MM.dd", "yy-MM-dd", "yy/MM/dd", "yy年MM月dd日", "yy年MM月dd号",

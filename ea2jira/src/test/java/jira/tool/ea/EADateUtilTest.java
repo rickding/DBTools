@@ -51,6 +51,7 @@ public class EADateUtilTest {
             put("2018-1-3", "2018/01/03");
             put("20171230", "2017/12/30");
             put("1208", "2017/12/08");
+            put("1.0", null);
         }};
 
         for (Map.Entry<String, String> io : mapIO.entrySet()) {
@@ -69,6 +70,7 @@ public class EADateUtilTest {
             put("2017-12-15", "2017/12/15");
             put("2018-1-3", "2018/01/03");
             put("1208", "2018/12/08");
+            put("1.0", null);
         }};
 
         for (Map.Entry<String, String> io : mapIO.entrySet()) {
