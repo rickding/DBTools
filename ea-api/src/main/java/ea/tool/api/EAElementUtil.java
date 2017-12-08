@@ -48,7 +48,7 @@ public class EAElementUtil {
         values.put(EAHeaderEnum.Estimation.getCode(), element.GetVersion());
         values.put(EAHeaderEnum.DueDate.getCode(), element.GetPhase());
         values.put(EAHeaderEnum.Dev.getCode(), element.GetAlias());
-        values.put(EAHeaderEnum.QA.getCode(), EAQAUtil.getQA(element.GetNotes()));
+        values.put(EAHeaderEnum.QA.getCode(), EAQAUtil.getQAStr(element.GetNotes()));
 
         values.put(EAHeaderEnum.JiraIssueKey.getCode(), element.GetStereotype());
         values.put(EAHeaderEnum.Status.getCode(), element.GetStatus());

@@ -3,6 +3,8 @@ package jira.tool.ea;
 import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
+import ea.tool.api.EAQAUtil;
+import jira.tool.db.model.User;
 
 import java.util.*;
 
@@ -207,20 +209,38 @@ public class EA2Jira {
             }
 
             // Update and add story
-            updateQA(values, team);
+            updateQA(values, team, element);
             JiraEpicUtil.updateEpic(values);
             stories.add(values);
         }
     }
 
-    private static void updateQA(String[] values, String team) {
-        if (ArrayUtils.isEmpty(values) || StrUtils.isEmpty(team)) {
+    private static void updateQA(String[] values, String team, String[] element) {
+        if (ArrayUtils.isEmpty(values) || EA2JiraHeaderEnum.QA.getIndex() >= values.length) {
             return;
         }
 
-        JiraQAEnum qa = JiraQAEnum.findQA(team);
-        if (qa != null && EA2JiraHeaderEnum.QA.getIndex() < values.length) {
-            values[EA2JiraHeaderEnum.QA.getIndex()] = qa.getCode();
+        int qaIndex = EA2JiraHeaderEnum.QA.getIndex();
+
+        // Get QA from notes
+        if (element != null && element.length > 0) {
+            String notes = element[EAHeaderEnum.Notes.getIndex()];
+            String[] qaArray = EAQAUtil.getQAArray(notes);
+            if (qaArray != null && qaArray.length > 0) {
+                JiraUser qa = JiraUser.findUser(qaArray[0]);
+                if (qa != null) {
+                    values[qaIndex] = qa.getName();
+                    return;
+                }
+            }
+        }
+
+        // Get QA from team
+        if (!StrUtils.isEmpty(team)) {
+            JiraQAEnum qa = JiraQAEnum.findQA(team);
+            if (qa != null) {
+                values[qaIndex] = qa.getCode();
+            }
         }
     }
 

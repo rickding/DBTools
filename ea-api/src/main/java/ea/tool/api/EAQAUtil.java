@@ -20,12 +20,21 @@ public class EAQAUtil {
             ", ", "， ", "、 ", "; ", "； ", ": ", "： "
     };
 
+    public static String[] parseQAStr(String value) {
+        if (value == null || value.trim().length() <= 0) {
+            return null;
+        }
+
+        String separator = EA_QA_Separator_Array[0];
+        return value.trim().split(separator);
+    }
+
     /**
      * Format the QA names with separator
      * @param value
      * @return
      */
-    public static String formatQA(String value) {
+    public static String formatQAStr(String value) {
         if (value == null || value.trim().length() <= 0) {
             return null;
         }
@@ -45,7 +54,11 @@ public class EAQAUtil {
      * @param value
      * @return
      */
-    public static String getQA(String value) {
+    public static String[] getQAArray(String value) {
+        return parseQAStr(getQAStr(value));
+    }
+
+    public static String getQAStr(String value) {
         if (value == null || value.trim().length() <= 0) {
             return null;
         }
@@ -77,7 +90,7 @@ public class EAQAUtil {
                         if (arr != null && arr.length > 0) {
                             tmp = arr[0].trim();
                             if (tmp != null && tmp.length() > 0) {
-                                tmp = formatQA(tmp);
+                                tmp = formatQAStr(tmp);
                                 return tmp;
                             }
                         }

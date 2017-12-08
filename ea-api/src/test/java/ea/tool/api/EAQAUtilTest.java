@@ -8,7 +8,22 @@ import java.util.Map;
 
 public class EAQAUtilTest {
     @Test
-    public void testFormatQA() {
+    public void testParseQAStr() {
+        Map<String, String[]> mapIO = new HashMap<String, String[]>() {{
+            put("qa_test", new String[]{"qa_test"});
+            put("测试A, 测工师",  new String[]{"测试A", "测工师"});
+            put("", null);
+            put(null, null);
+        }};
+
+        for (Map.Entry<String, String[]> io : mapIO.entrySet()) {
+            String[] ret = EAQAUtil.parseQAStr(io.getKey());
+            Assert.assertArrayEquals(io.getValue(), ret);
+        }
+    }
+
+    @Test
+    public void testFormatQAStr() {
         Map<String, String> mapIO = new HashMap<String, String>() {{
             put("qa_test", "qa_test");
             put("测工 师", "测工师");
@@ -18,7 +33,7 @@ public class EAQAUtilTest {
         }};
 
         for (Map.Entry<String, String> io : mapIO.entrySet()) {
-            String ret = EAQAUtil.formatQA(io.getKey());
+            String ret = EAQAUtil.formatQAStr(io.getKey());
             Assert.assertEquals(io.getValue(), ret);
         }
     }
@@ -44,7 +59,7 @@ public class EAQAUtilTest {
     }
 
     @Test
-    public void testGetQA() {
+    public void testGetQAStr() {
         Map<String, String> mapIO = new HashMap<String, String>() {{
             put("测试负责人: test", "test");
             put("QA负责人; test", "test");
@@ -65,7 +80,7 @@ public class EAQAUtilTest {
         }};
 
         for (Map.Entry<String, String> io : mapIO.entrySet()) {
-            String ret = EAQAUtil.getQA(io.getKey());
+            String ret = EAQAUtil.getQAStr(io.getKey());
             Assert.assertEquals(io.getValue(), ret);
         }
     }
