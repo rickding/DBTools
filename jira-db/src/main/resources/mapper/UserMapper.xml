@@ -8,10 +8,19 @@
         <result column="c_id" property="code"/>
         <result column="StaffName" property="name"/>
         <result column="ProductLine" property="team"/>
+        <result column="member_count" property="memberCount"/>
     </resultMap>
 
     <!-- Return the user list -->
     <select id="getUserList" resultMap="userMap">
         SELECT * FROM jiradb.OStaffList;
+    </select>
+
+    <!-- Count the team members -->
+    <select id="getTeamMembersCountList" resultMap="userMap">
+        select distinct ProductLine, count(*) as member_count
+        from jiradb.OStaffList
+        where IsActive = '是'
+        group by ProductLine;
     </select>
 </mapper>

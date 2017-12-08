@@ -29,5 +29,7 @@ public interface JiraMapper {
     List<Story> getPMOStoryList();
     List<Story> getEAGUIDList();
     List<Story> getPMOLabelList();
+
     List<User> getUserList();
+    List<User> getTeamMembersCountList();
 }

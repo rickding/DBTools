@@ -115,4 +115,13 @@ public class JiraMapperTest {
         System.out.printf("Users: %d\r\n", ret == null ? 0 : ret.size());
         Assert.assertNotNull(ret);
     }
+
+    @Test
+    public void testGetTeamMembersCountList() {
+        Assert.assertNotNull(mapper);
+
+        List<User> ret = mapper.getTeamMembersCountList();
+        System.out.printf("Team member count: %d\r\n", ret == null ? 0 : ret.size());
+        Assert.assertNotNull(ret);
+    }
 }

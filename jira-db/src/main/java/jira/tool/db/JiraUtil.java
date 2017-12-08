@@ -1,5 +1,6 @@
 package jira.tool.db;
 
+import dbtools.common.utils.StrUtils;
 import jira.tool.db.mapper.JiraMapper;
 import jira.tool.db.model.Story;
 import jira.tool.db.model.User;
@@ -10,6 +11,7 @@ import java.util.Map;
 
 public class JiraUtil {
     private static List<User> userList = null;
+    private static List<User> teamMemberCountList = null;
     private static Map<Long, Story> customerOptionMap = null;
 
     public static List<User> getUserList() {
@@ -19,6 +21,15 @@ public class JiraUtil {
             }
         }
         return userList;
+    }
+
+    public static List<User> getTeamMembersCountList() {
+        synchronized ("getTeamMembersCountList") {
+            if (teamMemberCountList == null || teamMemberCountList.size() <= 0) {
+                teamMemberCountList = DB.getDb().getMapper(JiraMapper.class).getTeamMembersCountList();
+            }
+        }
+        return teamMemberCountList;
     }
 
     public static List<Story> getNoDueDateStoryList() {
@@ -74,7 +85,7 @@ public class JiraUtil {
         synchronized ("getReleasedStoryList") {
             storyList = DB.getDb().getMapper(JiraMapper.class).getReleasedStoryList();
         }
-        return updateStoryList(storyList);
+        return updateStoryList(storyList, true);
     }
 
     public static List<Story> getPMOStoryList() {
@@ -94,6 +105,10 @@ public class JiraUtil {
     }
 
     public static List<Story> updateStoryList(List<Story> storyList) {
+        return updateStoryList(storyList, false);
+    }
+
+    public static List<Story> updateStoryList(List<Story> storyList, boolean checkReleaseDate) {
         if (storyList == null || storyList.size() <= 0) {
             return storyList;
         }
@@ -126,6 +141,13 @@ public class JiraUtil {
 
             if (customer != null && customer.containsKey(id)) {
                 story.setCustomer(customer.get(id).getCustomer());
+            }
+
+            // Update release date if it's closed but has no value.
+            if (checkReleaseDate && story.getReleaseDate() == null) {
+                if ("YuYan".equalsIgnoreCase(story.getProjectKey())) {
+                    story.setReleaseDate(story.getResolveDate());
+                }
             }
         }
         return storyList;

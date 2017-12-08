@@ -15,6 +15,15 @@ public class User {
     private String unserInvestigate;
     private String devPhase;
     private String isHead;
+    private int memberCount;
+
+    public int getMemberCount() {
+        return memberCount;
+    }
+
+    public void setMemberCount(int memberCount) {
+        this.memberCount = memberCount;
+    }
 
     public long getId() {
         return id;
