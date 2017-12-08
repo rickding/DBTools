@@ -22,6 +22,8 @@ public enum EA2JiraHeaderEnum {
     Label(15, "标签"),
     EAGUID(16, "EA-GUID"), // GUID
     Importance(17, "重要性"),
+
+    SubProject(20, "所属子项目"),
     EpicLink(19, "Epic Link"),
     EpicName(18, "Epic Name");
 
@@ -35,6 +37,7 @@ public enum EA2JiraHeaderEnum {
         put(EA2JiraHeaderEnum.DueDate, EAHeaderEnum.DueDate);
         put(EA2JiraHeaderEnum.QA, null); // guoguilin
         put(EA2JiraHeaderEnum.Project, EAHeaderEnum.ParentKey);
+        put(EA2JiraHeaderEnum.SubProject, null);
         put(EA2JiraHeaderEnum.RequirementType, null); // 产品化
         put(EA2JiraHeaderEnum.ProductDate, null); // now
         put(EA2JiraHeaderEnum.RequirementDate, null); // now

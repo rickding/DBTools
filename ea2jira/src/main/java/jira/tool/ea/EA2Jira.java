@@ -167,6 +167,9 @@ public class EA2Jira {
                 if (jiraHeader.equalsIgnoreCase(EA2JiraHeaderEnum.Project.getCode())) {
                     // The project maps with file name
                     value = project.getName();
+                } else if (jiraHeader.equalsIgnoreCase(EA2JiraHeaderEnum.SubProject.getCode())) {
+                    // The project has sub project value
+                    value = project.getSubProject();
                 } else if (jiraHeader.equalsIgnoreCase(EA2JiraHeaderEnum.Developer.getCode())) {
                     // Team of the developer
                     JiraUser user = JiraUser.findUser(value);
