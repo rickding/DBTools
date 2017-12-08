@@ -6,7 +6,6 @@ import dbtools.common.file.FileUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
 import ea.tool.api.EAFileUtil;
-import ea.tool.api.EAHeaderEnum;
 import jira.tool.ea.EADateUtil;
 import jira.tool.ea.JiraProjectEnum;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -152,7 +151,7 @@ public class App {
             ExcelUtil.saveToFile(wb, outputFileName);
         }
 
-        System.out.printf("Finished %d folder(s), %d file(s), start: %s, end: %s\r\n",
+        System.out.printf("Finished %d folder(s), %d file(s), start: %s, end: %s\r\n\r\n",
                 filePaths.size(),
                 projects.size(),
                 DateUtils.format(time_start, "hh:mm:ss"),
@@ -161,7 +160,6 @@ public class App {
         for (String project : projects) {
             System.out.println(project);
         }
-
         System.out.printf("\r\nSaved to: %s\r\n", outputFileName);
     }
 }
