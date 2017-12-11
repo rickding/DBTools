@@ -12,6 +12,7 @@ import jira.tool.ea.EATypeEnum;
 import jira.tool.ea.JiraKeyUtil;
 import jira.tool.ea.JiraProjectEnum;
 import jira.tool.ea.JiraUser;
+import jira.tool.ea.PMOMeetingUtil;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import java.util.ArrayList;
@@ -22,25 +23,6 @@ import java.util.Map;
 
 public class EACheckUtil {
     private static Date today = DateUtils.parse(DateUtils.format(new Date(), "yyyy-MM-dd"), "yyyy-MM-dd");
-
-    public static String getLastMeetingDate() {
-        return getLastMeetingDate(today);
-    }
-
-    public static String getLastMeetingDate(Date date) {
-        if (date == null) {
-            return null;
-        }
-
-        // Get the last meeting: Tuesday or Friday
-        int day = DateUtils.dayOfWeek(date);
-        if (day > Calendar.TUESDAY && day <= Calendar.FRIDAY) {
-            day = day - Calendar.TUESDAY;
-        } else {
-            day = (day - Calendar.FRIDAY + 7) % 7;
-        }
-        return DateUtils.format(DateUtils.adjustDate(date, -day), "yyyyMMdd");
-    }
 
     public static void process(
             JiraProjectEnum project, List<String[]> elementList,
@@ -70,8 +52,8 @@ public class EACheckUtil {
             }
 
             // Check the created and modified dates: since the last meeting: Tuesday or Friday
-            if (!EADateUtil.needsToBeProcessed(getLastMeetingDate(), element[EAHeaderEnum.CreatedDate.getIndex()])
-                    && !EADateUtil.needsToBeProcessed(getLastMeetingDate(), element[EAHeaderEnum.ModifiedDate.getIndex()])) {
+            if (!EADateUtil.needsToBeProcessed(PMOMeetingUtil.getLastMeetingDate(), element[EAHeaderEnum.CreatedDate.getIndex()])
+                    && !EADateUtil.needsToBeProcessed(PMOMeetingUtil.getLastMeetingDate(), element[EAHeaderEnum.ModifiedDate.getIndex()])) {
                 continue;
             }
 

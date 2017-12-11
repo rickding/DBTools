@@ -33,6 +33,7 @@ public class App {
         Date time_start = new Date();
         Set<String> filePaths = new HashSet<String>() {{
             add(".\\");
+            add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹");
             add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹\\jira_transfer\\1208");
         }};
 
@@ -50,6 +51,8 @@ public class App {
 
         // Process files
         List<String> projects = new ArrayList<String>();
+        boolean isCsv = File_Ext.toLowerCase().endsWith(".csv");
+
         for (String filePath : filePaths) {
             File file = new File(filePath);
             File[] files = FileUtils.findFiles(filePath, File_Prefix, File_Ext, File_Name);
@@ -68,16 +71,9 @@ public class App {
             for (File f : files) {
                 // Check the date in file name
                 String fileName = f.getName();
-
-                // Read date in the file name
-                int extIndex = fileName.indexOf(File_Ext);
-                if (extIndex < 4) {
-                    continue;
-                }
-
-                // Skip the old files
-                String strDate = fileName.substring(extIndex - 4, extIndex);
-                if (strDate.compareTo(strToday) != 0) {
+                if (!PMOMeetingUtil.needsToBeProcessed(f)) {
+                    String fileDate = DateUtils.format(new Date(f.lastModified()), "yyyyMMdd");
+                    System.out.printf("Skip file: %s, %s, %s\r\n", PMOMeetingUtil.getLastMeetingDate(), fileDate, fileName);
                     continue;
                 }
 

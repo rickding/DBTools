@@ -103,7 +103,7 @@ public class JiraStoryUtil {
                 String guid = values[guidIndex];
                 if (!StrUtils.isEmpty(guid) && !JiraTeamEnum.isStoryInIgnoredTeam(key)) {
                     if (guidStoryMap.containsKey(guid)) {
-                        System.out.printf("GUID connects with multiple stories: %s, %s, %s\n", guid, guidStoryMap.get(guid), key);
+                        System.out.printf("Jira: GUID connects with multiple stories: %s, %s, %s\r\n", guid, guidStoryMap.get(guid), key);
                     } else {
                         guidStoryMap.put(guid, key);
                     }

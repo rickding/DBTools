@@ -8,6 +8,7 @@ import dbtools.common.utils.StrUtils;
 import ea.tool.api.EAFileUtil;
 import jira.tool.ea.EADateUtil;
 import jira.tool.ea.JiraProjectEnum;
+import jira.tool.ea.PMOMeetingUtil;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
@@ -82,24 +83,10 @@ public class App {
             for (File f : files) {
                 // Check the date in file name
                 String fileName = f.getName();
-                String fileDate = DateUtils.format(new Date(f.lastModified()), "yyyyMMdd");
-                if (!EADateUtil.needsToBeProcessed(EACheckUtil.getLastMeetingDate(), fileDate)) {
-                    System.out.printf("Skip file: %s, %s, %s\r\n", EACheckUtil.getLastMeetingDate(), fileDate, fileName);
+                if (!PMOMeetingUtil.needsToBeProcessed(f)) {
+                    String fileDate = DateUtils.format(new Date(f.lastModified()), "yyyyMMdd");
+                    System.out.printf("Skip file: %s, %s, %s\r\n", PMOMeetingUtil.getLastMeetingDate(), fileDate, fileName);
                     continue;
-                }
-
-                if (isCsv) {
-                    // Read date in the file name
-                    int extIndex = fileName.indexOf(File_Ext);
-                    if (extIndex < 4) {
-                        continue;
-                    }
-
-                    // Skip the old files
-                    String strDate = fileName.substring(extIndex - 4, extIndex);
-                    if (strDate.compareTo(strToday) != 0) {
-                        continue;
-                    }
                 }
 
                 // Find project
