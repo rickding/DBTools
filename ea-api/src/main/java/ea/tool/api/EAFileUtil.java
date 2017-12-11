@@ -7,6 +7,7 @@ import org.sparx.Repository;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -118,6 +119,28 @@ public class EAFileUtil {
             // children elements
             getElementList(element.GetElements(), elementList);
         }
+    }
+
+    private static void testUpdate(Element element) {
+        if (element == null) {
+            return;
+        }
+
+        List<String> statusList = new ArrayList<String>() {{
+            add("Approved");
+            add("Proposed");
+            add("Mandatory");
+            add("Implemented");
+            add("Validated");
+        }};
+
+        int index = statusList.indexOf(element.GetStatus()) + 1;
+        if (index >= statusList.size()) {
+            index = 0;
+        }
+        element.SetStatus(statusList.get(index));
+        element.SetStereotype(EAElementUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+        element.Update();
     }
 
     private static List<String[]> formatElementList(List<Package> packageList, List<Element> elementList) {

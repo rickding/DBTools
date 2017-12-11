@@ -92,7 +92,7 @@ public class EAElementUtil {
         }};
     }
 
-    private static String format(Date date, String format) {
+    public static String format(Date date, String format) {
         if (date == null || format == null || format.trim().length() <= 0) {
             return "";
         }
