@@ -11,6 +11,18 @@ import java.util.Date;
  * Created by user on 2017/9/23.
  */
 public class DateUtils {
+    public static String getTodayStr() {
+        return getTodayStr("MMdd");
+    }
+
+    public static String getTodayStr(String format) {
+        return DateUtils.format(new Date(), format);
+    }
+
+    public static Date getToday() {
+        return DateUtils.parse(DateUtils.format(new Date(), "yyyy-MM-dd"), "yyyy-MM-dd");
+    }
+
     public static String format(Date date) {
         return format(date, "yyyy-MM-dd HH:mm:ss");
     }
@@ -72,11 +84,11 @@ public class DateUtils {
         return null;
     }
 
-    public static int diffDays(String date1, String date2) {
-        return diffDays(DateUtils.parse(date1, "yyyy-MM-dd"), DateUtils.parse(date2, "yyyy-MM-dd"));
+    public static int diffDates(String date1, String date2) {
+        return diffDates(DateUtils.parse(date1, "yyyy-MM-dd"), DateUtils.parse(date2, "yyyy-MM-dd"));
     }
 
-    public static int diffDays(Date d1, Date d2) {
+    public static int diffDates(Date d1, Date d2) {
         if (d1 == null || d2 == null) {
             return 0;
         }

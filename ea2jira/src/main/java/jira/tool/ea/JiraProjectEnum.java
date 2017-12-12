@@ -61,6 +61,7 @@ public enum JiraProjectEnum {
             }
         }
 
+        System.out.printf("Can't find project definition: %s\n", fileName);
         return null;
     }
 

@@ -17,13 +17,13 @@ public class SprintDateProcessor implements ValueProcessor {
         Date dateDate = getSprintDate(beforeAdjustDate, false);
         Date todayDate = DateUtils.parse(today, "yyyy-MM-dd");
 
-        int days = DateUtils.diffDays(dateDate, todayDate);
+        int days = DateUtils.diffDates(dateDate, todayDate);
         if (days <= 1) {
             days = 0;
         } else {
             if (DateUtils.dayOfWeek(todayDate) == Calendar.FRIDAY
-                    && DateUtils.diffDays(beforeAdjustDate, todayDate) == 1
-                    && DateUtils.diffDays(beforeAdjustDate, dateDate) == -7) {
+                    && DateUtils.diffDates(beforeAdjustDate, todayDate) == 1
+                    && DateUtils.diffDates(beforeAdjustDate, dateDate) == -7) {
                 // It's special when report is generated on Friday
                 days = 0;
             } else {

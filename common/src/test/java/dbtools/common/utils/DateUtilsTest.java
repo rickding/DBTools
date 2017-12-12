@@ -79,7 +79,7 @@ public class DateUtilsTest {
 
         for (Map.Entry<String[], Integer> io : mapIO.entrySet()) {
             String[] params = io.getKey();
-            int ret = DateUtils.diffDays(params[0], params[1]);
+            int ret = DateUtils.diffDates(params[0], params[1]);
             Assert.assertEquals(io.getValue().intValue(), ret);
         }
     }

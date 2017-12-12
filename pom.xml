@@ -15,11 +15,12 @@
         <module>sql-updater</module>
         <module>csv-updater</module>
         <module>jira-report</module>
-        <module>ea2jira</module>
         <module>jira2ea</module>
         <module>jira-db</module>
+        <module>ea2jira</module>
         <module>ea-checker</module>
         <module>ea-api</module>
+        <module>rms-db</module>
     </modules>
 
 </project>

@@ -12,6 +12,7 @@ import java.util.Map;
 public class EAElementUtil {
     private static String EA_Date_Format = "yyyy-MM-dd";
     private static String EA_Time_Format = "HH:mm:ss";
+    public static String Root_Model_Key = "P_0";
 
     public static String[] getValues(Element element) {
         return getValues(formatElement(element));
@@ -60,8 +61,15 @@ public class EAElementUtil {
         values.put(EAHeaderEnum.CreatedTime.getCode(), format(element.GetCreated(), EA_Time_Format));
         values.put(EAHeaderEnum.ModifiedTime.getCode(), format(element.GetModified(), EA_Time_Format));
 
-        values.put(EAHeaderEnum.Key.getCode(), String.valueOf(element.GetElementID()));
-        values.put(EAHeaderEnum.ParentKey.getCode(), String.valueOf(element.GetParentID() > 0 ? element.GetParentID() : element.GetPackageID()));
+        values.put(EAHeaderEnum.Key.getCode(), String.format("E_%d", element.GetElementID()));
+
+        int pId = element.GetParentID() > 0 ? element.GetParentID() : element.GetPackageID();
+        if (element.GetParentID() > 0 && pId == element.GetElementID()) {
+            System.out.printf("Error: the same parent package or element Id: %d, %s\r\n", pId, element.GetName());
+            pId = 0;
+        }
+
+        values.put(EAHeaderEnum.ParentKey.getCode(), String.format("%s_%d", element.GetParentID() > 0 ? "E" : "P", pId));
         return values;
     }
 
@@ -69,7 +77,8 @@ public class EAElementUtil {
         if (pack == null) {
             return null;
         }
-        return new HashMap<String, String>() {{
+
+        Map<String, String> values = new HashMap<String, String>() {{
             put(EAHeaderEnum.GUID.getCode(), pack.GetPackageGUID());
             put(EAHeaderEnum.Type.getCode(), "Package");
             put(EAHeaderEnum.Name.getCode(), pack.GetName());
@@ -87,9 +96,17 @@ public class EAElementUtil {
             put(EAHeaderEnum.CreatedDate.getCode(), format(pack.GetCreated(), EA_Date_Format));
             put(EAHeaderEnum.ModifiedDate.getCode(), format(pack.GetModified(), EA_Date_Format));
 
-            put(EAHeaderEnum.Key.getCode(), String.valueOf(pack.GetPackageID()));
-            put(EAHeaderEnum.ParentKey.getCode(), String.valueOf(pack.GetParentID()));
+            put(EAHeaderEnum.Key.getCode(), String.format("P_%d", pack.GetPackageID()));
         }};
+
+        int pId = pack.GetParentID();
+        if (pId == pack.GetPackageID()) {
+            System.out.printf("Error: the same parent package Id: %d, %s\r\n", pId, pack.GetName());
+            pId = 0;
+        }
+
+        values.put(EAHeaderEnum.ParentKey.getCode(), String.format("P_%d", pId));
+        return values;
     }
 
     public static String format(Date date, String format) {
@@ -118,7 +135,7 @@ public class EAElementUtil {
         int count = 0;
         String parentKey = element[EAHeaderEnum.ParentKey.getIndex()];
         StringBuilder sb = new StringBuilder();
-        while (parentKey != null && parentKey.trim().length() > 0) {
+        while (parentKey != null && parentKey.trim().length() > 0 && !parentKey.trim().equalsIgnoreCase(Root_Model_Key)) {
             count++;
             if (level >= 0 && count > level) {
                 break;
@@ -158,7 +175,6 @@ public class EAElementUtil {
         // headers at first line
         int startIndex = 1;
         int keyIndex = EAHeaderEnum.Key.getIndex();
-        int nameIndex = EAHeaderEnum.Name.getIndex();
 
         // Generate the map: key to parent elements
         Map<String, String[]> keyElementMap = new HashMap<String, String[]>(elements.size());
@@ -168,16 +184,40 @@ public class EAElementUtil {
                 continue;
             }
 
-            if (ignoreFirstModel && "Model".equalsIgnoreCase(element[nameIndex])) {
+            String key = element[keyIndex];
+            if (ignoreFirstModel && Root_Model_Key.equalsIgnoreCase(key)) {
                 continue;
             }
 
-            String key = element[keyIndex];
             if (key != null && key.trim().length() > 0) {
                 keyElementMap.put(key, element);
             }
         }
-
         return keyElementMap;
+    }
+
+    public static int countRequirements(List<String[]> elements, boolean checkStoryKey) {
+        if (elements == null || elements.size() <= 0) {
+            return 0;
+        }
+
+        int count = 0;
+        int typeIndex = EAHeaderEnum.Type.getIndex();
+        for (String[] element : elements) {
+            if (element == null || element.length <= 0 || typeIndex < 0 || typeIndex >= element.length) {
+                continue;
+            }
+
+            String type = element[typeIndex];
+            if (type != null && type.trim().length() > 0 && EATypeEnum.Requirement.getCode().equalsIgnoreCase(type)) {
+                // check stereotype
+                String key = element[EAHeaderEnum.JiraIssueKey.getIndex()];
+                if (checkStoryKey && (key == null || key.trim().length() <= 0)) {
+                    continue;
+                }
+                count++;
+            }
+        }
+        return count;
     }
 }

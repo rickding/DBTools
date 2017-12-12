@@ -84,15 +84,12 @@ public class App {
                 // Check the date in file name
                 String fileName = f.getName();
                 if (!PMOMeetingUtil.needsToBeProcessed(f)) {
-                    String fileDate = DateUtils.format(new Date(f.lastModified()), "yyyyMMdd");
-                    System.out.printf("Skip file: %s, %s, %s\r\n", PMOMeetingUtil.getLastMeetingDate(), fileDate, fileName);
                     continue;
                 }
 
                 // Find project
                 JiraProjectEnum project = JiraProjectEnum.findProject(fileName);
                 if (project == null) {
-                    System.out.printf("Can't find project definition: %s\n", fileName);
                     continue;
                 }
 
@@ -101,7 +98,7 @@ public class App {
                 List<String[]> records = null;
                 if (isCsv) {
                     records = CsvUtil.readFile(f.getPath());
-                    EACheckUtil.formatDate(records);
+                    EADateUtil.formatDate(records);
                 } else {
                     records = EAFileUtil.readFile(f.getPath());
                 }

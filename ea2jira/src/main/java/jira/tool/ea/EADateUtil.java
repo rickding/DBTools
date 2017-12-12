@@ -1,9 +1,10 @@
 package jira.tool.ea;
 
 import dbtools.common.utils.DateUtils;
-import dbtools.common.utils.StrUtils;
+import ea.tool.api.EAHeaderEnum;
 
 import java.util.Date;
+import java.util.List;
 
 public class EADateUtil {
     private static String[] EA_Date_Format_Array = new String[] {
@@ -14,7 +15,7 @@ public class EADateUtil {
     public static String Date_Skip = "20171123";
 
     public static Date parse(String strDate) {
-        if (StrUtils.isEmpty(strDate)) {
+        if (strDate == null || strDate.trim().length() <= 0) {
             return null;
         }
         return DateUtils.parse(strDate.trim(), EA_Date_Format_Array);
@@ -56,7 +57,7 @@ public class EADateUtil {
     }
 
     public static String processDueDate(String value, Date today) {
-        if (StrUtils.isEmpty(value) || StrUtils.isEmpty(value.trim())) {
+        if (value == null || value.trim().length() <= 0) {
             return null;
         }
 
@@ -90,5 +91,37 @@ public class EADateUtil {
             }
         }
         return null;
+    }
+
+    public static void formatDate(List<String[]> elementList) {
+        if (elementList == null || elementList.size() <= 0) {
+            return;
+        }
+
+        int rowStart = 0;
+        int rowEnd = elementList.size() - 1;
+
+        // Headers
+        ea.tool.api.EAHeaderEnum.fillIndex(elementList.get(rowStart++));
+
+        // Data
+        int createIndex = ea.tool.api.EAHeaderEnum.CreatedDate.getIndex();
+        int modifyIndex = EAHeaderEnum.ModifiedDate.getIndex();
+        while (rowStart <= rowEnd) {
+            String[] element = elementList.get(rowStart++);
+            if (element == null || element.length <= 0) {
+                continue;
+            }
+
+            String strDate = element[createIndex];
+            if (strDate != null && strDate.trim().length() > 0) {
+                element[createIndex] = EADateUtil.format(strDate.trim(), "yyyy-MM-dd HH:mm:ss");
+            }
+
+            strDate = element[modifyIndex];
+            if (strDate != null && strDate.trim().length() > 0) {
+                element[modifyIndex] = EADateUtil.format(strDate.trim(), "yyyy-MM-dd HH:mm:ss");
+            }
+        }
     }
 }

@@ -7,6 +7,9 @@ import dbtools.common.file.FileWriter;
 import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
+import ea.tool.api.EAFileUtil;
+import jira.tool.db.JiraStoryUtil;
+import jira.tool.db.JiraTeamEnum;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
@@ -17,7 +20,7 @@ import java.util.*;
  */
 public class App {
     private static String File_Prefix = "";
-    private static String File_Ext = ".csv";
+    private static String File_Ext = ".eap";
     private static String File_Name = "%s-create-story-%d.xlsx";
     private static String Team_File_name = "%s-create-story-%s-%d.csv";
     private static String Folder_name = "";
@@ -33,6 +36,7 @@ public class App {
         Date time_start = new Date();
         Set<String> filePaths = new HashSet<String>() {{
             add(".\\");
+            add("..\\");
             add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹");
             add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹\\jira_transfer\\1208");
         }};
@@ -70,22 +74,26 @@ public class App {
 
             for (File f : files) {
                 // Check the date in file name
-                String fileName = f.getName();
                 if (!PMOMeetingUtil.needsToBeProcessed(f)) {
-                    String fileDate = DateUtils.format(new Date(f.lastModified()), "yyyyMMdd");
-                    System.out.printf("Skip file: %s, %s, %s\r\n", PMOMeetingUtil.getLastMeetingDate(), fileDate, fileName);
                     continue;
                 }
 
                 // Find project
+                String fileName = f.getName();
                 JiraProjectEnum project = JiraProjectEnum.findProject(fileName);
                 if (project == null) {
-                    System.out.printf("Can't find project definition: %s\n", fileName);
                     continue;
                 }
 
                 // Read file and fill to excel
-                List<String[]> records = CsvUtil.readFile(f.getPath());
+                System.out.printf("Start to read: %s\r\n", fileName);
+                List<String[]> records = null;
+                if (isCsv) {
+                    records = CsvUtil.readFile(f.getPath());
+                    EADateUtil.formatDate(records);
+                } else {
+                    records = EAFileUtil.readFile(f.getPath());
+                }
                 ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, String.format(Sheet_EA, f.getName())), records);
 
                 // Process

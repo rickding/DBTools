@@ -1,6 +1,7 @@
 package jira.tool.ea;
 
 import dbtools.common.utils.DateUtils;
+import ea.tool.api.EAHeaderEnum;
 
 import java.util.*;
 
@@ -30,8 +31,8 @@ public enum EA2JiraHeaderEnum {
     // Map the Jira header to EA header
     public static Map<EA2JiraHeaderEnum, EAHeaderEnum> JiraEAHeaderMap = new HashMap<EA2JiraHeaderEnum, EAHeaderEnum>() {{
         put(EA2JiraHeaderEnum.Title, EAHeaderEnum.Name);
-        put(EA2JiraHeaderEnum.Developer, EAHeaderEnum.Owner);
-        put(EA2JiraHeaderEnum.Owner, EAHeaderEnum.Owner);
+        put(EA2JiraHeaderEnum.Developer, EAHeaderEnum.Dev);
+        put(EA2JiraHeaderEnum.Owner, EAHeaderEnum.Dev);
         put(EA2JiraHeaderEnum.PM, EAHeaderEnum.Author);
         put(EA2JiraHeaderEnum.Estimation, EAHeaderEnum.Estimation);
         put(EA2JiraHeaderEnum.DueDate, EAHeaderEnum.DueDate);

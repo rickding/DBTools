@@ -3,10 +3,22 @@ package jira.tool.ea;
 import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
+import ea.tool.api.EAElementUtil;
+import ea.tool.api.EAEstimationUtil;
+import ea.tool.api.EAHeaderEnum;
 import ea.tool.api.EAQAUtil;
-import jira.tool.db.model.User;
+import ea.tool.api.EAStatusEnum;
+import ea.tool.api.EATypeEnum;
+import jira.tool.db.JiraKeyUtil;
+import jira.tool.db.JiraQAEnum;
+import jira.tool.db.JiraUser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class EA2Jira {
     public static String Jira_Date_Format = "yyyy/MM/dd";
@@ -46,7 +58,7 @@ public class EA2Jira {
                 // QA start 2 days earlier
                 if (!StrUtils.isEmpty(value) && jiraHeader.equalsIgnoreCase(EA2JiraHeaderEnum.QAStartDate.getCode())) {
                     Date date = DateUtils.parse(value, Jira_Date_Format);
-                    int days = DateUtils.diffDays(date, today);
+                    int days = DateUtils.diffDates(date, today);
                     if (days > 3) {
                         days = 2;
                     } else if (days > 1) {
@@ -127,7 +139,7 @@ public class EA2Jira {
             }
 
             // Check if the author exists
-            if (StrUtils.isEmpty(element[EAHeaderEnum.Author.getIndex()]) || StrUtils.isEmpty(element[EAHeaderEnum.Owner.getIndex()])) {
+            if (StrUtils.isEmpty(element[EAHeaderEnum.Author.getIndex()]) || StrUtils.isEmpty(element[EAHeaderEnum.Dev.getIndex()])) {
                 continue;
             }
 

@@ -2,12 +2,14 @@ package jira.tool.jira;
 
 import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.StrUtils;
+import ea.tool.api.EAElementUtil;
+import ea.tool.api.EAHeaderEnum;
+import ea.tool.api.EAStatusEnum;
+import ea.tool.api.EATypeEnum;
+import jira.tool.db.JiraHeaderEnum;
+import jira.tool.db.JiraKeyUtil;
+import jira.tool.db.JiraStatusEnum;
 import jira.tool.ea.EADateUtil;
-import jira.tool.ea.EAHeaderEnum;
-import jira.tool.ea.EAStatusEnum;
-import jira.tool.ea.EATypeEnum;
-import jira.tool.ea.JiraHeaderEnum;
-import jira.tool.ea.JiraKeyUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class Jira2EA {
+    // The saved values from Jira2EA
     private static EAHeaderEnum[] savedValueList = new EAHeaderEnum[] {
             EAHeaderEnum.GUID, EAHeaderEnum.Type, EAHeaderEnum.JiraIssueKey, EAHeaderEnum.Status,
             EAHeaderEnum.Key, EAHeaderEnum.ParentKey,
@@ -55,7 +58,7 @@ public class Jira2EA {
 
     public static List<String[]> updateStoryInfoIntoElement(
             List<String[]> elements, Map<String, String> guidKeyMap, Map<String, String[]> keyStoryMap,
-            Map<String, String> noGUIDFromJiraMap
+            Map<String, String> noGUIDFromJiraMap, boolean addParentElement
     ) {
         if (elements == null || elements.size() <= 1 || guidKeyMap == null || guidKeyMap.size() <= 0) {
             return null;
@@ -87,7 +90,7 @@ public class Jira2EA {
                 continue;
             }
 
-            // TODO: Skip the old issues currently.
+            // Skip the old issues currently.
             if (EADateUtil.Date_Skip.compareTo(EADateUtil.format(element[EAHeaderEnum.CreatedDate.getIndex()])) > 0
                     && EADateUtil.Date_Skip.compareTo(EADateUtil.format(element[EAHeaderEnum.ModifiedDate.getIndex()])) > 0) {
                 continue;
@@ -116,30 +119,37 @@ public class Jira2EA {
         }
 
         // Info
+        List<List<String>> infoList = new ArrayList<List<String>>();
+        infoList.add(noGUIDFromJiraList);
+        infoList.add(noStoryFromEAList);
+
         StringBuilder sb = new StringBuilder();
-        sb.append("\n");
-        int infoIndex = 0;
-        for (String str : noGUIDFromJiraList) {
-            sb.append(String.format("%d, %s", infoIndex++, str));
+        for (List<String> infos : infoList) {
+            if (infos != null && infos.size() > 0) {
+                sb.append("\n");
+                int infoIndex = 0;
+                for (String str : infos) {
+                    sb.append(String.format("%d, %s", infoIndex++, str));
+                }
+            }
         }
 
-        sb.append("\n");
-        infoIndex = 0;
-        for (String str : noStoryFromEAList) {
-            sb.append(String.format("%d, %s", infoIndex++, str));
+        if (sb.length() > 0) {
+            System.out.println(sb.toString());
         }
-        System.out.println(sb.toString());
 
         if (newElementList.size() > 0) {
             newElementList.add(0, headers);
 
             // Add the parent elements
-            addParentElements(newElementList, elements);
+            if (addParentElement) {
+                addParentElements(newElementList, elements);
+            }
         }
         return newElementList;
     }
 
-    private static boolean checkStoryStatusAndUpdateIntoElement( String[] element, Map<String, String[]> guidKeyMap, List<String> reopenStoryList) {
+    private static boolean checkStoryStatusAndUpdateIntoElement(String[] element, Map<String, String[]> guidKeyMap, List<String> reopenStoryList) {
         if (ArrayUtils.isEmpty(element) || guidKeyMap == null || guidKeyMap.size() <= 0) {
             return false;
         }
@@ -154,7 +164,7 @@ public class Jira2EA {
         int statusIndex = EAHeaderEnum.Status.getIndex();
         if (EAStatusEnum.isMappedToStory(element[statusIndex])
                 && JiraStatusEnum.isClosed(story[JiraHeaderEnum.Status.getIndex()])) {
-            EAStatusEnum status = JiraResultEnum.toEAStatus(story[JiraHeaderEnum.Result.getIndex()]);
+            EAStatusEnum status = StatusUtil.toEAStatus(story[JiraHeaderEnum.Resolve.getIndex()]);
             if (status != null) {
                 element[statusIndex] = status.getCode();
             }
@@ -276,7 +286,9 @@ public class Jira2EA {
         for (String key : parentKeySet) {
             while (!keySet.contains(key)) {
                 if (!mapParentKeyElements.containsKey(key)) {
-                    System.out.printf("Error when find parent element: %s", key);
+                    if (!EAElementUtil.Root_Model_Key.equalsIgnoreCase(key)) {
+                        System.out.printf("Error when find parent element: %s\r\n", key);
+                    }
                     break;
                 }
 
@@ -350,30 +362,5 @@ public class Jira2EA {
         String[] values = new String[sqlList.size()];
         sqlList.toArray(values);
         return values;
-    }
-
-    private static int getHeaderIndex(String header, String[] headerArray) {
-        if (StrUtils.isEmpty(header) || headerArray == null || headerArray.length <= 0) {
-            return -1;
-        }
-
-        int i = 0;
-        for (String h : headerArray) {
-            i++;
-            if (StrUtils.isEmpty(h)) {
-                continue;
-            }
-
-            String tmp = h.trim();
-            if (StrUtils.isEmpty(tmp)) {
-                continue;
-            }
-
-            if (tmp.equalsIgnoreCase(header) || tmp.toLowerCase().endsWith(header.toLowerCase())) {
-                return i - 1;
-            }
-        }
-
-        return -1;
     }
 }

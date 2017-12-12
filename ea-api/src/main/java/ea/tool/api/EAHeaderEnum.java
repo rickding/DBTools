@@ -1,7 +1,9 @@
 package ea.tool.api;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public enum EAHeaderEnum {
     FileName("File", -1),
@@ -11,12 +13,12 @@ public enum EAHeaderEnum {
     Name("Name", 2),
 
     Author("Author", 3),
-    Estimation("Estimation", 4), // Estimation is from Version
-    DueDate("Due Date", 5), // Due Date is from Phase
-    Dev("Dev", 6), // Dev is from Alias
+    Estimation("Estimation", 4, new String[]{"Version"}), // Estimation is from Version
+    DueDate("Due Date", 5, new String[]{"Phase"}), // Due Date is from Phase
+    Dev("Dev", 6, new String[]{"Alias"}), // Dev is from Alias
     QA("QA", -1), // QA is parsed from Notes
 
-    JiraIssueKey("Jira Issue Key", 7), // Jira Issue Key is from Stereotype
+    JiraIssueKey("Jira Issue Key", 7, new String[]{"Stereotype"}), // Jira Issue Key is from Stereotype
     Status("Status", 8),
     Notes("Notes", 9),
 
@@ -37,6 +39,14 @@ public enum EAHeaderEnum {
             Keywords, CreatedDate, CreatedTime, ModifiedDate, ModifiedTime,
             Key, ParentKey,
     };
+
+    private static Set<EAHeaderEnum> generatedHeaderSet = new HashSet<EAHeaderEnum>() {{
+       add(FileName);
+       add(ParentPath);
+       add(QA);
+       add(CreatedTime);
+       add(ModifiedTime);
+    }};
 
     public static String[] getHeaders() {
         String[] headers = new String[headerList.length];
@@ -64,9 +74,17 @@ public enum EAHeaderEnum {
         // Find the index
         for (EAHeaderEnum header : headerList) {
             int index = strHeaders.indexOf(header.getCode().toLowerCase());
+            if (index < 0 && header.aliases != null && header.aliases.length > 0) {
+                for (String alias : header.getAliases()) {
+                    index = strHeaders.indexOf(alias.toLowerCase());
+                    if (index > 0) {
+                        break;
+                    }
+                }
+            }
             header.setIndex(index);
 
-            if (index < 0 || index >= strHeaders.size()) {
+            if ((index < 0 || index >= strHeaders.size()) && !generatedHeaderSet.contains(header)) {
                 System.out.printf("Can't find header: %s, %s\n", header.getCode(), strHeaders.toString());
             }
         }
@@ -74,10 +92,17 @@ public enum EAHeaderEnum {
 
     private String code;
     private int index;
+    private String[] aliases;
 
     EAHeaderEnum(String code, int index) {
         this.code = code;
         this.index = index;
+    }
+
+    EAHeaderEnum(String code, int index, String[] aliases) {
+        this.code = code;
+        this.index = index;
+        this.aliases = aliases;
     }
 
     public String getCode() {
@@ -90,5 +115,9 @@ public enum EAHeaderEnum {
 
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public String[] getAliases() {
+        return aliases;
     }
 }

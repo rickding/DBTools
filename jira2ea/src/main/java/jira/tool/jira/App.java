@@ -5,12 +5,20 @@ import dbtools.common.file.FileUtils;
 import dbtools.common.file.FileWriter;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
-import jira.tool.ea.EAElementUtil;
+import ea.tool.api.EAElementUtil;
+import ea.tool.api.EAFile;
+import jira.tool.db.JiraStoryUtil;
+import jira.tool.ea.EADateUtil;
 import jira.tool.ea.JiraProjectEnum;
-import jira.tool.ea.JiraStoryUtil;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Hello world!
@@ -20,7 +28,7 @@ public class App {
     private static String Sql_File_Name = "%s-jira2ea-update-guid-%d.sql";
 
     private static String File_Prefix = "";
-    private static String File_Ext = ".csv";
+    private static String File_Ext = ".eap";
     private static String File_Name = "%s-jira2ea-%s-%d.csv";
     private static String Folder_name = "";
 
@@ -31,7 +39,9 @@ public class App {
         Date time_start = new Date();
         Set<String> filePaths = new HashSet<String>() {{
             add(".\\");
-            add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹\\jira_transfer\\1205");
+            add("..\\");
+            add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹");
+            add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹\\jira_transfer\\1208");
         }};
 
         if (args != null) {
@@ -48,6 +58,9 @@ public class App {
 
         // Process files
         List<String> projects = new ArrayList<String>();
+        boolean isCsv = File_Ext.toLowerCase().endsWith(".csv");
+        EAFile eaFile = new EAFile();
+
         for (String filePath : filePaths) {
             File file = new File(filePath);
             File[] files = FileUtils.findFiles(filePath, File_Prefix, File_Ext, File_Name);
@@ -58,39 +71,38 @@ public class App {
             // Update and save
             Map<String, String> noGuidFromJiraMap = new HashMap<String, String>();
             for (File f : files) {
-                String fileName = f.getName();
-
-                // Read date in the file name
-                int extIndex = fileName.indexOf(File_Ext);
-                if (extIndex < 4) {
-                    continue;
-                }
-
-                // TODO: Skip the old files
-                String strDate = fileName.substring(extIndex - 4, extIndex);
-                if (strDate.compareTo("1123") < 0) {
-                    continue;
-                }
-
                 // Find project
-                JiraProjectEnum project = JiraProjectEnum.findProject(f.getName());
+                String fileName = f.getName();
+                JiraProjectEnum project = JiraProjectEnum.findProject(fileName);
                 if (project == null) {
-                    System.out.printf("Can't find project definition: %s\n", fileName);
                     continue;
                 }
 
                 // Read file
-                List<String[]> elements = CsvUtil.readFile(f.getPath());
+                System.out.printf("Start to read: %s\r\n", fileName);
+                List<String[]> elements = null;
+                if (isCsv) {
+                    elements = CsvUtil.readFile(f.getPath());
+                    EADateUtil.formatDate(elements);
+                } else {
+                    eaFile.open(f.getPath());
+                    elements = eaFile.getElementList();
+                }
                 if (elements == null || elements.size() <= 1) {
+                    eaFile.close();
                     continue;
                 }
 
                 // Process
-                elements = Jira2EA.updateStoryInfoIntoElement(elements, guidKeyMap, keyStoryMap, noGuidFromJiraMap);
+                elements = Jira2EA.updateStoryInfoIntoElement(elements, guidKeyMap, keyStoryMap, noGuidFromJiraMap, isCsv);
                 if (elements != null) {
                     // Only the needed values
                     int storyCount = EAElementUtil.countRequirements(elements, true);
                     if (storyCount > 0) {
+                        // Update into ea file
+                        eaFile.updateStoryInfo(elements);
+
+                        // Get values to save csv file
                         elements = Jira2EA.getSavedValues(elements);
 
                         // Save file
@@ -101,6 +113,7 @@ public class App {
                 } else {
                     System.out.printf("Fail to process file: %s\n", f.getPath());
                 }
+                eaFile.close();
             }
 
             // Generate sql

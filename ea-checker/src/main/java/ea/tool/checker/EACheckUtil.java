@@ -5,18 +5,17 @@ import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
 import ea.tool.api.EAHeaderEnum;
+import ea.tool.api.EATypeEnum;
 import jira.tool.ea.EADateUtil;
-import jira.tool.ea.EAEstimationUtil;
-import jira.tool.ea.EAStatusEnum;
-import jira.tool.ea.EATypeEnum;
-import jira.tool.ea.JiraKeyUtil;
+import ea.tool.api.EAEstimationUtil;
+import ea.tool.api.EAStatusEnum;
+import jira.tool.db.JiraKeyUtil;
 import jira.tool.ea.JiraProjectEnum;
-import jira.tool.ea.JiraUser;
+import jira.tool.db.JiraUser;
 import jira.tool.ea.PMOMeetingUtil;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -127,37 +126,5 @@ public class EACheckUtil {
 
         ExcelUtil.fillSheet(sheet, stories);
         return stories.size() - 1;
-    }
-
-    public static void formatDate(List<String[]> elementList) {
-        if (elementList == null || elementList.size() <= 0) {
-            return;
-        }
-
-        int rowStart = 0;
-        int rowEnd = elementList.size() - 1;
-
-        // Headers
-        EAHeaderEnum.fillIndex(elementList.get(rowStart++));
-
-        // Data
-        int createIndex = EAHeaderEnum.CreatedDate.getIndex();
-        int modifyIndex = EAHeaderEnum.ModifiedDate.getIndex();
-        while (rowStart <= rowEnd) {
-            String[] element = elementList.get(rowStart++);
-            if (ArrayUtils.isEmpty(element)) {
-                continue;
-            }
-
-            String strDate = element[createIndex];
-            if (!StrUtils.isEmpty(strDate)) {
-                element[createIndex] = EADateUtil.format(strDate, "yyyy-MM-dd HH:mm:ss");
-            }
-
-            strDate = element[modifyIndex];
-            if (!StrUtils.isEmpty(strDate)) {
-                element[modifyIndex] = EADateUtil.format(strDate, "yyyy-MM-dd HH:mm:ss");
-            }
-        }
     }
 }
