@@ -1,0 +1,4 @@
+USE rms;
+
+ALTER TABLE `element_guid`
+  MODIFY COLUMN `path` VARCHAR(1024) DEFAULT NULL;

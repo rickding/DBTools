@@ -5,6 +5,8 @@ package ea.tool.api;
  */
 public enum EAStatusEnum {
     Approved("Approved"),
+    Released("完成"),
+    Canceled("取消"),
     Mandatory("Mandatory"),
     Proposed("Proposed"),
     Validated("Validated"),

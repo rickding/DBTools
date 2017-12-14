@@ -1,6 +1,7 @@
 package com.rms.db;
 
 import com.alibaba.fastjson.JSON;
+import com.rms.db.model.Element;
 import com.rms.db.model.User;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
@@ -23,6 +24,13 @@ public class DBServiceTest {
     @Test
     public void testGetUserList() {
         List<User> ret = dbService.getUserList();
+        Assert.assertNotNull(ret);
+        logger.info(JSON.toJSONString(ret));
+    }
+
+    @Test
+    public void testGetElementList() {
+        List<Element> ret = dbService.getElementList();
         Assert.assertNotNull(ret);
         logger.info(JSON.toJSONString(ret));
     }

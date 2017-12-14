@@ -1,7 +1,7 @@
 USE rms;
 
+-- table: user
 DROP TABLE IF EXISTS user;
-
 CREATE TABLE IF NOT EXISTS user (
   id          BIGINT(32)  NOT NULL AUTO_INCREMENT,
   name        VARCHAR(32) NOT NULL,

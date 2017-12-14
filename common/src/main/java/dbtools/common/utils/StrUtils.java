@@ -8,6 +8,36 @@ public class StrUtils {
         return str == null || str.trim().length() <= 0;
     }
 
+    public static boolean contains(String str, String subStr) {
+        return contains(str, subStr, ",");
+    }
+
+    public static boolean contains(String str, String subStr, String separator) {
+        if (subStr == null || subStr.length() <= 0) {
+            return false;
+        }
+
+        if (subStr.equalsIgnoreCase(str)) {
+            return true;
+        }
+
+        String[] strArray = split(str, separator);
+        if (ArrayUtils.isEmpty(strArray)) {
+            return false;
+        }
+
+        for (String tmpStr : strArray) {
+            if (tmpStr.trim().length() == 0 && subStr.trim().length() == 0) {
+                return true;
+            }
+
+            if (tmpStr.trim().equalsIgnoreCase(subStr.trim())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static String[] split(String str, String separator) {
         if (StrUtils.isEmpty(str) || separator == null || separator.length() <= 0) {
             return null;

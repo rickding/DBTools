@@ -9,7 +9,7 @@
 <!-- "C:\Program Files\Java\jdk1.7.0_75\bin -->
 
 <generatorConfiguration>
-    <classPathEntry location="mysql-connector-java-5.1.29.jar" />
+    <classPathEntry location="mysql-connector-java-5.1.29.jar"/>
 
     <context id="MysqlContext" targetRuntime="MyBatis3Simple" defaultModelType="flat">
         <property name="beginningDelimiter" value="`"/>
@@ -34,11 +34,34 @@
 
         <sqlMapGenerator targetPackage="mapper" targetProject="..\rms-db\src\main\resources"/>
 
-        <javaClientGenerator type="XMLMAPPER" targetPackage="com.rms.db.mapper" targetProject="..\rms-db\src\main\java"/>
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.rms.db.mapper"
+                             targetProject="..\rms-db\src\main\java"/>
 
         <!-- table -->
         <table tableName="user">
-            <generatedKey column="id" sqlStatement="Mysql"/>
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+        <table tableName="project">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+        <table tableName="file">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+        <table tableName="jira_issue">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+
+        <table tableName="element">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+        <table tableName="type">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+        <table tableName="status">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+        <table tableName="element_guid">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
         </table>
     </context>
 </generatorConfiguration>

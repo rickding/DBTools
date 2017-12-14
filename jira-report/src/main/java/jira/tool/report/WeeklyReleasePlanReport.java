@@ -2,7 +2,7 @@ package jira.tool.report;
 
 import dbtools.common.file.ExcelUtil;
 import dbtools.common.utils.DateUtils;
-import jira.tool.db.JiraUtil;
+import jira.tool.db.DBUtil;
 import jira.tool.db.model.Story;
 import jira.tool.report.processor.HeaderProcessor;
 import jira.tool.report.processor.TeamEnum;
@@ -40,7 +40,7 @@ public class WeeklyReleasePlanReport extends ReleasePlanReport {
 
     @Override
     protected List<Story> getStoryList() {
-        return JiraUtil.getReleasePlanStoryList();
+        return DBUtil.getReleasePlanStoryList();
     }
 
     /**

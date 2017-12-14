@@ -2,7 +2,7 @@ package jira.tool.ea;
 
 import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.StrUtils;
-import jira.tool.db.JiraUtil;
+import jira.tool.db.DBUtil;
 import jira.tool.db.model.Story;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class JiraEpicUtil {
         // Query jira db to verify the epic name and get the epic key (link)
         synchronized ("updateEpic.getEpicList") {
             if (epicList == null) {
-                epicList = JiraUtil.getEpicList();
+                epicList = DBUtil.getEpicList();
             }
         }
 

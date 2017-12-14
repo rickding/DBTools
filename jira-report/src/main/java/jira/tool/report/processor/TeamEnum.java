@@ -1,6 +1,6 @@
 package jira.tool.report.processor;
 
-import jira.tool.db.JiraUtil;
+import jira.tool.db.DBUtil;
 import jira.tool.db.model.User;
 
 import java.util.HashMap;
@@ -41,7 +41,7 @@ public enum TeamEnum {
     }
 
     public static void checkTeamMemberCount() {
-        List<User> teams = JiraUtil.getTeamMembersCountList();
+        List<User> teams = DBUtil.getTeamMembersCountList();
         if (teams == null || teams.size() <= 0) {
             return;
         }

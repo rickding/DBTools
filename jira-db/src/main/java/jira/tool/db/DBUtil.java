@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JiraUtil {
+public class DBUtil {
     private static List<User> userList = null;
     private static List<User> teamMemberCountList = null;
     private static Map<Long, Story> customerOptionMap = null;

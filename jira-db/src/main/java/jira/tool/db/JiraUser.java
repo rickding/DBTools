@@ -40,7 +40,7 @@ public class JiraUser {
         // Get users from db
         synchronized("getUserArray") {
             if (userListFromDB == null) {
-                userListFromDB = JiraUtil.getUserList();
+                userListFromDB = DBUtil.getUserList();
             }
         }
 
@@ -53,7 +53,7 @@ public class JiraUser {
                     continue;
                 }
 
-                JiraUser tmpUser = new JiraUser(user.getTeam(), user.getCode(), new String[]{user.getName()});
+                JiraUser tmpUser = new JiraUser(user.getTeam().trim(), user.getCode().trim(), new String[]{user.getName().trim()});
                 tmpUserList.add(tmpUser);
 
                 // Find if it's pre-defined

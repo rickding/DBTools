@@ -143,6 +143,12 @@ public class EA2Jira {
                 continue;
             }
 
+            // Check if the title is not empty
+            if (StrUtils.isEmpty(element[EAHeaderEnum.Name.getIndex()])) {
+                System.out.printf("Error: the element's title is empty, %s\r\n", Arrays.asList(element).toString());
+                continue;
+            }
+
             // Check if it has jira issue key already
             String issueKey = element[EAHeaderEnum.JiraIssueKey.getIndex()];
             if (JiraKeyUtil.isValid(issueKey)) {

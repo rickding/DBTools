@@ -41,15 +41,15 @@ public class EAFileUtil {
         // Headers
         int index = 0;
         EAHeaderEnum.fillIndex(elements.get(index++));
-
-        Map<String, String[]> keyElementMap = EAElementUtil.getKeyElementMap(elements);
         int fileIndex = EAHeaderEnum.FileName.getIndex();
         int parentPathIndex = EAHeaderEnum.ParentPath.getIndex();
         int typeIndex = EAHeaderEnum.Type.getIndex();
 
-        if (fileIndex < 0 || parentPathIndex < 0) {
+        if (fileIndex < 0 || parentPathIndex < 0 || typeIndex < 0) {
             System.out.printf("Error when addFileName(), can't find index: fileIndex: %d, parentPathIndex: %d\r\n", fileIndex, parentPathIndex);
         }
+
+        Map<String, String[]> keyElementMap = EAElementUtil.getKeyElementMap(elements);
 
         // Set values
         for (; index < elements.size(); index++) {

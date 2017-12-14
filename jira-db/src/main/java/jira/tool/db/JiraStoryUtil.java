@@ -21,7 +21,7 @@ public class JiraStoryUtil {
         }
 
         // Read story from db and convert
-        List<String[]> storyList = JiraHeaderEnum.formatStoryList(JiraUtil.getPMOStoryList());
+        List<String[]> storyList = JiraHeaderEnum.formatStoryList(DBUtil.getPMOStoryList());
 
         if (storyList == null || storyList.size() <= 0) {
             // Read from csv file

@@ -226,6 +226,7 @@ public class EAFile {
 
         List<String> statusList = new ArrayList<String>() {{
             add("Approved");
+            add("已发布");
             add("Proposed");
             add("Mandatory");
             add("Implemented");
@@ -236,7 +237,8 @@ public class EAFile {
         if (index >= statusList.size()) {
             index = 0;
         }
-        element.SetStatus(statusList.get(index));
+        element.SetStatus("已发布");
+        element.SetTag("状态：已发布");
         element.SetStereotype(EAElementUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
         element.SetNotes(String.format("%s_%s", element.GetNotes(), guid));
         element.Update();

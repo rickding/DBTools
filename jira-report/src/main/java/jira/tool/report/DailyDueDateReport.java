@@ -1,7 +1,7 @@
 package jira.tool.report;
 
 import dbtools.common.utils.DateUtils;
-import jira.tool.db.JiraUtil;
+import jira.tool.db.DBUtil;
 import jira.tool.db.model.Story;
 
 import java.util.Date;
@@ -24,6 +24,6 @@ public class DailyDueDateReport extends BaseReport {
 
     // Read story list from db
     protected List<Story> getStoryList() {
-        return JiraUtil.getNoDueDateStoryList();
+        return DBUtil.getNoDueDateStoryList();
     }
 }
