@@ -26,13 +26,13 @@ public class DBServiceTest {
     public void testGetUserList() {
         List<User> ret = dbService.getUserList();
         Assert.assertNotNull(ret);
-        logger.info(JSON.toJSONString(ret));
+        logger.info(JSON.toJSONString(ret.size()));
     }
 
     @Test
     public void testGetElementList() {
         List<ElementEx> ret = dbService.getElementList();
         Assert.assertNotNull(ret);
-        logger.info(JSON.toJSONString(ret));
+        logger.info(JSON.toJSONString(ret.size()));
     }
 }

@@ -39,13 +39,8 @@ public class App {
         Set<String> filePaths = new HashSet<String>() {{
             add("C:\\Work\\doc\\30-项目-PMO\\需求内容提交文件夹");
             add("C:\\Work\\doc\\30-项目-PMO\\需求内容提交文件夹\\商家线");
-            add("C:\\Work\\doc\\30-项目-PMO\\需求内容提交文件夹\\海航ERP需求管理");
             add("..\\");
             add("..\\商家线");
-            add("..\\海航ERP需求管理");
-            add(".\\");
-            add(".\\商家线");
-            add(".\\海航ERP需求管理");
         }};
 
         if (args != null) {

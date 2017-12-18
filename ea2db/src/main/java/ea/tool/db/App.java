@@ -32,7 +32,7 @@ public class App {
             add("C:\\Work\\doc\\30-项目-PMO\\需求内容提交文件夹");
             add("C:\\Work\\doc\\30-项目-PMO\\需求内容提交文件夹\\商家线");
             add("..\\");
-            add(".\\");
+            add("..\\商家线");
         }};
 
         if (args != null) {

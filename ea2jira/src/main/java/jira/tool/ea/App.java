@@ -37,10 +37,9 @@ public class App {
 
         Date time_start = new Date();
         Set<String> filePaths = new HashSet<String>() {{
-            add(".\\");
             add("..\\");
             add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹");
-            add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹\\jira_transfer\\1208");
+//            add("C:\\Work\\doc\\30-项目-PMO\\需求内容提交文件夹");
         }};
 
         if (args != null) {
