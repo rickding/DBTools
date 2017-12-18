@@ -15,24 +15,24 @@ public class JiraIssueUtil {
         }
 
         if (nameItemMap == null) {
-            nameItemMap = list2Map(DBUtil.getJiraIssueList());
+            nameItemMap = list2Map(DBUtil.getJiraIssueList(), null);
         }
 
         // Find
         if (nameItemMap != null) {
-            String nameStr = key.trim().toLowerCase();
+            String nameStr = key.trim().toUpperCase();
             if (nameItemMap.containsKey(nameStr)) {
                 return nameItemMap.get(nameStr);
             }
 
-            for (JiraIssue item : nameItemMap.values()) {
-                if (guid != null && item.getGuid() != null && guid.trim().equalsIgnoreCase(item.getGuid().trim())) {
-                    return item;
-                }
-                if (name != null && item.getName() != null && name.trim().equalsIgnoreCase(item.getName().trim())) {
-                    return item;
-                }
-            }
+//            for (JiraIssue item : nameItemMap.values()) {
+//                if (guid != null && item.getGuid() != null && guid.trim().equalsIgnoreCase(item.getGuid().trim())) {
+//                    return item;
+//                }
+//                if (name != null && item.getName() != null && name.trim().equalsIgnoreCase(item.getName().trim())) {
+//                    return item;
+//                }
+//            }
         }
 
         // Add new one
@@ -54,14 +54,18 @@ public class JiraIssueUtil {
         return item;
     }
 
-    private static Map<String, JiraIssue> list2Map(List<JiraIssue> list) {
+    private static Map<String, JiraIssue> list2Map(List<JiraIssue> list, Map<String, String> guidKeyMap) {
         if (list == null || list.size() <= 0) {
             return null;
         }
 
         Map<String, JiraIssue> map = new HashMap<String, JiraIssue>(list.size());
         for (JiraIssue item : list) {
-            map.put(item.getIssueKey().trim().toLowerCase(), item);
+            map.put(item.getIssueKey().trim().toUpperCase(), item);
+
+            if (guidKeyMap != null && item.getGuid() != null) {
+                guidKeyMap.put(item.getGuid().trim().toUpperCase(), item.getIssueKey().trim().toUpperCase());
+            }
         }
         return map;
     }

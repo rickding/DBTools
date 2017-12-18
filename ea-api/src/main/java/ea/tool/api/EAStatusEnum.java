@@ -12,16 +12,25 @@ public enum EAStatusEnum {
     Validated("Validated"),
     Implemented("Implemented");
 
-    private static EAStatusEnum[] mappedToStoryList = new EAStatusEnum[]{
-            Implemented,
-    };
+    public static boolean isUpdatedFromStory(String status) {
+        return isSpecifiedStatus(status, new EAStatusEnum[]{
+                Implemented,
+                Approved,
+        });
+    }
 
     public static boolean isMappedToStory(String status) {
-        if (status == null || status.trim().length() <= 0) {
+        return isSpecifiedStatus(status, new EAStatusEnum[]{
+                Implemented,
+        });
+    }
+
+    public static boolean isSpecifiedStatus(String status, EAStatusEnum[] statusList) {
+        if (status == null || status.trim().length() <= 0 || statusList == null || statusList.length <= 0) {
             return false;
         }
 
-        for (EAStatusEnum processStatus : mappedToStoryList) {
+        for (EAStatusEnum processStatus : statusList) {
             if (processStatus.getCode().equalsIgnoreCase(status)) {
                 return true;
             }

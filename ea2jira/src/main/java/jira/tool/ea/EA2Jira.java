@@ -1,5 +1,6 @@
 package jira.tool.ea;
 
+import com.rms.db.model.ElementEx;
 import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
@@ -81,7 +82,8 @@ public class EA2Jira {
      */
     public static void process(
             JiraProjectEnum project, List<String[]> elementList, Map<String, List<String[]>> teamStoryListMap,
-            Map<String, String> guidStoryMap, List<String> preCreatedStoryList, Set<String> pmoLabelKeySet
+            Map<String, String> guidStoryKeyMap, List<String> preCreatedStoryList, Set<String> pmoLabelKeySet,
+            Map<String, ElementEx> guidElementMapFromRMS
     ) {
         if (project == null || elementList == null || elementList.size() <= 0) {
             return;
@@ -202,11 +204,21 @@ public class EA2Jira {
             }
 
             // Check if GUID exists in story
-            if (guidStoryMap != null && guidStoryMap.containsKey(guid)) {
-                String tmp = guidStoryMap.get(guid);
+            guid = guid.trim().toUpperCase();
+            if (guidStoryKeyMap != null && guidStoryKeyMap.containsKey(guid)) {
+                String tmp = guidStoryKeyMap.get(guid);
                 System.out.printf("GUID already connects with one story: %s, %s, %s\r\n", guid, tmp, keyElementMap.get(tmp));
                 continue;
             }
+
+            // Check if GUID exists in rms-db
+            if (guidElementMapFromRMS != null && guidElementMapFromRMS.containsKey(guid)) {
+                ElementEx elementFromDB = guidElementMapFromRMS.get(guid);
+                String tmp = String.format("%s: %s", elementFromDB.getPath(), elementFromDB.getName());
+                System.out.printf("GUID already connects with one story in rms-db: %s, %s, %s\r\n", guid, tmp, keyElementMap.get(tmp));
+                continue;
+            }
+
 
             // Group as team
             List<String[]> stories = teamStoryListMap.get(team);

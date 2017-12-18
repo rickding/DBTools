@@ -1,5 +1,7 @@
 package jira.tool.ea;
 
+import com.rms.db.ElementUtil;
+import com.rms.db.model.ElementEx;
 import dbtools.common.file.CsvUtil;
 import dbtools.common.file.ExcelUtil;
 import dbtools.common.file.FileUtils;
@@ -51,7 +53,8 @@ public class App {
 
         // Get the guid story key map firstly
         Set<String> pmoLabelKeySet = new HashSet<String>();
-        Map<String, String> guidStoryMap = JiraStoryUtil.getGUIDKeyMap(filePaths, null, pmoLabelKeySet);
+        Map<String, String> guidStoryKeyMap = JiraStoryUtil.getGUIDKeyMap(filePaths, null, pmoLabelKeySet);
+        Map<String, ElementEx> guidElementMapFromRMS = ElementUtil.getGuidElementMap();
 
         // Process files
         List<String> projects = new ArrayList<String>();
@@ -97,7 +100,7 @@ public class App {
                 ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, String.format(Sheet_EA, f.getName())), records);
 
                 // Process
-                EA2Jira.process(project, records, teamStoryListMap, guidStoryMap, preCreatedStoryList, pmoLabelKeySet);
+                EA2Jira.process(project, records, teamStoryListMap, guidStoryKeyMap, preCreatedStoryList, pmoLabelKeySet, guidElementMapFromRMS);
                 projects.add(f.getPath());
             }
 

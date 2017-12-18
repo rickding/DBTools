@@ -1,8 +1,10 @@
 package jira.tool.jira;
 
+import com.rms.db.model.ElementEx;
 import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.StrUtils;
 import ea.tool.api.EAElementUtil;
+import ea.tool.api.EAEstimationUtil;
 import ea.tool.api.EAHeaderEnum;
 import ea.tool.api.EAStatusEnum;
 import ea.tool.api.EATypeEnum;
@@ -12,6 +14,7 @@ import jira.tool.db.JiraStatusEnum;
 import jira.tool.ea.EADateUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -58,7 +61,8 @@ public class Jira2EA {
 
     public static List<String[]> updateStoryInfoIntoElement(
             List<String[]> elements, Map<String, String> guidKeyMap, Map<String, String[]> keyStoryMap,
-            Map<String, String> noGUIDFromJiraMap, boolean addParentElement
+            Map<String, String> noGUIDFromJiraMap, boolean addParentElement,
+            Map<String, ElementEx> guidElementMapFromRMS
     ) {
         if (elements == null || elements.size() <= 1 || guidKeyMap == null || guidKeyMap.size() <= 0) {
             return null;
@@ -86,13 +90,30 @@ public class Jira2EA {
 
             // Only process implemented requirement as story
             if (!EATypeEnum.isMappedToStory(element[EAHeaderEnum.Type.getIndex()])
-                    || !EAStatusEnum.isMappedToStory(element[EAHeaderEnum.Status.getIndex()])) {
+                    || !EAStatusEnum.isUpdatedFromStory(element[EAHeaderEnum.Status.getIndex()])) {
                 continue;
             }
 
             // Skip the old issues currently.
             if (EADateUtil.Date_Skip.compareTo(EADateUtil.format(element[EAHeaderEnum.CreatedDate.getIndex()])) > 0
                     && EADateUtil.Date_Skip.compareTo(EADateUtil.format(element[EAHeaderEnum.ModifiedDate.getIndex()])) > 0) {
+                continue;
+            }
+
+            // Check if the estimation and due-date are valid
+            if (StrUtils.isEmpty(EAEstimationUtil.processEstimation(element[EAHeaderEnum.Estimation.getIndex()]))
+                    || StrUtils.isEmpty(EADateUtil.processDueDate(element[EAHeaderEnum.DueDate.getIndex()]))) {
+                continue;
+            }
+
+            // Check if the author exists
+            if (StrUtils.isEmpty(element[EAHeaderEnum.Author.getIndex()]) || StrUtils.isEmpty(element[EAHeaderEnum.Dev.getIndex()])) {
+                continue;
+            }
+
+            // Check if the title is not empty
+            if (StrUtils.isEmpty(element[EAHeaderEnum.Name.getIndex()])) {
+                System.out.printf("Error: the element's title is empty, %s\r\n", Arrays.asList(element).toString());
                 continue;
             }
 
@@ -104,7 +125,7 @@ public class Jira2EA {
 
             // Update story key and status
             boolean changed = false;
-            if (checkStoryKeyAndUpdateIntoElement(element, guidKeyMap, noStoryFromEAList, noGUIDFromJiraList, noGUIDFromJiraMap)) {
+            if (checkStoryKeyAndUpdateIntoElement(element, guidKeyMap, noStoryFromEAList, noGUIDFromJiraList, noGUIDFromJiraMap, guidElementMapFromRMS)) {
                 changed = true;
             }
 
@@ -149,26 +170,28 @@ public class Jira2EA {
         return newElementList;
     }
 
-    private static boolean checkStoryStatusAndUpdateIntoElement(String[] element, Map<String, String[]> guidKeyMap, List<String> reopenStoryList) {
-        if (ArrayUtils.isEmpty(element) || guidKeyMap == null || guidKeyMap.size() <= 0) {
+    private static boolean checkStoryStatusAndUpdateIntoElement(
+            String[] element, Map<String, String[]> keyStoryMap, List<String> reopenStoryList
+    ) {
+        if (ArrayUtils.isEmpty(element) || keyStoryMap == null || keyStoryMap.size() <= 0) {
             return false;
         }
 
         String key = element[EAHeaderEnum.JiraIssueKey.getIndex()];
-        if (StrUtils.isEmpty(key) || !guidKeyMap.containsKey(key)) {
+        if (StrUtils.isEmpty(key) || !keyStoryMap.containsKey(key)) {
             return false;
         }
 
         // Only changed from Implemented to Approved
-        String[] story = guidKeyMap.get(key);
+        String[] story = keyStoryMap.get(key);
         int statusIndex = EAHeaderEnum.Status.getIndex();
-        if (EAStatusEnum.isMappedToStory(element[statusIndex])
+        if (EAStatusEnum.isUpdatedFromStory(element[statusIndex])
                 && JiraStatusEnum.isClosed(story[JiraHeaderEnum.Status.getIndex()])) {
             EAStatusEnum status = StatusUtil.toEAStatus(story[JiraHeaderEnum.Resolve.getIndex()]);
-            if (status != null) {
+            if (status != null && !status.getCode().equalsIgnoreCase(element[statusIndex])) {
                 element[statusIndex] = status.getCode();
+                return true;
             }
-            return true;
         }
         return false;
     }
@@ -185,7 +208,8 @@ public class Jira2EA {
      */
     private static boolean checkStoryKeyAndUpdateIntoElement(
             String[] element, Map<String, String> guidKeyMap,
-            List<String> noStoryFromEAList, List<String> noGUIDFromJiraList, Map<String, String> noGUIDFromJiraMap
+            List<String> noStoryFromEAList, List<String> noGUIDFromJiraList, Map<String, String> noGUIDFromJiraMap,
+            Map<String, ElementEx> guidElementMapFromRMS
     ) {
         if (ArrayUtils.isEmpty(element) || guidKeyMap == null || guidKeyMap.size() <= 0) {
             return false;
@@ -196,8 +220,14 @@ public class Jira2EA {
             return false;
         }
 
+        guid = guid.trim().toUpperCase();
         String story = element[EAHeaderEnum.JiraIssueKey.getIndex()];
         String newStory = guidKeyMap.get(guid);
+        if ((newStory == null || newStory.trim().length() <= 0)
+                && guidElementMapFromRMS != null && guidElementMapFromRMS.containsKey(guid)) {
+            newStory = guidElementMapFromRMS.get(guid).getStoryKey();
+        }
+
         boolean hasStory = JiraKeyUtil.isValid(story);
         boolean hasNewStory = JiraKeyUtil.isValid(newStory);
 

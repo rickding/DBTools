@@ -65,7 +65,9 @@ public class EA2DBUtil {
         element = ElementUtil.addElement(element);
         if (element != null) {
             String guid = record[EAHeaderEnum.GUID.getIndex()];
-            guidElementMap.put(guid, element);
+            if (guid != null && guid.trim().length() > 0) {
+                guidElementMap.put(guid.trim().toUpperCase(), element);
+            }
         }
         return element;
     }
@@ -153,15 +155,18 @@ public class EA2DBUtil {
         if (!StrUtils.isEmpty(parentKey) && keyRecordMap.containsKey(parentKey)) {
             String[] parentRecord = keyRecordMap.get(parentKey);
             String parentGuid = parentRecord[EAHeaderEnum.GUID.getIndex()];
-            if (!guidElementMap.containsKey(parentGuid)) {
-                // Add parent element firstly
-                addRecord(project, filePath, parentRecord, keyRecordMap, guidElementMap);
-            }
+            if (parentGuid != null && parentGuid.trim().length() > 0) {
+                parentGuid = parentGuid.trim().toUpperCase();
+                if (!guidElementMap.containsKey(parentGuid)) {
+                    // Add parent element firstly
+                    addRecord(project, filePath, parentRecord, keyRecordMap, guidElementMap);
+                }
 
-            if (guidElementMap.containsKey(parentGuid)) {
-                element.setParentId(guidElementMap.get(parentGuid).getId());
-            } else {
-                System.out.printf("Error: can't find parent element: %s\r\n", Arrays.asList(record));
+                if (guidElementMap.containsKey(parentGuid)) {
+                    element.setParentId(guidElementMap.get(parentGuid).getId());
+                } else {
+                    System.out.printf("Error: can't find parent element: %s, %s\r\n", parentGuid, Arrays.asList(record));
+                }
             }
         }
         return element;

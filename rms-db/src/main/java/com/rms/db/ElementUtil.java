@@ -27,7 +27,7 @@ public class ElementUtil {
 
         // Check guid
         Map<String, ElementEx> guidElementMap = getGuidElementMap();
-        final String guid = item.getGuidList().get(0);
+        final String guid = item.getGuidList().get(0).toUpperCase();
         if (guid == null || guid.trim().length() <= 0 || (guidElementMap != null && guidElementMap.containsKey(guid))) {
             return null;
         }
@@ -171,7 +171,7 @@ public class ElementUtil {
         Map<String, ElementEx> map = new HashMap<String, ElementEx>(list.size());
         for (ElementEx item : list) {
             for (String guid : item.getGuidList()) {
-                map.put(guid, item);
+                map.put(guid.trim().toUpperCase(), item);
             }
 
             if (pathItemMap != null) {

@@ -1,5 +1,7 @@
 package jira.tool.jira;
 
+import com.rms.db.ElementUtil;
+import com.rms.db.model.ElementEx;
 import dbtools.common.file.CsvUtil;
 import dbtools.common.file.FileUtils;
 import dbtools.common.file.FileWriter;
@@ -41,7 +43,8 @@ public class App {
             add(".\\");
             add("..\\");
             add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹");
-            add("C:\\Work\\doc\\30-项目-PMO\\需求内容确认文件夹\\jira_transfer\\1208");
+            add("C:\\Work\\doc\\30-项目-PMO\\需求内容提交文件夹");
+            add("C:\\Work\\doc\\30-项目-PMO\\需求内容提交文件夹\\商家线");
         }};
 
         if (args != null) {
@@ -55,6 +58,7 @@ public class App {
         // Get the guid story key map firstly
         Map<String, String[]> keyStoryMap = new HashMap<String, String[]>();
         Map<String, String> guidKeyMap = JiraStoryUtil.getGUIDKeyMap(filePaths, keyStoryMap, null);
+        Map<String, ElementEx> guidElementMapFromRMS = ElementUtil.getGuidElementMap();
 
         // Process files
         List<String> projects = new ArrayList<String>();
@@ -94,7 +98,7 @@ public class App {
                 }
 
                 // Process
-                elements = Jira2EA.updateStoryInfoIntoElement(elements, guidKeyMap, keyStoryMap, noGuidFromJiraMap, isCsv);
+                elements = Jira2EA.updateStoryInfoIntoElement(elements, guidKeyMap, keyStoryMap, noGuidFromJiraMap, isCsv, guidElementMapFromRMS);
                 if (elements != null) {
                     // Only the needed values
                     int storyCount = EAElementUtil.countRequirements(elements, true);

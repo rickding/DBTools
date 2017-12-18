@@ -42,7 +42,7 @@ public class ElementEx extends Element {
 
     public void setGuidList(String guid) {
         if (guid != null && guid.length() > 0) {
-            this.guidList.add(guid);
+            this.guidList.add(guid.trim().toUpperCase());
         }
     }
 

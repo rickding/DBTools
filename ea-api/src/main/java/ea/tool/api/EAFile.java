@@ -150,8 +150,7 @@ public class EAFile {
         Map<String, String[]> guidElementMap = new HashMap<String, String[]>();
         for (String[] element : elements) {
             if (EATypeEnum.isMappedToStory(element[typeIndex])
-                    && (EAStatusEnum.isMappedToStory(element[statusIndex])
-                    || EAStatusEnum.Approved.getCode().equalsIgnoreCase(element[statusIndex]))) {
+                    && EAStatusEnum.isUpdatedFromStory(element[statusIndex])) {
                 guidElementMap.put(element[guidIndex], element);
             }
         }
@@ -159,7 +158,7 @@ public class EAFile {
         // Update
         for (Element element : elementList) {
             if (EATypeEnum.isMappedToStory(element.GetType())
-                    && EAStatusEnum.isMappedToStory(element.GetStatus())
+                    && EAStatusEnum.isUpdatedFromStory(element.GetStatus())
                     && guidElementMap.containsKey(element.GetElementGUID())) {
                 // Check values
                 String[] values = guidElementMap.get(element.GetElementGUID());
