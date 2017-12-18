@@ -16,18 +16,21 @@ public class ProjectUtil {
         }
 
         if (nameItemMap == null) {
-            nameItemMap = list2Map(DBUtil.getProjectList());
+            nameItemMap = list2Map(DBUtil.getProjectList(), null);
         }
 
         // Find
         if (nameItemMap != null) {
-            String nameStr = name.trim().toLowerCase();
+            String nameStr = String.format("%s_%s",
+                    name.trim().toLowerCase(),
+                    subProject == null ? "" : subProject.trim().toLowerCase());
+
             if (nameItemMap.containsKey(nameStr)) {
                 return nameItemMap.get(nameStr);
             }
 
             for (Project item : nameItemMap.values()) {
-                if (StatusUtil.inInAlias(item.getAliases(), nameStr)) {
+                if (StatusUtil.inInAlias(item.getAliases(), nameStr) && ((subProject == null && item.getSubProject() == null) || subProject.trim().equalsIgnoreCase(item.getSubProject().trim()))) {
                     return item;
                 }
             }
@@ -54,14 +57,21 @@ public class ProjectUtil {
         return item;
     }
 
-    private static Map<String, Project> list2Map(List<Project> list) {
+    public static Map<String, Project> list2Map(List<Project> list, Map<Long, Project> idItemMap) {
         if (list == null || list.size() <= 0) {
             return null;
         }
 
         Map<String, Project> map = new HashMap<String, Project>(list.size());
         for (Project item : list) {
-            map.put(item.getName().trim().toLowerCase(), item);
+            map.put(String.format("%s_%s",
+                    item.getName().trim().toLowerCase(),
+                    item.getSubProject() == null ? "" : item.getSubProject().trim().toLowerCase()
+            ), item);
+
+            if (idItemMap != null) {
+                idItemMap.put(item.getId(), item);
+            }
         }
         return map;
     }

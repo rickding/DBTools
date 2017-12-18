@@ -96,6 +96,14 @@ public class DBUtil {
         return updateStoryList(storyList);
     }
 
+    public static List<Story> getStoryList() {
+        List<Story> storyList = null;
+        synchronized ("getStoryList") {
+            storyList = DB.getDb().getMapper(JiraMapper.class).getStoryList();
+        }
+        return updateStoryList(storyList);
+    }
+
     public static List<Story> getEpicList() {
         List<Story> storyList = null;
         synchronized ("getEpicList") {

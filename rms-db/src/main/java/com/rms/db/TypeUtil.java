@@ -35,7 +35,7 @@ public class TypeUtil {
             System.out.printf("Fail to add new type: %s\r\n", name);
         } else {
             System.out.printf("Add new type: %s\r\n", name);
-            nameItemMap = null;
+            nameItemMap.put(item.getName().trim().toLowerCase(), item);
         }
         return item;
     }

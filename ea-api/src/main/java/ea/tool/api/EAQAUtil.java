@@ -91,10 +91,54 @@ public class EAQAUtil {
                             tmp = arr[0].trim();
                             if (tmp != null && tmp.length() > 0) {
                                 tmp = formatQAStr(tmp);
-                                return tmp;
+
+                                JiraUserInterface jiraUserInterface = EAFileUtil.getJiraUserInterface();
+                                if (jiraUserInterface != null) {
+                                    arr = parseQAStr(tmp);
+                                    if (arr != null && arr.length > 0) {
+                                        for (String findUser : arr) {
+                                            tmp = jiraUserInterface.findQA(findUser);
+                                            if (tmp != null && tmp.trim().length() > 0) {
+                                                return tmp;
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    return tmp;
+                                }
                             }
                         }
                     }
+                }
+            }
+        }
+
+        // Find again directly
+        return findQAInNotes(value, EAFileUtil.getJiraUserInterface());
+    }
+
+    private static String[] Separator_Array = new String[]{
+            ",", ":", ";",
+            "，", "：", "；", "、",
+            " ", " ", "  ", "\t",
+    };
+
+    public static String findQAInNotes(String str, JiraUserInterface jiraUserInterface) {
+        if (str == null || str.trim().length() <= 0 || jiraUserInterface == null) {
+            return null;
+        }
+
+        str = str.trim().toLowerCase();
+        for (String sep : Separator_Array) {
+            String[] tmpArr = str.split(sep);
+            if (tmpArr == null || tmpArr.length <= 0) {
+                continue;
+            }
+
+            for (String tmp : tmpArr) {
+                String user = jiraUserInterface.findQA(tmp);
+                if (user != null) {
+                    return user;
                 }
             }
         }

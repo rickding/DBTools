@@ -156,6 +156,22 @@
         order by issue.id desc;
     </select>
 
+    <!-- Return the story list -->
+    <select id="getStoryList" resultMap="storyMap">
+        select distinct issue.ID as id, concat(project.pkey, '-', issue.issuenum) as issue_key, issue.SUMMARY as title,
+        issue.DUEDATE as due_date, issue.RESOLUTIONDATE as resolve_date,
+        issue.TIMEORIGINALESTIMATE as original_estimation, issue.TIMEESTIMATE as estimation, issue.TIMESPENT as time_spent,
+        issuetype.pname as type, issuestatus.pname as status, resolution.pname as resolution,
+        project.pname as project_name, project.pkey as project_key
+        from jiradb.jiraissue as issue
+        left join jiradb.issuetype on issue.issuetype = issuetype.ID
+        left join jiradb.issuestatus on issue.issuestatus = issuestatus.ID
+        left join jiradb.resolution on issue.RESOLUTION = resolution.ID
+        left join jiradb.project on issue.project = project.id
+        where issuetype.pname in ('Story', '变更', 'UserStory')
+        order by issue.id desc;
+    </select>
+
     <!-- Return the epic list -->
     <select id="getEpicList" resultMap="storyMap">
         select distinct issue.ID as id, concat(project.pkey, '-', issue.issuenum) as issue_key, issue.SUMMARY as title,

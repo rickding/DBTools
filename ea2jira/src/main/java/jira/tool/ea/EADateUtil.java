@@ -11,6 +11,8 @@ public class EADateUtil {
             "dd-MMM-yyyy HH:mm:ss", "dd-MM月-yyyy HH:mm:ss",
             "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd", "yyyyMMdd",
     };
+
+    private static Date today = DateUtils.parse(DateUtils.format(new Date(), "yyyy-MM-dd"), "yyyy-MM-dd");
     private static String strToday = DateUtils.format(new Date(), "yyyyMMdd");
     public static String Date_Skip = "20171123";
 
@@ -56,6 +58,36 @@ public class EADateUtil {
         return processDate.compareTo(modifyDate) >= 0 && Date_Skip.compareTo(modifyDate) <= 0;
     }
 
+    public static String getQADate(String dueDate) {
+        return getQADate(dueDate, today);
+    }
+
+    public static String getQADate(String dueDate, Date today) {
+        Date date = DateUtils.parse(dueDate, EA2Jira.Jira_Date_Format);
+        if (date == null) {
+            return null;
+        }
+
+        int days = DateUtils.diffDates(date, today);
+        if (days > 3) {
+            days = 2;
+        } else if (days > 1) {
+            days = 1;
+        } else {
+            days = 0;
+        }
+
+        if (days > 0) {
+            date = DateUtils.adjustDate(date, -days);
+            dueDate = DateUtils.format(date, EA2Jira.Jira_Date_Format);
+        }
+        return dueDate;
+    }
+
+    public static String processDueDate(String value) {
+        return processDueDate(value, today);
+    }
+
     public static String processDueDate(String value, Date today) {
         if (value == null || value.trim().length() <= 0) {
             return null;
@@ -77,13 +109,14 @@ public class EADateUtil {
                 // Adjust the year if it's not set
                 String strYear = DateUtils.format(date, "yyyy");
                 if ("2017".compareTo(strYear) > 0) {
-                    String strDate = DateUtils.format(date, "MM-dd");
+                    String strMonth = DateUtils.format(date, "MM-dd");
+                    String strDay = DateUtils.format(date, "MM-dd");
                     int year = Integer.valueOf(DateUtils.format(today, "yyyy"));
                     int month = Integer.valueOf(DateUtils.format(today, "MM"));
-                    if (month >= 12 && strDate.compareTo(DateUtils.format(today, "MM-dd")) < 0) {
+                    if (month >= 12 && strMonth.compareTo("03") < 0) {
                         year++;
                     }
-                    date = DateUtils.parse(String.format("%4d-%s", year, strDate), "yyyy-MM-dd");
+                    date = DateUtils.parse(String.format("%4d-%s-%s", year, strMonth, strDay), "yyyy-MM-dd");
                 }
 
                 // Format date

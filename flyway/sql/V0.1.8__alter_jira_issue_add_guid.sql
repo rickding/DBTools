@@ -1,0 +1,5 @@
+USE rms;
+
+ALTER TABLE `jira_issue`
+  ADD COLUMN guid VARCHAR(64) DEFAULT NULL
+  AFTER name;

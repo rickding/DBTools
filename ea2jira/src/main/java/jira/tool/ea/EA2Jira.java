@@ -40,7 +40,7 @@ public class EA2Jira {
                 if (user == null) {
                     System.out.printf("Error when find user: %s\n", value);
                 } else {
-                    return user.getName();
+                    return user.getCode();
                 }
             }
         }
@@ -57,22 +57,8 @@ public class EA2Jira {
 
                 // QA start 2 days earlier
                 if (!StrUtils.isEmpty(value) && jiraHeader.equalsIgnoreCase(EA2JiraHeaderEnum.QAStartDate.getCode())) {
-                    Date date = DateUtils.parse(value, Jira_Date_Format);
-                    int days = DateUtils.diffDates(date, today);
-                    if (days > 3) {
-                        days = 2;
-                    } else if (days > 1) {
-                        days = 1;
-                    } else {
-                        days = 0;
-                    }
-
-                    if (days > 0) {
-                        date = DateUtils.adjustDate(date, -days);
-                        value = DateUtils.format(date, Jira_Date_Format);
-                    }
+                    value = EADateUtil.getQADate(value, today);
                 }
-
                 return value;
             }
         }
@@ -241,16 +227,32 @@ public class EA2Jira {
             return;
         }
 
-        int qaIndex = EA2JiraHeaderEnum.QA.getIndex();
-
         // Get QA from notes
-        if (element != null && element.length > 0) {
-            String notes = element[EAHeaderEnum.Notes.getIndex()];
-            String[] qaArray = EAQAUtil.getQAArray(notes);
-            if (qaArray != null && qaArray.length > 0) {
-                JiraUser qa = JiraUser.findUser(qaArray[0]);
+        int qaIndex = EA2JiraHeaderEnum.QA.getIndex();
+        if (element != null && element.length > 0 && element[EAHeaderEnum.QA.getIndex()] != null) {
+            String qaStr = element[EAHeaderEnum.QA.getIndex()].trim();
+            if (!JiraQAEnum.noQA.getCode().equalsIgnoreCase(qaStr)) {
+                JiraUser qa = JiraUser.findQA(qaStr);
                 if (qa != null) {
-                    values[qaIndex] = qa.getName();
+                    values[qaIndex] = qa.getCode();
+                    return;
+                }
+
+                // Parse
+                String notes = element[EAHeaderEnum.Notes.getIndex()];
+                String[] qaArray = EAQAUtil.getQAArray(notes);
+                if (qaArray != null && qaArray.length > 0) {
+                    qa = JiraUser.findQA(qaArray[0]);
+                    if (qa != null) {
+                        values[qaIndex] = qa.getCode();
+                        return;
+                    }
+                }
+
+                // Find again
+                qaStr = EAQAUtil.findQAInNotes(notes, new JiraUserImpl());
+                if (qaStr != null) {
+                    values[qaIndex] = qaStr;
                     return;
                 }
             }

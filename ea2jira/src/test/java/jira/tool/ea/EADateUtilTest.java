@@ -45,6 +45,9 @@ public class EADateUtilTest {
         Date today = DateUtils.parse("2017-12-05", "yyyy-MM-dd");
         Map<String, String> mapIO = new HashMap<String, String>() {{
             put("1-15", "2018/01/15");
+            put("2-15", "2018/02/15");
+            put("3-15", "2017/03/15");
+            put("11.25", "2017/11/25");
             put("12.28", "2017/12/28");
             put("12月18日", "2017/12/18");
             put("2017-12-15", "2017/12/15");
@@ -65,6 +68,9 @@ public class EADateUtilTest {
         Date today = DateUtils.parse("2018-1-5", "yyyy-MM-dd");
         Map<String, String> mapIO = new HashMap<String, String>() {{
             put("1-15", "2018/01/15");
+            put("2-15", "2018/02/15");
+            put("3-15", "2018/03/15");
+            put("11.25", "2018/11/25");
             put("12.28", "2018/12/28");
             put("12月18日", "2018/12/18");
             put("2017-12-15", "2017/12/15");

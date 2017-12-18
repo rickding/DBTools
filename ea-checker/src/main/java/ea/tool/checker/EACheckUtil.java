@@ -5,6 +5,7 @@ import dbtools.common.utils.ArrayUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
 import ea.tool.api.EAHeaderEnum;
+import ea.tool.api.EAQAUtil;
 import ea.tool.api.EATypeEnum;
 import jira.tool.ea.EADateUtil;
 import ea.tool.api.EAEstimationUtil;
@@ -13,6 +14,7 @@ import jira.tool.db.JiraKeyUtil;
 import jira.tool.ea.JiraProjectEnum;
 import jira.tool.db.JiraUser;
 import jira.tool.ea.PMOMeetingUtil;
+import jira.tool.ea.JiraUserImpl;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import java.util.ArrayList;
@@ -63,9 +65,15 @@ public class EACheckUtil {
             }
 
             // Check QA
-//            if (JiraUser.findUser(element[EAHeaderEnum.QA.getIndex()]) == null) {
-//                continue;
-//            }
+            if (JiraUser.findUser(element[EAHeaderEnum.QA.getIndex()]) == null) {
+                // Find in notes again with query db
+                String user = EAQAUtil.findQAInNotes(element[EAHeaderEnum.Notes.getIndex()], new JiraUserImpl());
+                if (user != null && user.trim().length() > 0) {
+                    element[EAHeaderEnum.QA.getIndex()] = user;
+                } else {
+//                    continue;
+                }
+            }
 
             // Check if the estimation and due-date are valid
             if (StrUtils.isEmpty(EAEstimationUtil.processEstimation(element[EAHeaderEnum.Estimation.getIndex()]))
@@ -109,7 +117,7 @@ public class EACheckUtil {
         }
 
         // Get the headers
-        List<String[]> stories = new ArrayList<String[]>(){{
+        List<String[]> stories = new ArrayList<String[]>() {{
             add(EAHeaderEnum.getHeaders());
         }};
 

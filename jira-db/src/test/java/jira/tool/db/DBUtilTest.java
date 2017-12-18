@@ -58,6 +58,13 @@ public class DBUtilTest {
     }
 
     @Test
+    public void testGetStoryList() {
+        List<Story> ret = DBUtil.getStoryList();
+        System.out.printf("Stories from DBUtil: %d\r\n", ret == null ? 0 : ret.size());
+        Assert.assertNotNull(ret);
+    }
+
+    @Test
     public void testGetEpicList() {
         List<Story> ret = DBUtil.getEpicList();
         System.out.printf("Epics from DBUtil: %d\r\n", ret == null ? 0 : ret.size());

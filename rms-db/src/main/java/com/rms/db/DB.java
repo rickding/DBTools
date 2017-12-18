@@ -24,7 +24,7 @@ public class DB {
 
     private DB() {
         try {
-            String resource = "mybatis-config.xml";
+            String resource = "rms_db/mybatis-config.xml";
             InputStream inputStream = Resources.getResourceAsStream(resource);
             SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
             session = sqlSessionFactory.openSession();

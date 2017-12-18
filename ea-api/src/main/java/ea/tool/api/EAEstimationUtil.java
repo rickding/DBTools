@@ -2,6 +2,10 @@ package ea.tool.api;
 
 public class EAEstimationUtil {
     public static String processEstimation(String value) {
+        return processEstimation(value, true);
+    }
+
+    public static String processEstimation(String value, boolean showError) {
         if (value == null || value.trim().length() <= 0) {
             return null;
         }
@@ -32,7 +36,9 @@ public class EAEstimationUtil {
                 }
                 estimation += v * base;
             } catch (Exception e) {
-                System.out.printf("Error when process estimation: %s\n", value);
+                if (showError) {
+                    System.out.printf("Error when process estimation: %s\r\n", value);
+                }
             }
         }
 

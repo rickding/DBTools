@@ -9,10 +9,21 @@ import java.util.List;
 import java.util.Map;
 
 public class EAFileUtil {
+    private static JiraUserInterface jiraUserInterface;
+
+    public static JiraUserInterface getJiraUserInterface() {
+        return jiraUserInterface;
+    }
+
     public static List<String[]> readFile(String file) {
+        return readFile(file, null);
+    }
+
+    public static List<String[]> readFile(String file, JiraUserInterface userImpl) {
         if (file == null || file.trim().length() <= 0) {
             return null;
         }
+        jiraUserInterface = userImpl;
 
         EAFile eaFile = new EAFile();
         eaFile.open(file);

@@ -17,7 +17,7 @@ public class FileUtil {
         }
 
         if (nameItemMap == null) {
-            nameItemMap = list2Map(DBUtil.getFileList());
+            nameItemMap = list2Map(DBUtil.getFileList(), null);
         }
 
         // Find
@@ -45,7 +45,7 @@ public class FileUtil {
         return item;
     }
 
-    private static Map<String, File> list2Map(List<File> list) {
+    public static Map<String, File> list2Map(List<File> list, Map<Long, File> idItemMap) {
         if (list == null || list.size() <= 0) {
             return null;
         }
@@ -53,6 +53,10 @@ public class FileUtil {
         Map<String, File> map = new HashMap<String, File>(list.size());
         for (File item : list) {
             map.put(String.format("%d-%s-%s", item.getProjectId(), item.getPath().trim().toLowerCase(), item.getName().trim().toLowerCase()), item);
+
+            if (idItemMap != null) {
+                idItemMap.put(item.getId(), item);
+            }
         }
         return map;
     }

@@ -6,11 +6,21 @@ import jira.tool.db.model.User;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class JiraUser {
     private static List<User> userListFromDB = null;
     private static JiraUser[] userArray = null;
+
+    public static JiraUser findQA(String name) {
+        JiraUser user = findUser(name);
+        if (user != null) {
+            return user;
+        }
+        return JiraQAEnum.toUser(JiraQAEnum.findQAByName(name));
+    }
 
     public static JiraUser findUser(String name) {
         if (userArray == null || userArray.length <= 0) {
@@ -23,11 +33,11 @@ public class JiraUser {
 
         name = name.trim();
         for (JiraUser user : userArray) {
-            if (user.getName().equalsIgnoreCase(name)) {
+            if (user.code.equalsIgnoreCase(name)) {
                 return user;
             }
 
-            for (String alias : user.getAliases()) {
+            for (String alias : user.aliases) {
                 if (alias.equalsIgnoreCase(name)) {
                     return user;
                 }
@@ -48,12 +58,15 @@ public class JiraUser {
         if (userListFromDB != null && userListFromDB.size() > 0) {
             List<JiraUser> tmpUserList = new ArrayList<JiraUser>(userListFromDB.size());
 
+            JiraUser tmpUser = new JiraUser(JiraQAEnum.QA_Team_Name, JiraQAEnum.noQA.getName(), JiraQAEnum.noQA.getCode(), JiraQAEnum.noQA.getAliases());
+            tmpUserList.add(tmpUser);
+
             for (User user : userListFromDB) {
                 if (user == null || StrUtils.isEmpty(user.getName()) || StrUtils.isEmpty(user.getCode()) || StrUtils.isEmpty(user.getTeam())) {
                     continue;
                 }
 
-                JiraUser tmpUser = new JiraUser(user.getTeam().trim(), user.getCode().trim(), new String[]{user.getName().trim()});
+                tmpUser = new JiraUser(user.getTeam().trim(), user.getName().trim(), user.getCode().trim(), new String[]{user.getName().trim()});
                 tmpUserList.add(tmpUser);
 
                 // Find if it's pre-defined
@@ -61,10 +74,16 @@ public class JiraUser {
                 if (tmpUserEnum == null) {
                     tmpUserEnum = JiraUserEnum.findUser(user.getCode());
                 }
-
                 if (tmpUserEnum != null) {
-                    // Save the information
                     tmpUser.addAliases(tmpUserEnum.getAliases());
+                }
+
+                JiraQAEnum qaUser = JiraQAEnum.findQAByName(user.getName());
+                if (qaUser == null) {
+                    qaUser = JiraQAEnum.findQAByName(user.getCode());
+                }
+                if (qaUser != null) {
+                    tmpUser.addAliases(qaUser.getAliases());
                 }
             }
 
@@ -79,53 +98,42 @@ public class JiraUser {
 
     private String team;
     private String name;
+    private String code;
     private List<String> aliases = new ArrayList<String>();
 
-    public JiraUser(String team, String name, String[] aliases) {
+    public JiraUser(String team, String name, String code, String[] aliases) {
         this.team = team;
         this.name = name;
-
-        if (!ArrayUtils.isEmpty(aliases)) {
-            this.aliases.addAll(Arrays.asList(aliases));
-        }
+        this.code = code;
+        addAliases(aliases);
     }
 
-    public JiraUser(String team, String name, List<String> aliases) {
+    public JiraUser(String team, String name, String code, List<String> aliases) {
         this.team = team;
         this.name = name;
-
-        if (aliases != null && aliases.size() > 0) {
-            this.aliases.addAll(aliases);
-        }
+        this.code = code;
+        addAliases(aliases);
     }
 
     public String getTeam() {
         return team;
     }
 
-    public void setTeam(String team) {
-        this.team = team;
+    public String getCode() {
+        return code;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<String> getAliases() {
-        return aliases;
-    }
-
-    public void addAliases(String[] aliases) {
+    private void addAliases(String[] aliases) {
         if (!ArrayUtils.isEmpty(aliases)) {
             this.aliases.addAll(Arrays.asList(aliases));
         }
     }
 
-    public void addAliases(List<String> aliases) {
+    private void addAliases(List<String> aliases) {
         if (aliases != null && aliases.size() > 0) {
             this.aliases.addAll(aliases);
         }

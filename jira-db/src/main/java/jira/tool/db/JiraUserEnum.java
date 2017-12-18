@@ -35,7 +35,7 @@ public enum JiraUserEnum {
 
     Wangdongfang("DDX", "wangdongfang", new String[]{"王东方"}),
     Churongcheng("DDX", "churongcheng", new String[]{"储荣成"}),
-    Chenliangtian("DDX", "chenliangtian", new String[]{"陈良田"}),
+    Chenliangtian("DDX", "chenliangtian", new String[]{"陈良田", "c陈良田"}),
 
     Zengfenghua("BI", "zengfenghua", new String[]{"曾风华"}),
     Yeyuqiang("BI", "yeyuqiang", new String[]{"叶雨强"}),
@@ -86,7 +86,7 @@ public enum JiraUserEnum {
         if (user == null) {
             return null;
         }
-        return new JiraUser(user.getTeam(), user.getName(), user.getAliases());
+        return new JiraUser(user.team, user.aliases.get(0), user.name, user.aliases);
     }
 
     public static JiraUserEnum findUser(String name) {
@@ -96,11 +96,11 @@ public enum JiraUserEnum {
 
         name = name.trim();
         for (JiraUserEnum user : userArray) {
-            if (user.getName().equalsIgnoreCase(name)) {
+            if (user.name.equalsIgnoreCase(name)) {
                 return user;
             }
 
-            for (String alias : user.getAliases()) {
+            for (String alias : user.aliases) {
                 if (alias.equalsIgnoreCase(name)) {
                     return user;
                 }
@@ -121,14 +121,6 @@ public enum JiraUserEnum {
         if (!ArrayUtils.isEmpty(aliases)) {
             this.aliases.addAll(Arrays.asList(aliases));
         }
-    }
-
-    public String getTeam() {
-        return team;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public List<String> getAliases() {

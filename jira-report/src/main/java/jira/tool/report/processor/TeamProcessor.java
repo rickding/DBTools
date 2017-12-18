@@ -42,7 +42,7 @@ public class TeamProcessor {
      * @return
      */
     public static Map<String, TeamProcessor> createTeamProcessors() {
-        TeamEnum[] teams = TeamEnum.getList();
+        TeamEnum[] teams = TeamEnum.getTeamList();
         if (teams == null || teams.length <= 0) {
             return null;
         }

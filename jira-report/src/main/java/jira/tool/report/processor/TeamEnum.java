@@ -22,25 +22,35 @@ public enum TeamEnum {
     SAAS("SaaS", "", 0),
     AA("应用架构", "", 0);
 
-    private static final TeamEnum[] list = {
+    private static final TeamEnum[] teamList = {
             APP, CW, DG, DD, GYL, BA, JY, SJ, SP, BI, SAAS, AA
     };
 
-    public static TeamEnum[] getList() {
-        return list;
+    public static TeamEnum[] getTeamList() {
+        checkTeamMemberCount();
+        return teamList;
     }
 
     public static int getTotalMember() {
         checkTeamMemberCount();
 
         int count = 0;
-        for (TeamEnum team : getList()) {
+        for (TeamEnum team : teamList) {
             count += team.member;
         }
         return count;
     }
 
+    private static boolean hasCheckTeamMemberCount = false;
+
     public static void checkTeamMemberCount() {
+        synchronized ("checkTeamMemberCount") {
+            if (hasCheckTeamMemberCount) {
+                return;
+            }
+            hasCheckTeamMemberCount = true;
+        }
+
         List<User> teams = DBUtil.getTeamMembersCountList();
         if (teams == null || teams.size() <= 0) {
             return;
@@ -51,7 +61,7 @@ public enum TeamEnum {
             teamCountMap.put(team.getTeam(), team.getMemberCount());
         }
 
-        for (TeamEnum team : getList()) {
+        for (TeamEnum team : teamList) {
             String name = team.name;
             int count = teamCountMap.containsKey(name) ? teamCountMap.get(name) : 0;
             if (team.member != count) {

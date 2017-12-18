@@ -26,6 +26,7 @@ public interface JiraMapper {
 
     // For ea2jira and jira2ea
     List<Story> getEpicList();
+    List<Story> getStoryList();
     List<Story> getPMOStoryList();
     List<Story> getEAGUIDList();
     List<Story> getPMOLabelList();

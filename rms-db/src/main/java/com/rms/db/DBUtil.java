@@ -2,50 +2,63 @@ package com.rms.db;
 
 import com.rms.db.mapper.ElementGuidMapper;
 import com.rms.db.mapper.ElementMapper;
+import com.rms.db.mapper.ElementMapperEx;
 import com.rms.db.mapper.FileMapper;
+import com.rms.db.mapper.JiraIssueMapper;
 import com.rms.db.mapper.ProjectMapper;
 import com.rms.db.mapper.StatusMapper;
 import com.rms.db.mapper.TypeMapper;
 import com.rms.db.mapper.UserMapper;
 import com.rms.db.model.Element;
+import com.rms.db.model.ElementEx;
 import com.rms.db.model.ElementGuid;
 import com.rms.db.model.File;
+import com.rms.db.model.JiraIssue;
 import com.rms.db.model.Project;
 import com.rms.db.model.Status;
 import com.rms.db.model.Type;
 import com.rms.db.model.User;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class DBUtil {
-    public static List<Element> getElementList() {
-        List<Element> ret = null;
+    public static List<ElementEx> getElementList() {
+        List<ElementEx> ret = null;
         synchronized ("getElementList") {
-            ret = DB.getDb().getMapper(ElementMapper.class).selectAll();
+            ret = DB.getDb().getMapper(ElementMapperEx.class).selectAll();
 
-            // Read guid
             if (ret != null && ret.size() > 0) {
-                final List<ElementGuid> guidList = getElementGuidList();
-                if (guidList != null && guidList.size() > 0) {
-                    Map<Long, ElementGuid> elementIdGuidMap = new HashMap<Long, ElementGuid>() {{
-                       for (ElementGuid item : guidList) {
-                           put(item.getElementId(), item);
-                       }
-                    }};
-
-                    for (Element item : ret) {
-                        ElementGuid guid = elementIdGuidMap.get(item.getId());
-                        if (guid != null) {
-                            item.setGuid(guid.getGuid());
-                        }
-                    }
-                }
+                // Read more info
+                ElementUtil.updateElementInfo(ret, getProjectList(), getElementGuidList(), getFileList());
             }
         }
         return ret;
+    }
+
+    public static ElementEx addElement(ElementEx item) {
+        return addElement(item, true);
+    }
+
+    public static ElementEx addElement(final ElementEx item, boolean commit) {
+        if (item == null) {
+            return null;
+        }
+
+        int count = DB.getDb().getMapper(ElementMapper.class).insert(item);
+        if (count > 0) {
+            // Fill element-guid
+            addElementGuid(new ElementGuid(){{
+                setElementId(item.getId());
+                setGuid(item.getGuidList().get(0));
+                setFileId(item.getFileList().get(0).getId());
+            }}, false);
+
+            if (commit) {
+                DB.getDb().commit();
+            }
+        }
+        return count <= 0 ? null : item;
     }
 
     public static List<ElementGuid> getElementGuidList() {
@@ -56,32 +69,11 @@ public class DBUtil {
         return ret;
     }
 
-    public static Element addElement(Element item) {
-        return addElement(item, true);
+    public static ElementGuid addElementGuid(ElementGuid item) {
+        return addElementGuid(item, true);
     }
 
-    public static Element addElement(final Element item, boolean commit) {
-        if (item == null) {
-            return null;
-        }
-
-        int count = DB.getDb().getMapper(ElementMapper.class).insert(item);
-        if (count > 0) {
-            // Fill element-guid
-            addElementGuid(new ElementGuid(){{
-                setElementId(item.getId());
-                setGuid(item.getGuid());
-                setFileId(item.getFile().getId());
-            }}, false);
-
-            if (commit) {
-                DB.getDb().commit();
-            }
-        }
-        return count <= 0 ? null : item;
-    }
-
-    private static ElementGuid addElementGuid(ElementGuid item, boolean commit) {
+    public static ElementGuid addElementGuid(ElementGuid item, boolean commit) {
         if (item == null) {
             return null;
         }
@@ -184,12 +176,48 @@ public class DBUtil {
         return count > 0 ? item : null;
     }
 
+    public static List<JiraIssue> getJiraIssueList() {
+        synchronized ("getJiraIssueList") {
+            return DB.getDb().getMapper(JiraIssueMapper.class).selectAll();
+        }
+    }
+
+    public static JiraIssue addJiraIssue(JiraIssue item) {
+        return addJiraIssue(item, true);
+    }
+
+    public static JiraIssue addJiraIssue(JiraIssue item, boolean commit) {
+        if (item == null) {
+            return null;
+        }
+        int count = DB.getDb().getMapper(JiraIssueMapper.class).insert(item);
+        if (count > 0 && commit) {
+            DB.getDb().commit();
+        }
+        return count > 0 ? item : null;
+    }
+
     public static List<User> getUserList() {
         List<User> ret = null;
         synchronized ("getUserList") {
             ret = DB.getDb().getMapper(UserMapper.class).selectAll();
         }
         return ret;
+    }
+
+    public static User addUser(User item) {
+        return addUser(item, true);
+    }
+
+    public static User addUser(User item, boolean commit) {
+        if (item == null) {
+            return null;
+        }
+        int count = DB.getDb().getMapper(UserMapper.class).insert(item);
+        if (count > 0 && commit) {
+            DB.getDb().commit();
+        }
+        return count > 0 ? item : null;
     }
 
     @Resource

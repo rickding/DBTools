@@ -2,6 +2,7 @@ package com.rms.db;
 
 import com.alibaba.fastjson.JSON;
 import com.rms.db.model.Element;
+import com.rms.db.model.ElementEx;
 import com.rms.db.model.User;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
@@ -14,7 +15,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:spring-mybatis.xml"})
+@ContextConfiguration(locations = {"classpath:rms_db/spring-mybatis.xml"})
 public class DBServiceTest {
     private static Logger logger = Logger.getLogger(DBServiceTest.class);
 
@@ -30,7 +31,7 @@ public class DBServiceTest {
 
     @Test
     public void testGetElementList() {
-        List<Element> ret = dbService.getElementList();
+        List<ElementEx> ret = dbService.getElementList();
         Assert.assertNotNull(ret);
         logger.info(JSON.toJSONString(ret));
     }

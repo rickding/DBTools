@@ -92,7 +92,7 @@ public class App {
                     records = CsvUtil.readFile(f.getPath());
                     EADateUtil.formatDate(records);
                 } else {
-                    records = EAFileUtil.readFile(f.getPath());
+                    records = EAFileUtil.readFile(f.getPath(), new JiraUserImpl());
                 }
                 ExcelUtil.fillSheet(ExcelUtil.getOrCreateSheet(wb, String.format(Sheet_EA, f.getName())), records);
 

@@ -9,6 +9,7 @@ import ea.tool.api.EAFileUtil;
 import jira.tool.ea.EADateUtil;
 import jira.tool.ea.JiraProjectEnum;
 import jira.tool.ea.PMOMeetingUtil;
+import jira.tool.ea.JiraUserImpl;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
@@ -100,7 +101,7 @@ public class App {
                     records = CsvUtil.readFile(f.getPath());
                     EADateUtil.formatDate(records);
                 } else {
-                    records = EAFileUtil.readFile(f.getPath());
+                    records = EAFileUtil.readFile(f.getPath(), new JiraUserImpl());
                 }
 
                 // Remember the elements
