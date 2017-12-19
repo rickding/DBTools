@@ -8,19 +8,19 @@ import java.util.List;
 import java.util.Map;
 
 public enum TeamEnum {
-    APP("APP", "", 7),
+    APP("APP", "", 6),
     CW("财务线", "", 5),
-    DG("导购线", "", 14),
+    DG("导购线", "", 15),
     DD("订单线", "", 7),
-    GYL("供应链", "", 14),
+    GYL("供应链", "", 16),
     BA("基础架构", "", 5),
     JY("交易线", "", 8),
-    SJ("商家线", "", 10),
-    SP("商品线", "", 8),
+    SJ("商家线", "", 9),
+    SP("商品线", "", 9),
     BI("智能平台", "", 7),
 
     SAAS("SaaS", "", 0),
-    AA("应用架构", "", 0);
+    AA("应用架构", "", 2);
 
     private static final TeamEnum[] teamList = {
             APP, CW, DG, DD, GYL, BA, JY, SJ, SP, BI, SAAS, AA

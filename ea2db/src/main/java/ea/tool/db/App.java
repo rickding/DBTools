@@ -1,5 +1,7 @@
 package ea.tool.db;
 
+import com.rms.db.ElementUtil;
+import com.rms.db.model.ElementEx;
 import dbtools.common.file.FileUtils;
 import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
@@ -13,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -43,6 +46,9 @@ public class App {
             }
         }
 
+        Map<String, ElementEx> guidElementMapFromRMS = ElementUtil.getGuidElementMap();
+        boolean isInitDB = guidElementMapFromRMS == null || guidElementMapFromRMS.size() <= 0;
+
         // Process files
         List<String> projects = new ArrayList<String>();
         for (String filePath : filePaths) {
@@ -56,7 +62,7 @@ public class App {
                 // Check the date in file name
                 String fileName = f.getName();
                 filePath = f.getPath();
-                if (!PMOMeetingUtil.needsToBeProcessed(f)) {
+                if (!isInitDB && !PMOMeetingUtil.needsToBeProcessed(f)) {
                     continue;
                 }
 

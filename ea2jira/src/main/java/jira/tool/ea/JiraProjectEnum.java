@@ -19,6 +19,7 @@ public enum JiraProjectEnum {
     CloudPOS("A-海航", new String[]{"云POS项目需求", "云POS需求管理", "云POS"}, "云POS"),
     YunDianPu("A-海航", new String[]{"云店铺项目需求", "云店铺需求管理", "云店铺"}, "云店铺"),
 
+    YuYan("D-雨燕平台", new String[]{"基础架构-雨燕平台", }),
     BI("D-技术优化", new String[]{"技术优化-大数据", "技术-大数据", "大数据", }),
     DGX("D-技术优化", new String[]{"技术优化-导购线", "技术-导购线", "导购线", }),
     JYX("D-技术优化", new String[]{"技术优化-交易线", "技术-交易线", "交易线", }),
@@ -36,7 +37,7 @@ public enum JiraProjectEnum {
 
     private static JiraProjectEnum[] projectArray = new JiraProjectEnum[]{
             DeSheng, HaiHangERP, HaiHangOO, HaiHangB2B2C, HaiHangB2B, JingKeLong, OuPu, PingAn, ShiTaiBo, LaiYiFen,
-            WuRenDian, CloudPOS, YunDianPu,
+            WuRenDian, CloudPOS, YunDianPu, YuYan,
             BI, DGX, JYX, SJX, SPX, YHX, TechDebt,
     };
 
