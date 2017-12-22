@@ -62,7 +62,7 @@ public class JiraUtilEx {
         }
 
         // Post to rms
-        RMSUtil.postReport(String.format("%s_%s", report.getName(), report.getSheetName("data")), report.getDateStr(), report.getDuration(), records);
+        report.postToRms(records);
     }
 
     private static Map<String, String> formatStory(final Story story) {

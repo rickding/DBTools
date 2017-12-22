@@ -6,6 +6,8 @@ import dbtools.common.utils.StrUtils;
 import jira.tool.db.DBUtil;
 import jira.tool.db.model.Story;
 import jira.tool.report.processor.HeaderProcessor;
+import jira.tool.report.processor.SprintDateProcessor;
+import jira.tool.report.processor.TeamEnum;
 import jira.tool.report.processor.TeamProcessor;
 import org.apache.poi.ss.usermodel.DataConsolidateFunction;
 import org.apache.poi.ss.usermodel.Row;
@@ -16,6 +18,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +34,7 @@ public class ReleasePlanReport extends BaseReport {
         mapSheetName.put("graph2", "人力库存警戒线");
 
         duration = "half-weekly";
+        fillWholeDate = true;
     }
 
     @Override
@@ -167,7 +171,7 @@ public class ReleasePlanReport extends BaseReport {
         }
 
         // Post to rms
-        RMSUtil.postReport(String.format("%s_%s", getName(), getSheetName("data2")), dateStr, duration, records);
+        postToRms2(records);
 
         if (!isTemplateUsed()) {
             // Decorate data
@@ -202,5 +206,76 @@ public class ReleasePlanReport extends BaseReport {
 //        pivotTable.addColumnLabel(DataConsolidateFunction.SUM, list.indexOf(TeamProcessor.releaseMinHeader));
 
         pivotTable.addReportFilter(list.indexOf(TeamProcessor.releaseMinHeader));
+    }
+
+    protected void postToRms2(List<Map<String, String>> records) {
+        if (records == null || records.size() <= 0) {
+            return;
+        }
+
+        // Manipulate the data: Release Date, Team Name
+        Map<String, Map<String, Double>> dataMap = new HashMap<String, Map<String, Double>>();
+        String minReleaseDate = null;
+        String strToday = DateUtils.format(SprintDateProcessor.getSprintDate(new Date(), true), "yyyy-MM-dd");
+
+        for (Map<String, String> record : records) {
+            String releaseDate = record.get(TeamProcessor.dateHeader.getName());
+            String team = record.get(TeamProcessor.nameHeader.getName());
+
+            if (strToday.compareTo(releaseDate) < 0) {
+                if (minReleaseDate == null || minReleaseDate.compareTo(releaseDate) > 0){
+                    minReleaseDate = releaseDate;
+                }
+            }
+
+            // Find the project
+            if (!dataMap.containsKey(releaseDate)) {
+                dataMap.put(releaseDate, new HashMap<String, Double>());
+            }
+            Map<String, Double> teamMap = dataMap.get(releaseDate);
+
+            // Value
+            String value = record.get(TeamProcessor.releaseHeader.getName());
+            Double dbl = Double.valueOf(value);
+            if (teamMap.containsKey(team)) {
+                dbl += teamMap.get(team);
+            }
+            teamMap.put(team, dbl);
+        }
+
+        // Format: Project, Team Name
+//        const data = [
+//            { 'team': 'APP', Current: 1.0, Max: 4, Min: 2 },
+//            { 'team': '基础架构', Current: 4.6, Max: 4, Min: 2 }
+//        ];
+
+
+        // Only 4 weeks from current
+        String[] dates = new String[dataMap.keySet().size()];
+        dataMap.keySet().toArray(dates);
+        Arrays.sort(dates);
+
+        int count = 0;
+        for (String date : dates) {
+            if (minReleaseDate.compareTo(date) > 0) {
+                continue;
+            }
+            count++;
+            if (count > 4) {
+                break;
+            }
+
+            Map<String, Double> teamMap = dataMap.get(date);
+            List<Map<String, Object>> chartDataList = new ArrayList<Map<String, Object>>();
+            for (final Map.Entry<String, Double> team : teamMap.entrySet()) {
+                chartDataList.add(new HashMap<String, Object>() {{
+                    put("team", team.getKey());
+                    put("Current", team.getValue());
+                    put("Max", TeamEnum.APP.getReleaseMax());
+                    put("Min", TeamEnum.APP.getReleaseMin());
+                }});
+            }
+            RMSUtil.postReport(String.format("%s_%s_第%d周", getName(), getSheetName("graph2"), count), dateStr, duration, chartDataList);
+        }
     }
 }

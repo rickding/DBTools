@@ -153,7 +153,7 @@ public class DBUtil {
 
             // Update release date if it's closed but has no value.
             if (checkReleaseDate && story.getReleaseDate() == null) {
-                if ("YuYan".equalsIgnoreCase(story.getProjectKey())) {
+                if ("YuYan".equalsIgnoreCase(story.getProjectKey()) || "史泰博".equalsIgnoreCase(story.getProjectKey())) {
                     story.setReleaseDate(story.getResolveDate());
                 }
             }

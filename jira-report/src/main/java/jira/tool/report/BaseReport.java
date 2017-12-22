@@ -47,6 +47,7 @@ public class BaseReport {
 
     /**
      * return the template file
+     *
      * @return
      */
     public String getTemplateName() {
@@ -62,25 +63,21 @@ public class BaseReport {
         return null;
     }
 
-    public String getDateStr() {
-        return dateStr;
-    }
-
-    public String getDuration() {
-        return duration;
+    // Post the graph data to rms
+    protected void postToRms(List<Map<String, String>> records) {
     }
 
     public String getName() {
         String name = getFileName();
         if (!StrUtils.isEmpty(name)) {
-            for (String sep : new String[] {"-", dateStr}) {
+            for (String sep : new String[]{"-", dateStr}) {
                 if (name.indexOf(sep) > 0) {
                     name = name.trim().substring(0, name.indexOf(sep));
                     break;
                 }
             }
         }
-        if (StrUtils.isEmpty(name)){
+        if (StrUtils.isEmpty(name)) {
             name = this.getClass().getName();
         }
         return name;
@@ -183,7 +180,7 @@ public class BaseReport {
         // Call the processors
         for (ValueProcessor valueProcessor : valueProcessors) {
             if (valueProcessor.accept(header)) {
-                valueProcessor.process(value, cell);
+                value = valueProcessor.process(value, cell);
                 return value;
             }
         }

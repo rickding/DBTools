@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public class RMSUtil {
-    public static String postReport(final String name, final String date, final String duration, final List<Map<String, String>> data) {
+    public static String postReport(final String name, final String date, final String duration, final List<Map<String, Object>> data) {
         if (StrUtils.isEmpty(name) || StrUtils.isEmpty(date) || StrUtils.isEmpty(duration) || data == null || data.size() <= 0) {
             return null;
         }
@@ -24,7 +24,7 @@ public class RMSUtil {
             for (Object item : items) {
                 JSONObject jsonObj = (JSONObject) item;
                 if (name.equalsIgnoreCase(jsonObj.getString("name"))
-                        && date.equalsIgnoreCase(jsonObj.getString("date"))
+//                        && date.equalsIgnoreCase(jsonObj.getString("date"))
                         && duration.equalsIgnoreCase(jsonObj.getString("duration"))) {
                     idList.add(jsonObj.getString("objectId"));
                 }
@@ -46,7 +46,9 @@ public class RMSUtil {
         return post(JsonUtil.toString(report));
     }
 
-    private static String classPath = "/parse/classes/report";
+    // http://docs.parseplatform.org/rest/guide/
+//    localhost:1337/parse/classes/report?where={"name": "人天交付运营能力_本周交付统计"}
+    private static String classPath = "/parse/classes/report_test";
     private static String classUrl = String.format("%s%s", "http://localhost:1337", classPath);
     private static String batchUrl = "http://localhost:1337/parse/batch";
 

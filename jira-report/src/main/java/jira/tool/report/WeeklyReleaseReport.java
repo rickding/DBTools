@@ -5,15 +5,20 @@ import dbtools.common.utils.DateUtils;
 import jira.tool.db.DBUtil;
 import jira.tool.db.model.Story;
 import jira.tool.report.processor.HeaderProcessor;
+import jira.tool.report.processor.TeamEnum;
+import jira.tool.report.processor.TeamNameProcessor;
 import jira.tool.report.processor.TeamProcessor;
 import org.apache.poi.ss.usermodel.DataConsolidateFunction;
 import org.apache.poi.xssf.usermodel.XSSFPivotTable;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class WeeklyReleaseReport extends ReleasePlanReport {
     public WeeklyReleaseReport() {
@@ -104,5 +109,164 @@ public class WeeklyReleaseReport extends ReleasePlanReport {
             }
         }
         return sheets;
+    }
+
+    @Override
+    protected void postToRms(List<Map<String, String>> records) {
+        if (records == null || records.size() <= 0) {
+            return;
+        }
+
+        // Manipulate the data: Release Date, Project, Team Name
+        Map<String, Map<String, Map<String, Integer>>> dataMap = new HashMap<String, Map<String, Map<String, Integer>>>();
+        String maxReleaseDate = null;
+        for (Map<String, String> record : records) {
+            String releaseDate = record.get(HeaderProcessor.releaseDateHeader.getName());
+            String project = record.get(HeaderProcessor.projectHeader.getName());
+            String team = record.get(HeaderProcessor.teamNameHeader.getName());
+
+            if (maxReleaseDate == null || maxReleaseDate.compareTo(releaseDate) < 0) {
+                maxReleaseDate = releaseDate;
+            }
+
+            // Find the project
+            if (!dataMap.containsKey(releaseDate)) {
+                dataMap.put(releaseDate, new HashMap<String, Map<String, Integer>>());
+            }
+            Map<String, Map<String, Integer>> projectTeamMap = dataMap.get(releaseDate);
+
+            // Find the team
+            if (!projectTeamMap.containsKey(project)) {
+                projectTeamMap.put(project, new HashMap<String, Integer>());
+            }
+            Map<String, Integer> teamMap = projectTeamMap.get(project);
+
+            // Count
+            teamMap.put(team, teamMap.containsKey(team) ? (teamMap.get(team) + 1) : 1);
+        }
+
+        if (dataMap == null || dataMap.size() <= 0 || maxReleaseDate == null || !dataMap.containsKey(maxReleaseDate)) {
+            System.out.printf("Error when postToRms: %s\r\n", records.toString());
+            return;
+        }
+        Map<String, Map<String, Integer>> projectTeamMap = dataMap.get(maxReleaseDate);
+
+        // Format: Project, Team Name
+//        const data = [
+//                { name: 'A-欧普照明', 'APP': 18.9, '财务线': 28.8, '导购线': 39.3, 'Apr.': 81.4, 'May': 47, 'Jun.': 20.3, 'Jul.': 24, 'Aug.': 35.6 },
+//                { name: 'A-宜和', 'APP': 12.4, '财务线.': 23.2, '导购线': 34.5, 'Apr.': 99.7, 'May': 52.6, 'Jun.': 35.5, 'Jul.': 37.4, 'Aug.': 42.4 }
+//        ];
+
+        List<Map<String, Object>> chartDataList = getCharData(projectTeamMap);
+        RMSUtil.postReport(String.format("%s_%s", getName(), getSheetName("graph")), dateStr, duration, chartDataList);
+
+        postToRms3(records);
+    }
+
+    protected List<Map<String, Object>> getCharData(Map<String, Map<String, Integer>> projectTeamMap) {
+        if (projectTeamMap == null || projectTeamMap.size() <= 0) {
+            return null;
+        }
+
+        List<Map<String, Object>> chartDataList = new ArrayList<Map<String, Object>>();
+        for (final Map.Entry<String, Map<String, Integer>> projectTeam : projectTeamMap.entrySet()) {
+            chartDataList.add(new HashMap<String, Object>() {{
+                put("name", projectTeam.getKey());
+                for (Entry<String, Integer> team : projectTeam.getValue().entrySet()) {
+                    put(team.getKey(), team.getValue());
+                }
+            }});
+        }
+        return chartDataList;
+    }
+
+    @Override
+    protected void postToRms2(List<Map<String, String>> records) {
+        if (records == null || records.size() <= 0) {
+            return;
+        }
+
+        // Manipulate the data: Release Date, Team Name
+        Map<String, Map<String, Double>> dataMap = new HashMap<String, Map<String, Double>>();
+        String maxReleaseDate = null;
+        for (Map<String, String> record : records) {
+            String releaseDate = record.get(TeamProcessor.dateHeader.getName());
+            String team = record.get(TeamProcessor.nameHeader.getName());
+
+            if (maxReleaseDate == null || maxReleaseDate.compareTo(releaseDate) < 0) {
+                maxReleaseDate = releaseDate;
+            }
+
+            // Find the project
+            if (!dataMap.containsKey(releaseDate)) {
+                dataMap.put(releaseDate, new HashMap<String, Double>());
+            }
+            Map<String, Double> teamMap = dataMap.get(releaseDate);
+
+            // Value
+            String value = record.get(TeamProcessor.releaseHeader.getName());
+            Double dbl = Double.valueOf(value);
+            if (teamMap.containsKey(team)) {
+                dbl += teamMap.get(team);
+            }
+            teamMap.put(team, dbl);
+        }
+
+        if (dataMap == null || dataMap.size() <= 0 || maxReleaseDate == null || !dataMap.containsKey(maxReleaseDate)) {
+            System.out.printf("Error when postToRms2: %s\r\n", records.toString());
+            return;
+        }
+        Map<String, Double> teamMap = dataMap.get(maxReleaseDate);
+
+        // Format: Project, Team Name
+//        const data = [
+//            { month: 'APP', Current: 1.0, Max: 4, Min: 2 },
+//            { month: '基础架构', Current: 4.6, Max: 4, Min: 2 }
+//        ];
+
+        List<Map<String, Object>> chartDataList = new ArrayList<Map<String, Object>>();
+        for (final Map.Entry<String, Double> team : teamMap.entrySet()) {
+            chartDataList.add(new HashMap<String, Object>() {{
+                put("team", team.getKey());
+                put("Current", team.getValue());
+                put("Max", TeamEnum.APP.getReleaseMax());
+                put("Min", TeamEnum.APP.getReleaseMin());
+            }});
+        }
+        RMSUtil.postReport(String.format("%s_%s", getName(), getSheetName("graph2")), dateStr, duration, chartDataList);
+    }
+
+    protected void postToRms3(List<Map<String, String>> records) {
+        if (records == null || records.size() <= 0) {
+            return;
+        }
+
+        // Manipulate the data: Release Date, Team Name
+        Map<String, Map<String, Integer>> dataMap = new HashMap<String, Map<String, Integer>>();
+        for (Map<String, String> record : records) {
+            String releaseDate = record.get(HeaderProcessor.releaseDateHeader.getName());
+            String team = record.get(HeaderProcessor.teamNameHeader.getName());
+
+            // Find the project
+            if (!dataMap.containsKey(releaseDate)) {
+                dataMap.put(releaseDate, new HashMap<String, Integer>());
+            }
+            Map<String, Integer> teamMap = dataMap.get(releaseDate);
+            teamMap.put(team, teamMap.containsKey(team) ? (teamMap.get(team) + 1) : 1);
+        }
+
+        if (dataMap == null || dataMap.size() <= 0) {
+            System.out.printf("Error when postToRms3: %s\r\n", records.toString());
+            return;
+        }
+
+        // Format: Release Date, Team Name
+//        const data = [
+//                { name: '2017-12-16', 'APP': 18.9, '财务线': 28.8, '导购线': 39.3, 'Apr.': 81.4, 'May': 47, 'Jun.': 20.3, 'Jul.': 24, 'Aug.': 35.6 },
+//                { name: '2017-12-16', 'APP': 12.4, '财务线.': 23.2, '导购线': 34.5, 'Apr.': 99.7, 'May': 52.6, 'Jun.': 35.5, 'Jul.': 37.4, 'Aug.': 42.4 }
+//        ];
+
+        List<Map<String, Object>> chartDataList = getCharData(dataMap);
+        RMSUtil.postReport(String.format("%s_%s", getName(), getSheetName("graph3")), dateStr, duration, chartDataList);
     }
 }
