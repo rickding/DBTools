@@ -23,6 +23,7 @@ public class WeeklyReleaseReport extends ReleasePlanReport {
         mapSheetName.put("data2", "人力库存");
         mapSheetName.put("graph2", "本周交付人均");
 
+        duration = "weekly";
         dateProcessor = HeaderProcessor.releaseDateHeader;
         isPlanDate = false;
         fillWholeDate = true;

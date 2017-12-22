@@ -11,6 +11,8 @@ public class DailyDueDateReport extends BaseReport {
     public DailyDueDateReport() {
         mapSheetName.put("data", "到期日没有或超过4周");
         mapSheetName.put("graph", "graph");
+
+        duration = "daily";
     }
 
     @Override

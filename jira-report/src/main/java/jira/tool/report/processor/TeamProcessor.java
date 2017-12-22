@@ -6,8 +6,10 @@ import dbtools.common.utils.StrUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,7 +26,9 @@ public class TeamProcessor {
     public static HeaderProcessor memberHeader = new HeaderProcessor("人数", "member");
 
     private static final HeaderProcessor[] headers = {
-            dateHeader, nameHeader, storyHeader, timeHeader, releaseMaxHeader, releaseHeader, releaseMinHeader, manDayHeader, dayHeader, memberHeader
+            dateHeader, nameHeader, storyHeader, timeHeader,
+            releaseMaxHeader, releaseHeader, releaseMinHeader,
+            manDayHeader, dayHeader, memberHeader
     };
 
     /**
@@ -195,5 +199,35 @@ public class TeamProcessor {
         }
 
         return newRow - row;
+    }
+
+    public List<Map<String, String>> getNameValueMap(boolean isPlanDate) {
+        List<Map<String, String>> nameValueMapList = new ArrayList<Map<String, String>>();
+        String today = DateUtils.format(SprintDateProcessor.today, "yyyy-MM-dd");
+
+        for (Map.Entry<String, Integer> dateStory : dateStoryMap.entrySet()) {
+            final String date = dateStory.getKey();
+            final Integer story = dateStory.getValue() == null ? 0 : dateStory.getValue();
+
+            // Check the date
+            final int day = isPlanDate ? SprintDateProcessor.getLeftWorkDays(date, today) : 5;
+            final int manDay = team.getMember() * day;
+
+            // Generate data
+            nameValueMapList.add(new HashMap<String, String>() {{
+                put(dateHeader.getName(), date);
+                put(nameHeader.getName(), team.getName());
+                put(storyHeader.getName(), String.valueOf(story));
+                put(timeHeader.getName(), String.valueOf(dateTimeMap.get(date) == null ? 0.0 : DoubleUtil.format(dateTimeMap.get(date), 3)));
+                put(releaseMaxHeader.getName(), String.valueOf(team.getReleaseMax()));
+                put(releaseHeader.getName(), String.valueOf(manDay == 0 ? 0.0 : DoubleUtil.format((double) story / manDay, 3)));
+                put(releaseMinHeader.getName(), String.valueOf(team.getReleaseMin()));
+                put(manDayHeader.getName(), String.valueOf(manDay));
+                put(dayHeader.getName(), String.valueOf(day));
+                put(memberHeader.getName(), String.valueOf(team.getMember()));
+            }});
+        }
+
+        return nameValueMapList;
     }
 }

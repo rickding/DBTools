@@ -69,6 +69,9 @@ public class EA2DBUtil {
                 guidElementMap.put(guid.trim().toUpperCase(), element);
             }
         }
+
+        // Save to rms server: parse-server
+        RMSUtil.addElement(element);
         return element;
     }
 

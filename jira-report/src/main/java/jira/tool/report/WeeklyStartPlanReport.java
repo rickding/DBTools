@@ -22,6 +22,7 @@ public class WeeklyStartPlanReport extends ReleasePlanReport {
         mapSheetName.put("graph2", "story个数统计");
         mapSheetName.put("graph3", "story估时统计");
 
+        duration = "weekly";
         dateProcessor = HeaderProcessor.startDateHeader;
         isPlanDate = false;
         fillWholeDate = true;

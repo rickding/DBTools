@@ -60,11 +60,13 @@ public class SprintDateProcessor implements ValueProcessor {
         return false;
     }
 
-    public void process(String value, Cell cell) {
+    public String process(String value, Cell cell) {
         if (cell == null) {
-            return;
+            return value;
         }
-        cell.setCellValue(process(value, adjustDelay));
+        value = process(value, adjustDelay);
+        cell.setCellValue(value);
+        return value;
     }
 
     public Date parseDate(String value) {

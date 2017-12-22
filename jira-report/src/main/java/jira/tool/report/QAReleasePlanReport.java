@@ -10,10 +10,12 @@ import org.apache.poi.xssf.usermodel.XSSFPivotTable;
 import java.util.Date;
 import java.util.List;
 
-public class QAPlanReport extends BaseReport {
-    public QAPlanReport() {
+public class QAReleasePlanReport extends BaseReport {
+    public QAReleasePlanReport() {
         mapSheetName.put("data", "版本发布会");
         mapSheetName.put("graph", "统计");
+
+        duration = "weekly";
     }
 
     @Override

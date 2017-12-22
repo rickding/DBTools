@@ -35,7 +35,7 @@ public class FileUtils {
 
         // Format the file name
         if (!StrUtils.isEmpty(outputFileName)) {
-            if (outputFileName.toLowerCase().endsWith(fileExt)) {
+            if (!StrUtils.isEmpty(fileExt) && outputFileName.toLowerCase().endsWith(fileExt)) {
                 outputFileName = outputFileName.substring(0, outputFileName.length() - fileExt.length());
             }
             outputFileName = String.format("%s%s", outputFileName, newFileName);

@@ -42,6 +42,9 @@ public class BaseReport {
         put("graph", "graph");
     }};
 
+    protected String duration = null;
+    protected String dateStr = DateUtils.format(new Date(), "MMdd");
+
     /**
      * return the template file
      * @return
@@ -51,12 +54,36 @@ public class BaseReport {
     }
 
     public String getFileName() {
-        return String.format("BaseReport%s.xlsx", DateUtils.format(new Date(), "MMdd"));
+        return String.format("BaseReport%s.xlsx", dateStr);
     }
 
     // Read story list from db
     protected List<Story> getStoryList() {
         return null;
+    }
+
+    public String getDateStr() {
+        return dateStr;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public String getName() {
+        String name = getFileName();
+        if (!StrUtils.isEmpty(name)) {
+            for (String sep : new String[] {"-", dateStr}) {
+                if (name.indexOf(sep) > 0) {
+                    name = name.trim().substring(0, name.indexOf(sep));
+                    break;
+                }
+            }
+        }
+        if (StrUtils.isEmpty(name)){
+            name = this.getClass().getName();
+        }
+        return name;
     }
 
     /**
@@ -72,33 +99,6 @@ public class BaseReport {
 
         XSSFSheet dataSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("data"));
         JiraUtilEx.fillSheetFromDB(dataSheet, getStoryList(), this);
-
-        if (!isTemplateUsed()) {
-            decorateDataSheet(dataSheet);
-
-            // Pivot table
-            XSSFSheet graphSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("graph"));
-            XSSFPivotTable pivotTable = createPivotTable(graphSheet, dataSheet, HeaderProcessor.headerList.size() - 1);
-            if (pivotTable != null) {
-                decoratePivotTable(pivotTable);
-            } else {
-                wb.removeSheetAt(wb.getSheetIndex(graphSheet));
-            }
-        }
-        return new XSSFSheet[]{dataSheet};
-    }
-
-    /**
-     * Fill data sheets from csv files
-     */
-    public XSSFSheet[] fillDataSheets(XSSFWorkbook wb, String[] csvFiles) {
-        if (csvFiles == null || csvFiles.length <= 0 || wb == null) {
-            return null;
-        }
-
-        // Base data from csv file
-        XSSFSheet dataSheet = ExcelUtil.getOrCreateSheet(wb, getSheetName("data"));
-        ExcelUtilEx.fillSheetFromCsv(dataSheet, csvFiles[0], this);
 
         if (!isTemplateUsed()) {
             decorateDataSheet(dataSheet);
@@ -175,21 +175,22 @@ public class BaseReport {
      * @param value
      * @return
      */
-    protected void processValue(String header, String value, Cell cell) {
+    protected String processValue(String header, String value, Cell cell) {
         if (valueProcessors == null || valueProcessors.size() <= 0 || cell == null) {
-            return;
+            return value;
         }
 
         // Call the processors
         for (ValueProcessor valueProcessor : valueProcessors) {
             if (valueProcessor.accept(header)) {
                 valueProcessor.process(value, cell);
-                return;
+                return value;
             }
         }
 
         // Set directly
         cell.setCellValue(value);
+        return value;
     }
 
     /**
@@ -198,25 +199,7 @@ public class BaseReport {
      * @param sheet
      */
     protected void decorateDataSheet(XSSFSheet sheet) {
-        if (sheet == null) {
-            return;
-        }
-
-        int[] cellArea = ExcelUtil.getCellArea(sheet);
-        if (cellArea == null || cellArea.length < 4) {
-            return;
-        }
-
-        int rowStart = cellArea[0];
-        int rowEnd = cellArea[1];
-        int colStart = cellArea[2];
-        int colEnd = cellArea[3];
-
-        // Add the filter
-        sheet.setAutoFilter(new CellRangeAddress(rowStart, rowEnd, colStart, colEnd));
-
-        // Set the free panes, the first row
-        sheet.createFreezePane(0, 1, colStart, rowStart + 1);
+        ExcelUtil.filterAndLockSheet(sheet);
     }
 
     /**

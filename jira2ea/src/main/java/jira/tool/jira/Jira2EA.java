@@ -223,10 +223,10 @@ public class Jira2EA {
         guid = guid.trim().toUpperCase();
         String story = element[EAHeaderEnum.JiraIssueKey.getIndex()];
         String newStory = guidKeyMap.get(guid);
-        if ((story == null || story.trim().length() <= 0)
-                && guidElementMapFromRMS != null && guidElementMapFromRMS.containsKey(guid)) {
-            story = guidElementMapFromRMS.get(guid).getStoryKey();
-        }
+//        if ((story == null || story.trim().length() <= 0)
+//                && guidElementMapFromRMS != null && guidElementMapFromRMS.containsKey(guid)) {
+//            story = guidElementMapFromRMS.get(guid).getStoryKey();
+//        }
 
         boolean hasStory = JiraKeyUtil.isValid(story);
         boolean hasNewStory = JiraKeyUtil.isValid(newStory);

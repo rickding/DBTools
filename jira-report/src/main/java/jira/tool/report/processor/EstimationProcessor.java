@@ -8,21 +8,22 @@ public class EstimationProcessor implements ValueProcessor {
         return !StrUtils.isEmpty(header) && header.equalsIgnoreCase(HeaderProcessor.estimationHeader.getName());
     }
 
-    public void process(String value, Cell cell) {
+    public String process(String value, Cell cell) {
         if (cell == null) {
-            return;
+            return value;
         }
 
         if (!StrUtils.isEmpty(value)) {
             try {
                 double time = Double.valueOf(value);
                 time = time / (8 * 3600);
-                cell.setCellValue((time));
-                return;
+                cell.setCellValue(time);
+                return String.valueOf(time);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         cell.setCellValue(0.0);
+        return "0";
     }
 }

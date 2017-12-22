@@ -13,6 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFPivotTable;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +29,8 @@ public class ReleasePlanReport extends BaseReport {
         mapSheetName.put("graph", "各项目交付节奏表");
         mapSheetName.put("data2", "人力库存");
         mapSheetName.put("graph2", "人力库存警戒线");
+
+        duration = "half-weekly";
     }
 
     @Override
@@ -157,9 +160,14 @@ public class ReleasePlanReport extends BaseReport {
         ExcelUtil.fillRow(dataSheet, row++, HeaderProcessor.toStrings(headers));
 
         // Data
+        List<Map<String, String>> records = new ArrayList<Map<String, String>>();
         for (TeamProcessor team : teams) {
             row += team.fillRow(dataSheet, row, isPlanDate);
+            records.addAll(team.getNameValueMap(isPlanDate));
         }
+
+        // Post to rms
+        RMSUtil.postReport(String.format("%s_%s", getName(), getSheetName("data2")), dateStr, duration, records);
 
         if (!isTemplateUsed()) {
             // Decorate data

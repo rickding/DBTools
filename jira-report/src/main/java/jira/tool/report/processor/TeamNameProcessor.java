@@ -26,15 +26,15 @@ public class TeamNameProcessor implements ValueProcessor {
         return !StrUtils.isEmpty(header) && header.equalsIgnoreCase(HeaderProcessor.teamNameHeader.getName());
     }
 
-    public void process(String value, Cell cell) {
+    public String process(String value, Cell cell) {
         if (cell == null) {
-            return;
+            return value;
         }
 
         if (values.containsKey(value)) {
-            cell.setCellValue(values.get(value));
-        } else {
-            cell.setCellValue(value);
+            value = values.get(value);
         }
+        cell.setCellValue(value);
+        return value;
     }
 }

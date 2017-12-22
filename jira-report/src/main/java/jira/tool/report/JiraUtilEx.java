@@ -9,6 +9,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,22 +36,33 @@ public class JiraUtilEx {
         int row = 0;
         ExcelUtil.fillRow(sheet, row++, HeaderProcessor.toStrings(headers));
 
+        // Remember the values to post to rms
+        List<Map<String, String>> records = new ArrayList<Map<String, String>>();
+
         // Save the data
         for (Story story : storyList) {
             Map<String, String> values = formatStory(story);
+            Map<String, String> nameValueMap = new HashMap<String, String>();
+
+            // Write to excel
             Row r = sheet.createRow(row++);
             int col = 0;
             for (HeaderProcessor header : headers) {
                 Cell cell = r.createCell(col++);
                 String v = values.get(header.getValue());
                 if (report != null) {
-                    report.processValue(header.getName(), v, cell);
+                    v = report.processValue(header.getName(), v, cell);
                 } else {
                     // Save value to cell directly
                     cell.setCellValue(v);
                 }
+                nameValueMap.put(header.getName(), v);
             }
+            records.add(nameValueMap);
         }
+
+        // Post to rms
+        RMSUtil.postReport(String.format("%s_%s", report.getName(), report.getSheetName("data")), report.getDateStr(), report.getDuration(), records);
     }
 
     private static Map<String, String> formatStory(final Story story) {
