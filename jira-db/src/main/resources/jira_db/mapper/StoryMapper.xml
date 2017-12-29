@@ -188,6 +188,26 @@
         order by issue.id desc;
     </select>
 
+    <!-- Return all the issue list -->
+    <select id="getIssueList" resultMap="storyMap">
+        select distinct field_option.customvalue as customer, issue.ID as id, concat(project.pkey, '-', issue.issuenum) as issue_key, issue.SUMMARY as title,
+            issuetype.pname as type, issue.DUEDATE as due_date, issue.RESOLUTIONDATE as resolve_date,
+            issue.TIMEORIGINALESTIMATE as original_estimation, issue.TIMEESTIMATE as estimation, issue.TIMESPENT as time_spent,
+            issuetype.pname as type, issuestatus.pname as status, resolution.pname as resolution,
+            project.pname as project_name, project.pkey as project_key
+        from jiradb.jiraissue as issue
+            left join jiradb.issuetype on issue.issuetype = issuetype.ID
+            left join jiradb.issuestatus on issue.issuestatus = issuestatus.ID
+            left join jiradb.resolution on issue.RESOLUTION = resolution.ID
+            left join jiradb.project on issue.project = project.id
+            left join jiradb.customfieldvalue as field_value on issue.id = field_value.ISSUE
+            left join jiradb.customfield as field on field.id = field_value.CUSTOMFIELD
+            left join jiradb.customfieldoption as field_option on field_option.id = cast(field_value.STRINGVALUE as signed)
+        where field.cfname = '所属项目'
+          and issuetype.pname in ('Story', '变更', 'UserStory', 'Bug', 'Task', 'Epic', 'Subtask', 'Action', '任务', '子任务')
+        order by issue.id desc;
+    </select>
+
     <!-- Return the start date list -->
     <select id="getStartDateList" resultMap="storyMap">
         SELECT distinct field_value.ISSUE as id, field_value.DATEVALUE as start_date

@@ -267,6 +267,10 @@ public class WeeklyReleaseReport extends ReleasePlanReport {
 //        ];
 
         List<Map<String, Object>> chartDataList = getCharData(dataMap);
+        // Add backspace for date data type
+        for (Map<String, Object> data : chartDataList) {
+            data.put("name", String.format("%s%s", data.get("name"), " "));
+        }
         RMSUtil.postReport(String.format("%s_%s", getName(), getSheetName("graph3")), dateStr, duration, chartDataList);
     }
 }
