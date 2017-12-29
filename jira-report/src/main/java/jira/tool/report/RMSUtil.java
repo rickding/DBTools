@@ -48,9 +48,10 @@ public class RMSUtil {
 
     // http://docs.parseplatform.org/rest/guide/
 //    localhost:1337/parse/classes/report?where={"name": "人天交付运营能力_本周交付统计"}
+    private static String baseUrl = "http://localhost:1337";
     private static String classPath = "/parse/classes/report_test";
-    private static String classUrl = String.format("%s%s", "http://localhost:1337", classPath);
-    private static String batchUrl = "http://localhost:1337/parse/batch";
+    private static String classUrl = String.format("%s%s", baseUrl, classPath);
+    private static String batchUrl = String.format("%s%s", baseUrl, "/parse/batch");
 
     private static Map<String, String> headers = new HashMap<String, String>() {{
         put("X-Parse-Application-Id", "myAppId");

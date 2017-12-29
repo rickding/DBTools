@@ -32,7 +32,7 @@ public class ExcelUtil {
             wb.write(out);
             out.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.printf("Error when saveToFile: %s\r\n", e.getMessage());
         }
     }
 

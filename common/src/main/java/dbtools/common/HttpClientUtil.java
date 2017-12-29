@@ -130,7 +130,7 @@ public class HttpClientUtil {
                 EntityUtils.consume(entity);
             }
         } catch (Exception e) {
-            System.out.printf("Error when call post: %s, %s\r\n", httpPost.getURI().toString(), e.getMessage());
+            System.out.printf("Error when sendHttpPost: %s, %s\r\n", httpPost.getURI().toString(), e.getMessage());
         } finally {
             try {
                 if (response != null) {
@@ -180,14 +180,14 @@ public class HttpClientUtil {
                 EntityUtils.consume(entity);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.printf("Error when sendHttpGet: %s\r\n", e.getMessage());
         } finally {
             try {
                 if (response != null) {
                     response.close();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.printf("Error when sendHttpGet(finally): %s\r\n", e.getMessage());
             }
         }
         return responseContent;
@@ -337,7 +337,7 @@ public class HttpClientUtil {
                 httpPost.setEntity(stringEntity);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.printf("Error when sendHttpPostJson: %s\r\n", e.getMessage());
         }
         return sendHttpPost(httpPost);
     }
