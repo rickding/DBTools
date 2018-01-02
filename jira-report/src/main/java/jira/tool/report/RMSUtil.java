@@ -4,9 +4,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import dbtools.common.HttpClientUtil;
 import dbtools.common.JsonUtil;
+import dbtools.common.utils.DateUtils;
 import dbtools.common.utils.StrUtils;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +54,7 @@ public class RMSUtil {
 //    localhost:1337/parse/classes/report?where={"name": "人天交付运营能力_本周交付统计"}
 //    private static String baseUrl = "http://localhost:1337";
     private static String baseUrl = "http://192.168.20.161:1337";
-    private static String classPath = "/parse/classes/report";
+    private static String classPath = String.format("/parse/classes/report%s", DateUtils.dayOfWeek(new Date()) == Calendar.FRIDAY ? "" : "_test");
     private static String classUrl = String.format("%s%s", baseUrl, classPath);
     private static String batchUrl = String.format("%s%s", baseUrl, "/parse/batch");
 
