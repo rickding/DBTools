@@ -21,6 +21,7 @@
         <module>ea-checker</module>
         <module>ea-api</module>
         <module>rms-db</module>
+        <module>rms-api</module>
         <module>ea2db</module>
         <module>sql-generator</module>
     </modules>
