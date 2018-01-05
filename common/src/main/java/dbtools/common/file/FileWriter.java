@@ -15,12 +15,21 @@ import java.util.List;
 public class FileWriter {
     private String filePath;
     private BufferedWriter writer;
+    private boolean showInfo = true;
 
     public FileWriter(String filePath) {
         if (StrUtils.isEmpty(filePath)) {
             filePath = "fw";
         }
         this.filePath = filePath;
+    }
+
+    public FileWriter(String filePath, boolean showInfo) {
+        if (StrUtils.isEmpty(filePath)) {
+            filePath = "fw";
+        }
+        this.filePath = filePath;
+        this.showInfo = showInfo;
     }
 
     public boolean isOpen() {
@@ -41,7 +50,9 @@ public class FileWriter {
         }
 
         boolean isOpen = isOpen();
-        System.out.printf("FileWriter open %s: %s\n", isOpen ? "successfully" : "Failed", filePath);
+        if (showInfo) {
+            System.out.printf("FileWriter open %s: %s\n", isOpen ? "successfully" : "Failed", filePath);
+        }
         return isOpen;
     }
 
@@ -58,7 +69,10 @@ public class FileWriter {
         } finally {
             writer = null;
         }
-        System.out.printf("FileWriter close successfully: %s\n", filePath);
+
+        if (showInfo) {
+            System.out.printf("FileWriter close successfully: %s\n", filePath);
+        }
     }
 
     public void writeLine(List<String> strList) {

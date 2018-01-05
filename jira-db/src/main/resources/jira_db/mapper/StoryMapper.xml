@@ -239,6 +239,14 @@
         where CUSTOMFIELD in (select distinct id from jiradb.customfield where cfname = '所属项目')
     </select>
 
+    <!-- Return the customer option list only Enabled-->
+    <select id="getCustomerOptionListOnlyEnabled" resultMap="storyMap">
+        select id, customvalue as customer
+        from customfieldoption
+        where CUSTOMFIELD in (select distinct id from jiradb.customfield where cfname = '所属项目')
+          and disabled = 'N'
+    </select>
+
     <!-- Return the pmo story list, which have pmo label or have EA GUID -->
     <!-- EA-GUID is not EMPTY OR labels in (PMO-EA导入（禁止私动）) ORDER BY created DESC -->
     <select id="getPMOStoryList" resultMap="storyMap">

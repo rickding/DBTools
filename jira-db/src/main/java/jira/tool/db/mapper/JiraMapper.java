@@ -23,6 +23,7 @@ public interface JiraMapper {
     List<Story> getReleaseDateList();
     List<Story> getCustomerList();
     List<Story> getCustomerOptionList();
+    List<Story> getCustomerOptionListOnlyEnabled();
 
     // For ea2jira and jira2ea
     List<Story> getEpicList();
@@ -34,5 +35,6 @@ public interface JiraMapper {
     List<Story> getIssueList();
 
     List<User> getUserList();
+    List<User> getTeamList();
     List<User> getTeamMembersCountList();
 }

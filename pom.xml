@@ -22,6 +22,7 @@
         <module>ea-api</module>
         <module>rms-db</module>
         <module>ea2db</module>
+        <module>sql-generator</module>
     </modules>
 
 </project>

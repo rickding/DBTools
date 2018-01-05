@@ -17,7 +17,7 @@ public class App {
 
         Date time_start = new Date();
         Set<String> filePaths = new HashSet<String>() {{
-            add("C:\\Work\\prod1.0\\db\\dump_saas2.0_test_data");
+            add("C:\\Work\\jira\\db\\jiradb_test");
         }};
 
         for (String arg : args) {

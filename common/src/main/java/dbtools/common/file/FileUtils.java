@@ -4,8 +4,37 @@ import dbtools.common.utils.StrUtils;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class FileUtils {
+    public static String[] read(String filePath) {
+        if (StrUtils.isEmpty(filePath)) {
+            return null;
+        }
+
+        FileReader reader = new FileReader(filePath);
+        if (!reader.open()) {
+            System.out.printf("Fail to open file: %s\n", filePath);
+            return null;
+        }
+
+        // read and update, then write
+        List<String> lines = new ArrayList<String>();
+        String str;
+        while ((str = reader.readLine()) != null) {
+            lines.add(str);
+        }
+
+        // close
+        reader.close();
+
+        String[] strs = new String[lines.size()];
+        lines.toArray(strs);
+        return strs;
+    }
+
     public static String getOutputFileName(File parent, File file, String fileExt, String newFileName, String newFolderName) {
         if (file == null || parent == null) {
             return null;

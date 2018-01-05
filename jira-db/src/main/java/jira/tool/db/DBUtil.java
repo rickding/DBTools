@@ -11,6 +11,7 @@ import java.util.Map;
 
 public class DBUtil {
     private static List<User> userList = null;
+    private static List<User> teamList = null;
     private static List<User> teamMemberCountList = null;
     private static Map<Long, Story> customerOptionMap = null;
 
@@ -21,6 +22,15 @@ public class DBUtil {
             }
         }
         return userList;
+    }
+
+    public static List<User> getTeamList() {
+        synchronized ("getTeamList") {
+            if (teamList == null || teamList.size() <= 0) {
+                teamList = DB.getDb().getMapper(JiraMapper.class).getTeamList();
+            }
+        }
+        return teamList;
     }
 
     public static List<User> getTeamMembersCountList() {
@@ -161,11 +171,23 @@ public class DBUtil {
         return storyList;
     }
 
+    public static List<Story> getCustomerOptionListOnlyEnabled() {
+        synchronized ("getCustomerOptionListOnlyEnabled") {
+            return DB.getDb().getMapper(JiraMapper.class).getCustomerOptionListOnlyEnabled();
+        }
+    }
+
+    public static List<Story> getCustomerOptionList() {
+        synchronized ("getCustomerOptionList") {
+            return DB.getDb().getMapper(JiraMapper.class).getCustomerOptionList();
+        }
+    }
+
     /**
      * Return the customer list, which has been updated with customer option.
      * @return
      */
-    private static List<Story> getCustomerList() {
+    public static List<Story> getCustomerList() {
         synchronized ("getCustomerOptionList") {
             if (customerOptionMap == null || customerOptionMap.size() <= 0) {
                 List<Story> customerOptionList = DB.getDb().getMapper(JiraMapper.class).getCustomerOptionList();

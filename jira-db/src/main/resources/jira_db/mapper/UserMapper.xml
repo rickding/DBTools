@@ -16,6 +16,11 @@
         SELECT * FROM jiradb.OStaffList;
     </select>
 
+    <!-- Return the team list -->
+    <select id="getTeamList" resultMap="userMap">
+        SELECT distinct ProductLine_Amoeba FROM jiradb.OStaffList;
+    </select>
+
     <!-- Count the team members -->
     <select id="getTeamMembersCountList" resultMap="userMap">
         select distinct ProductLine, count(*) as member_count

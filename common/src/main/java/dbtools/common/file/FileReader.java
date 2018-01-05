@@ -12,12 +12,21 @@ import java.io.IOException;
 public class FileReader {
     private String filePath;
     private BufferedReader reader;
+    private Boolean showInfo = true;
 
     public FileReader(String filePath) {
         if (StrUtils.isEmpty(filePath)) {
             filePath = "fr";
         }
         this.filePath = filePath;
+    }
+
+    public FileReader(String filePath, boolean showInfo) {
+        if (StrUtils.isEmpty(filePath)) {
+            filePath = "fr";
+        }
+        this.filePath = filePath;
+        this.showInfo = showInfo;
     }
 
     public boolean isOpen() {
@@ -44,7 +53,9 @@ public class FileReader {
         }
 
         boolean isOpen = isOpen();
-        System.out.printf("FileReader open %s: %s\n", isOpen ? "successfully" : "Failed", filePath);
+        if (showInfo) {
+            System.out.printf("FileReader open %s: %s\n", isOpen ? "successfully" : "Failed", filePath);
+        }
         return isOpen;
     }
 
@@ -61,7 +72,10 @@ public class FileReader {
         } finally {
             reader = null;
         }
-        System.out.printf("FileReader close successfully: %s\n", filePath);
+
+        if (showInfo) {
+            System.out.printf("FileReader close successfully: %s\n", filePath);
+        }
     }
 
     public String readLine() {

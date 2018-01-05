@@ -16,8 +16,14 @@ public class SqlUpdater {
     public static String Sql_File_name = "_updated.sql";
     public static String Sql_Folder_name = "_updated";
 
+    // Action configuration
+    private static boolean Show_Info = false;
+    private static boolean Replace_Tail_Flag = true;
+    private static boolean Add_Header_Array = false;
+    private static boolean Update_Sql = false;
+
     // Check if the tail existed.
-    public static String Sql_Tail_Flag = "-- dump completed";
+    private static String Sql_Tail_Flag = "-- dump completed";
 
     // Write the header into file
     private static long Sql_Update_Header_Line_Index = 17;
@@ -47,14 +53,14 @@ public class SqlUpdater {
 
         // Input
         String filePath = inputFile.getPath();
-        FileReader reader = new FileReader(filePath);
+        FileReader reader = new FileReader(filePath, Show_Info);
         if (!reader.open()) {
             System.out.printf("Fail to open file: %s\n", filePath);
             return;
         }
 
         // Output
-        FileWriter writer = new FileWriter(outputFileName);
+        FileWriter writer = new FileWriter(outputFileName, Show_Info);
         if (!writer.open()) {
             System.out.printf("Fail to create output file: %s\n", outputFileName);
 
@@ -65,7 +71,7 @@ public class SqlUpdater {
 
         // Mark the header written or not
         long index = 0;
-        boolean headerWritten = false;
+        boolean headerWritten = !Add_Header_Array;
         boolean tailFound = false;
 
         // read and update, then write
@@ -75,11 +81,19 @@ public class SqlUpdater {
                 // Check if it's the tail
                 if (!tailFound && isTail(str)) {
                     tailFound = true;
-                    System.out.printf("Tail is found: %s\n", outputFileName);
+                    if (Show_Info) {
+                        System.out.printf("Tail is found: %s\n", outputFileName);
+                    }
+
+                    if (Replace_Tail_Flag) {
+                        str = Sql_Tail_Flag;
+                    }
                 }
 
                 // Update the str;
-                str = updateSql(str);
+                if (Update_Sql) {
+                    str = updateSql(str);
+                }
             }
 
             // Write header
