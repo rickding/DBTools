@@ -64,6 +64,10 @@ public class RMSUtil {
         put("X-Parse-Master-Key", "myMasterKey");
     }};
 
+    public static String getClassUrl() {
+        return classUrl;
+    }
+
     private static String post(String jsonStr) {
         if (jsonStr == null || jsonStr.trim().length() <= 0) {
             return null;
