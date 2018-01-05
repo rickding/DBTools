@@ -54,10 +54,15 @@
             <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>jira-tool</groupId>
+            <artifactId>jira-report</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
-        <finalName>spring.boot</finalName>
+        <finalName>rms-api</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

@@ -20,4 +20,10 @@ public class RmsApiController {
     public String chk() {
         return "ok";
     }
+
+    @RequestMapping(value = "/report", method = RequestMethod.GET)
+    public String report() {
+        jira.tool.report.App.main(null);
+        return "ok";
+    }
 }

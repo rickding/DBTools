@@ -49,12 +49,13 @@ public class RMSUtil {
         return post(JsonUtil.toString(report));
     }
 
-
     // http://docs.parseplatform.org/rest/guide/
 //    localhost:1337/parse/classes/report?where={"name": "人天交付运营能力_本周交付统计"}
 //    private static String baseUrl = "http://localhost:1337";
     private static String baseUrl = "http://192.168.20.161:1337";
+
     private static String classPath = String.format("/parse/classes/report%s", DateUtils.dayOfWeek(new Date()) == Calendar.FRIDAY ? "" : "_test");
+
     private static String classUrl = String.format("%s%s", baseUrl, classPath);
     private static String batchUrl = String.format("%s%s", baseUrl, "/parse/batch");
 
@@ -63,10 +64,11 @@ public class RMSUtil {
         put("X-Parse-Master-Key", "myMasterKey");
     }};
 
-    public static String post(String jsonStr) {
+    private static String post(String jsonStr) {
         if (jsonStr == null || jsonStr.trim().length() <= 0) {
             return null;
         }
+        System.out.printf("Post report: %s, %s\r\n", classUrl, jsonStr.length() > 100 ? String.format("%s...", jsonStr.substring(0, 100)) : jsonStr);
         return HttpClientUtil.sendHttpPostJson(classUrl, headers, jsonStr.trim());
     }
 
