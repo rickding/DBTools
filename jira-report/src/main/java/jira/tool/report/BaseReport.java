@@ -19,6 +19,7 @@ import org.apache.poi.xssf.usermodel.XSSFPivotTable;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,7 +44,8 @@ public class BaseReport {
     }};
 
     protected String duration = null;
-    protected String dateStr = DateUtils.format(new Date(), "MMdd");
+    protected String dateStr = DateUtils.format(new Date(), "yyyyMMdd");
+    protected boolean useTemplate = true;
 
     /**
      * return the template file
@@ -125,16 +127,22 @@ public class BaseReport {
     public XSSFWorkbook getWorkbook(String filePath) {
         String templateName = getTemplateName();
         XSSFWorkbook wb = null;
-        if (StrUtils.isEmpty(templateName) || StrUtils.isEmpty(filePath)) {
-            wb = new XSSFWorkbook();
-        } else {
+        if (!StrUtils.isEmpty(templateName) && !StrUtils.isEmpty(filePath)) {
             // Open the template
             templateName = String.format("%s\\%s", filePath, templateName);
-            try {
-                wb = new XSSFWorkbook(templateName);
-            } catch (IOException e) {
-                e.printStackTrace();
+            File templateFile = new File(templateName);
+            if (templateFile.exists()) {
+                try {
+                    wb = new XSSFWorkbook(templateName);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    wb = null;
+                }
             }
+        }
+
+        if (wb == null) {
+            wb = new XSSFWorkbook();
         }
         return wb;
     }

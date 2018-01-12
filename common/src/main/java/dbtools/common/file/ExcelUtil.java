@@ -114,13 +114,17 @@ public class ExcelUtil {
      * @param value
      */
     public static void fillSheet(XSSFSheet sheet, int row, int col, String value) {
-        if (sheet == null || row <= 0 || col <= 0) {
+        fillSheet(sheet, 0, row, 0, col, value);
+    }
+
+    public static void fillSheet(XSSFSheet sheet, int rowStart, int rowEnd, int colStart, int colEnd, String value) {
+        if (sheet == null || rowStart < 0 || rowStart > rowEnd || colStart < 0 || colStart > colEnd) {
             return;
         }
 
-        for (int i = 0; i < row; i++) {
+        for (int i = rowStart; i < rowEnd; i++) {
             Row r = sheet.createRow(i);
-            for (int j = 0; j < col; j++) {
+            for (int j = colStart; j < colEnd; j++) {
                 Cell cell = r.createCell(j);
                 if (value != null) {
                     cell.setCellValue(value);

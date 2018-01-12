@@ -17,8 +17,10 @@ public class PMOMeetingUtil {
 
         String fileName = f.getName();
         String fileDate = DateUtils.format(new Date(f.lastModified()), "yyyyMMdd");
-        if (!EADateUtil.needsToBeProcessed(PMOMeetingUtil.getLastMeetingDate(), fileDate)) {
-            System.out.printf("Skip file: %s, %s, %s\r\n", PMOMeetingUtil.getLastMeetingDate(), fileDate, fileName);
+//        if (!EADateUtil.needsToBeProcessed(PMOMeetingUtil.getLastMeetingDate(), fileDate)) {
+//        System.out.printf("Skip file: %s, %s, %s\r\n", PMOMeetingUtil.getLastMeetingDate(), fileDate, fileName);
+            if (!EADateUtil.needsToBeProcessed(PMOMeetingUtil.getLastMonday(), fileDate)) {
+            System.out.printf("Skip file: %s, %s, %s\r\n", PMOMeetingUtil.getLastMonday(), fileDate, fileName);
             return false;
         }
 
@@ -57,4 +59,19 @@ public class PMOMeetingUtil {
         }
         return DateUtils.format(DateUtils.adjustDate(date, -day), "yyyyMMdd");
     }
+
+    public static String getLastMonday() {
+        return getLastMonday(today);
+    }
+
+    public static String getLastMonday(Date date) {
+        if (date == null) {
+            return null;
+        }
+
+        int day = DateUtils.dayOfWeek(date);
+        day = day - Calendar.MONDAY + 7;
+        return DateUtils.format(DateUtils.adjustDate(date, -day), "yyyyMMdd");
+    }
+
 }

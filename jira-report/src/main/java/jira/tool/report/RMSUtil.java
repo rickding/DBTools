@@ -15,8 +15,17 @@ import java.util.List;
 import java.util.Map;
 
 public class RMSUtil {
-    public static String postReport(final String name, final String date, final String duration, final List<Map<String, Object>> data) {
-        if (StrUtils.isEmpty(name) || StrUtils.isEmpty(date) || StrUtils.isEmpty(duration) || data == null || data.size() <= 0) {
+    public static String postReportData(final String name, final String date, final String duration, final Object data) {
+        return postReport(name, date, duration, data, true);
+    }
+
+    public static String postReport(final String name, final String date, final String duration, final Object data) {
+        return postReport(name, date, duration, data, false);
+    }
+
+    public static String postReport(final String name, final String date, final String duration, final Object data, boolean isRawData) {
+        isPostingRawData = isRawData;
+        if (StrUtils.isEmpty(name) || StrUtils.isEmpty(date) || StrUtils.isEmpty(duration) || data == null) {
             return null;
         }
 
@@ -46,7 +55,7 @@ public class RMSUtil {
             put("duration", duration);
             put("data", data);
         }};
-        return post(JsonUtil.toString(report));
+        return post(name, JsonUtil.toString(report));
     }
 
     // http://docs.parseplatform.org/rest/guide/
@@ -54,26 +63,30 @@ public class RMSUtil {
 //    private static String baseUrl = "http://localhost:1337";
     private static String baseUrl = "http://192.168.20.161:1337";
 
-    private static String classPath = String.format("/parse/classes/report%s", DateUtils.dayOfWeek(new Date()) == Calendar.FRIDAY ? "" : "_test");
-
-    private static String classUrl = String.format("%s%s", baseUrl, classPath);
-    private static String batchUrl = String.format("%s%s", baseUrl, "/parse/batch");
-
+    private static boolean isPostingRawData = false;
     private static Map<String, String> headers = new HashMap<String, String>() {{
         put("X-Parse-Application-Id", "myAppId");
         put("X-Parse-Master-Key", "myMasterKey");
     }};
 
-    public static String getClassUrl() {
-        return classUrl;
+    private static String getClassPath() {
+        return String.format("/parse/classes/report%s%s", isPostingRawData ? "_data" : "", DateUtils.dayOfWeek(new Date()) == Calendar.FRIDAY ? "" : "_test");
     }
 
-    private static String post(String jsonStr) {
+    public static String getClassUrl() {
+        return String.format("%s%s", baseUrl, getClassPath());
+    }
+
+    private static String getBatchUrl() {
+        return String.format("%s%s", baseUrl, "/parse/batch");
+    }
+
+    private static String post(String name, String jsonStr) {
         if (jsonStr == null || jsonStr.trim().length() <= 0) {
             return null;
         }
-        System.out.printf("Post report: %s, %s\r\n", classUrl, jsonStr.length() > 100 ? String.format("%s...", jsonStr.substring(0, 100)) : jsonStr);
-        return HttpClientUtil.sendHttpPostJson(classUrl, headers, jsonStr.trim());
+        System.out.printf("Post report: %s, %s, %s\r\n", name, getClassUrl(), jsonStr.length() > 100 ? String.format("%s...", jsonStr.substring(0, 100)) : jsonStr);
+        return HttpClientUtil.sendHttpPostJson(getClassUrl(), headers, jsonStr.trim());
     }
 
     public static String delete(List<String> items) {
@@ -86,7 +99,7 @@ public class RMSUtil {
             final String itemId = item;
             Map<String, String> operation = new HashMap<String, String>() {{
                 put("method", "DELETE");
-                put("path", String.format("%s/%s", classPath, itemId));
+                put("path", String.format("%s/%s", getClassPath(), itemId));
             }};
             operationList.add(operation);
         }
@@ -94,11 +107,11 @@ public class RMSUtil {
         String jsonStr = JsonUtil.toString(new HashMap<String, Object>() {{
             put("requests", operationList);
         }});
-        return HttpClientUtil.sendHttpPostJson(batchUrl, headers, jsonStr);
+        return HttpClientUtil.sendHttpPostJson(getBatchUrl(), headers, jsonStr);
     }
 
     public static JSONArray get() {
-        String jsonStr = HttpClientUtil.sendHttpGet(classUrl, headers);
+        String jsonStr = HttpClientUtil.sendHttpGet(getClassUrl(), headers);
         Object jsonObj = JsonUtil.toObject(jsonStr);
         if (jsonObj == null) {
             return null;

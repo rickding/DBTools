@@ -44,7 +44,7 @@ public class ReleasePlanReport extends BaseReport {
 
     @Override
     public String getFileName() {
-        return String.format("未完成开发-4周内-交付计划-%s.xlsx", DateUtils.format(new Date(), "MMdd"));
+        return String.format("未完成开发-4周内-交付计划-%s.xlsx", DateUtils.format(new Date(), "yyyyMMdd"));
     }
 
     @Override
@@ -147,10 +147,6 @@ public class ReleasePlanReport extends BaseReport {
     @Override
     public XSSFSheet[] fillDataSheets(XSSFWorkbook wb) {
         XSSFSheet[] sheets = super.fillDataSheets(wb);
-        if (wb == null || isTemplateUsed()) {
-            return sheets;
-        }
-
         // Calculate the data
         TeamProcessor[] teams = calculateData(wb);
 
@@ -171,6 +167,7 @@ public class ReleasePlanReport extends BaseReport {
         }
 
         // Post to rms
+        RMSUtil.postReportData(String.format("%s_%s", getName(), getSheetName("data2")), dateStr, duration, records);
         postToRms2(records);
 
         if (!isTemplateUsed()) {

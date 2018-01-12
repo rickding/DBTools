@@ -66,7 +66,7 @@ public class JiraUser {
                     continue;
                 }
 
-                tmpUser = new JiraUser(user.getTeam().trim(), user.getName().trim(), user.getCode().trim(), new String[]{user.getName().trim()});
+                tmpUser = new JiraUser(user.getTeam().trim(), user.getName().trim(), user.getCode().trim(), user.getAliases());
                 tmpUserList.add(tmpUser);
 
                 // Find if it's pre-defined

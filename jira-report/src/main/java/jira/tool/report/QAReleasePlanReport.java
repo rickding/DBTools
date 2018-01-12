@@ -25,7 +25,7 @@ public class QAReleasePlanReport extends BaseReport {
 
     @Override
     public String getFileName() {
-        return String.format("版本发布会%s.xlsx", DateUtils.format(new Date(), "MMdd"));
+        return String.format("版本发布会%s.xlsx", DateUtils.format(new Date(), "yyyyMMdd"));
     }
 
     @Override

@@ -6,7 +6,6 @@ import jira.tool.db.DBUtil;
 import jira.tool.db.model.Story;
 import jira.tool.report.processor.HeaderProcessor;
 import jira.tool.report.processor.TeamEnum;
-import jira.tool.report.processor.TeamNameProcessor;
 import jira.tool.report.processor.TeamProcessor;
 import org.apache.poi.ss.usermodel.DataConsolidateFunction;
 import org.apache.poi.xssf.usermodel.XSSFPivotTable;
@@ -25,8 +24,10 @@ public class WeeklyReleaseReport extends ReleasePlanReport {
         mapSheetName.put("data", "人天交付运营能力");
         mapSheetName.put("graph", "本周交付统计");
         mapSheetName.put("graph3", "按周交付统计");
+
         mapSheetName.put("data2", "人力库存");
         mapSheetName.put("graph2", "本周交付人均");
+        mapSheetName.put("graph4", "%s人均");
 
         duration = "weekly";
         dateProcessor = HeaderProcessor.releaseDateHeader;
@@ -36,12 +37,12 @@ public class WeeklyReleaseReport extends ReleasePlanReport {
 
     @Override
     public String getTemplateName() {
-        return null; // "人天交付运营能力-template.xlsx";
+        return useTemplate ? "template-人天交付运营能力.xlsx" : null;
     }
 
     @Override
     public String getFileName() {
-        return String.format("人天交付运营能力%s.xlsx", DateUtils.format(new Date(), "MMdd"));
+        return String.format("人天交付运营能力-%s.xlsx", DateUtils.format(new Date(), "MMdd"));
     }
 
     @Override
@@ -78,8 +79,8 @@ public class WeeklyReleaseReport extends ReleasePlanReport {
         List<HeaderProcessor> list = Arrays.asList(TeamProcessor.getHeaders());
         pivotTable.addRowLabel(list.indexOf(TeamProcessor.nameHeader));
 
-        pivotTable.addColumnLabel(DataConsolidateFunction.SUM, list.indexOf(TeamProcessor.releaseHeader));
         pivotTable.addColumnLabel(DataConsolidateFunction.SUM, list.indexOf(TeamProcessor.releaseMaxHeader));
+        pivotTable.addColumnLabel(DataConsolidateFunction.SUM, list.indexOf(TeamProcessor.releaseHeader));
 //        pivotTable.addColumnLabel(DataConsolidateFunction.SUM, list.indexOf(TeamProcessor.releaseMinHeader));
 
         pivotTable.addReportFilter(list.indexOf(TeamProcessor.dateHeader));
@@ -108,7 +109,34 @@ public class WeeklyReleaseReport extends ReleasePlanReport {
                 wb.removeSheetAt(wb.getSheetIndex(graphSheet));
             }
         }
+
+        // Pivot table4: different teams
+        dataSheet = wb.getSheet(mapSheetName.get("data2"));
+        if (dataSheet != null) {
+            for (String team : TeamProcessor.createTeamProcessors().keySet()) {
+                XSSFSheet graphSheet = ExcelUtil.getOrCreateSheet(wb, String.format(getSheetName("graph4"), team));
+                XSSFPivotTable pivotTable = createPivotTable(graphSheet, dataSheet, TeamProcessor.getHeaders().length - 1);
+                decoratePivotTable4(pivotTable);
+            }
+        }
         return sheets;
+    }
+
+    protected void decoratePivotTable4(XSSFPivotTable pivotTable) {
+        if (pivotTable == null) {
+            return;
+        }
+
+        // Decorate graph
+        List<HeaderProcessor> list = Arrays.asList(TeamProcessor.getHeaders());
+        pivotTable.addRowLabel(list.indexOf(TeamProcessor.dateHeader));
+
+        pivotTable.addColumnLabel(DataConsolidateFunction.SUM, list.indexOf(TeamProcessor.releaseMaxHeader));
+        pivotTable.addColumnLabel(DataConsolidateFunction.SUM, list.indexOf(TeamProcessor.releaseHeader));
+//        pivotTable.addColumnLabel(DataConsolidateFunction.SUM, list.indexOf(TeamProcessor.releaseMinHeader));
+
+        pivotTable.addReportFilter(list.indexOf(TeamProcessor.nameHeader));
+        pivotTable.addReportFilter(list.indexOf(TeamProcessor.releaseMinHeader));
     }
 
     @Override
@@ -157,13 +185,12 @@ public class WeeklyReleaseReport extends ReleasePlanReport {
 //                { name: 'A-宜和', 'APP': 12.4, '财务线.': 23.2, '导购线': 34.5, 'Apr.': 99.7, 'May': 52.6, 'Jun.': 35.5, 'Jul.': 37.4, 'Aug.': 42.4 }
 //        ];
 
-        List<Map<String, Object>> chartDataList = getCharData(projectTeamMap);
+        List<Map<String, Object>> chartDataList = getChartData(projectTeamMap);
         RMSUtil.postReport(String.format("%s_%s", getName(), getSheetName("graph")), dateStr, duration, chartDataList);
-
         postToRms3(records);
     }
 
-    protected List<Map<String, Object>> getCharData(Map<String, Map<String, Integer>> projectTeamMap) {
+    protected List<Map<String, Object>> getChartData(Map<String, Map<String, Integer>> projectTeamMap) {
         if (projectTeamMap == null || projectTeamMap.size() <= 0) {
             return null;
         }
@@ -266,7 +293,7 @@ public class WeeklyReleaseReport extends ReleasePlanReport {
 //                { name: '2017-12-16', 'APP': 12.4, '财务线.': 23.2, '导购线': 34.5, 'Apr.': 99.7, 'May': 52.6, 'Jun.': 35.5, 'Jul.': 37.4, 'Aug.': 42.4 }
 //        ];
 
-        List<Map<String, Object>> chartDataList = getCharData(dataMap);
+        List<Map<String, Object>> chartDataList = getChartData(dataMap);
         // Add backspace for date data type
         for (Map<String, Object> data : chartDataList) {
             data.put("name", String.format("%s%s", data.get("name"), " "));

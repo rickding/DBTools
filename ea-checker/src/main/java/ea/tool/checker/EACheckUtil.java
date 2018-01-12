@@ -59,9 +59,18 @@ public class EACheckUtil {
             }
 
             // Check if the author and owner exist
-            if (JiraUser.findUser(element[EAHeaderEnum.Author.getIndex()]) == null
-                    || JiraUser.findUser(element[EAHeaderEnum.Dev.getIndex()]) == null) {
+            JiraUser jiraUser = JiraUser.findUser(element[EAHeaderEnum.Author.getIndex()]);
+            if (jiraUser == null || StrUtils.isEmpty(jiraUser.getName())) {
                 continue;
+            } else {
+                element[EAHeaderEnum.Author.getIndex()] = jiraUser.getName().trim();
+            }
+
+            jiraUser = JiraUser.findUser(element[EAHeaderEnum.Dev.getIndex()]);
+            if (jiraUser == null || StrUtils.isEmpty(jiraUser.getName())) {
+                continue;
+            } else {
+                element[EAHeaderEnum.Dev.getIndex()] = jiraUser.getName().trim();
             }
 
             // Check QA

@@ -34,12 +34,12 @@ public class WeeklyStartPlanReport extends ReleasePlanReport {
 
     @Override
     public String getTemplateName() {
-        return null; // "计划开始-template.xlsx";
+        return useTemplate ? "template-计划开始.xlsx" : null;
     }
 
     @Override
     public String getFileName() {
-        return String.format("计划开始%s.xlsx", DateUtils.format(new Date(), "MMdd"));
+        return String.format("计划开始-%s.xlsx", DateUtils.format(new Date(), "MMdd"));
     }
 
     @Override

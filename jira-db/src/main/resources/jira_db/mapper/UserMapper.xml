@@ -7,13 +7,23 @@
         <id column="ID" property="id"/>
         <result column="c_id" property="code"/>
         <result column="StaffName" property="name"/>
+        <result column="ProductLine_Amoeba" property="team"/>
         <result column="ProductLine" property="team"/>
         <result column="member_count" property="memberCount"/>
+
+        <result column="user_name" property="userName"/>
+        <result column="lower_user_name" property="lowerUserName"/>
+        <result column="first_name" property="firstName"/>
+        <result column="lower_first_name" property="lowerFirstName"/>
+        <result column="last_name" property="lastName"/>
+        <result column="lower_last_name" property="lowerLastName"/>
+        <result column="display_name" property="displayName"/>
+        <result column="lower_display_name" property="lowerDisplayName"/>
     </resultMap>
 
     <!-- Return the user list -->
     <select id="getUserList" resultMap="userMap">
-        SELECT * FROM jiradb.OStaffList;
+        SELECT * FROM jiradb.cwd_user left join jiradb.OStaffList on c_id = user_name;
     </select>
 
     <!-- Return the team list -->
