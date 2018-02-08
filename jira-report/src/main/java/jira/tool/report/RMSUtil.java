@@ -16,14 +16,14 @@ import java.util.Map;
 
 public class RMSUtil {
     public static String postReportData(final String name, final String date, final String duration, final Object data) {
-        return postReport(name, date, duration, data, true);
+        return null; // postReport(name, date, duration, data, true);
     }
 
     public static String postReport(final String name, final String date, final String duration, final Object data) {
-        return postReport(name, date, duration, data, false);
+        return null; // postReport(name, date, duration, data, false);
     }
 
-    public static String postReport(final String name, final String date, final String duration, final Object data, boolean isRawData) {
+    private static String postReport(final String name, final String date, final String duration, final Object data, boolean isRawData) {
         isPostingRawData = isRawData;
         if (StrUtils.isEmpty(name) || StrUtils.isEmpty(date) || StrUtils.isEmpty(duration) || data == null) {
             return null;

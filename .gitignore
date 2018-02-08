@@ -13,6 +13,8 @@ sample/
 # Log file
 *.log
 logs/
+*.xlsx
+*.xls
 
 # BlueJ files
 *.ctxt
