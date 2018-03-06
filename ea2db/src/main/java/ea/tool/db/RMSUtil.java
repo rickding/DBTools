@@ -18,7 +18,7 @@ public class RMSUtil {
         if (element == null) {
             return null;
         }
-        return postJson(JsonUtil.toString(element));
+        return postJson(JsonUtil.toJson(element));
     }
 
     public static String postJson(String jsonStr) {

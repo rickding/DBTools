@@ -53,6 +53,6 @@ public class ApiController {
             add(new String[]{"aa2", "bb2"});
         }};
         report.fillDataSheets(wb);
-        return JsonUtil.toString(recordList);
+        return JsonUtil.toJson(recordList);
     }
 }

@@ -55,7 +55,7 @@ public class RMSUtil {
             put("duration", duration);
             put("data", data);
         }};
-        return post(name, JsonUtil.toString(report));
+        return post(name, JsonUtil.toJson(report));
     }
 
     // http://docs.parseplatform.org/rest/guide/
@@ -104,7 +104,7 @@ public class RMSUtil {
             operationList.add(operation);
         }
 
-        String jsonStr = JsonUtil.toString(new HashMap<String, Object>() {{
+        String jsonStr = JsonUtil.toJson(new HashMap<String, Object>() {{
             put("requests", operationList);
         }});
         return HttpClientUtil.sendHttpPostJson(getBatchUrl(), headers, jsonStr);
@@ -112,7 +112,7 @@ public class RMSUtil {
 
     public static JSONArray get() {
         String jsonStr = HttpClientUtil.sendHttpGet(getClassUrl(), headers);
-        Object jsonObj = JsonUtil.toObject(jsonStr);
+        Object jsonObj = JsonUtil.parseJson(jsonStr);
         if (jsonObj == null) {
             return null;
         }
